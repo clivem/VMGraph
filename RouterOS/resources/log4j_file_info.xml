@@ -11,7 +11,7 @@
   </appender> 
   
   <appender name="R" class="org.apache.log4j.RollingFileAppender"> 
-    <param name="file" value="/var/log/snmpmon/SnmpGetService.log"/>
+    <param name="file" value="/var/log/snmpmon/RouterOS.log"/>
     <param name="MaxFileSize" value="1000KB"/>
     <!-- Keep one backup file -->
     <param name="MaxBackupIndex" value="1"/>
