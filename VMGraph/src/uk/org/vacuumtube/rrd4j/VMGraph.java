@@ -7,13 +7,20 @@ import static org.rrd4j.ConsolFun.AVERAGE;
 import static org.rrd4j.ConsolFun.MAX;
 
 import java.awt.Color;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -33,8 +40,8 @@ import org.rrd4j.core.Util;
 import org.rrd4j.graph.RrdGraph;
 import org.rrd4j.graph.RrdGraphDef;
 
-import uk.org.vacuumtube.rrd4j.Direction;
 import uk.org.vacuumtube.util.ByteFormat;
+import uk.org.vacuumtube.util.OS;
 
 /**
  * @author clivem
@@ -370,7 +377,8 @@ public class VMGraph {
         		((direction == Direction.DOWN) ? "_DOWN" : (direction == Direction.UP) ? "_UP" : "");
         String fileName = outputPath + Util.getFileSeparator() + graphName + ".png";
         
-        graphDef.setFilename(fileName);
+        //graphDef.setFilename(fileName);
+        graphDef.setFilename("-");
         graphDef.setImageFormat("PNG");
         graphDef.setImageInfo("<IMG SRC='%s' WIDTH='%d' HEIGHT='%d' ALT='" + graphName + "'>");
         //graphDef.setAltYMrtg(true);
@@ -378,9 +386,28 @@ public class VMGraph {
         RrdGraph graph = new RrdGraph(graphDef);
         //BufferedImage bi = new BufferedImage(100,100,BufferedImage.TYPE_INT_RGB);
         //graph.render(bi.getGraphics());
+
+        File f = new File(fileName);
+        if (OS.isUnix() && !f.exists()) {
+            String attrList = "rw-rw-r--";
+	        try {
+    			Set<PosixFilePermission> perms = PosixFilePermissions.fromString(attrList);
+    			FileAttribute<Set<PosixFilePermission>> at =
+    				    PosixFilePermissions.asFileAttribute(perms);
+    			Files.createFile(f.toPath(), at);
+	        } catch (IOException ioe) {
+	        	logger.warn("Error creating file with attributes [" + attrList + "]: " + fileName, ioe);
+	        } catch (UnsupportedOperationException uoe) {
+	        	logger.warn("Error creating file with attributes [" + attrList + "]: " + fileName, uoe);
+	        }
+        }
         
-        String imgInfo = graph.getRrdGraphInfo().getImgInfo();
-        logger.info(imgInfo);
+    	BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
+    	bos.write(graph.getRrdGraphInfo().getBytes());
+    	bos.close();
+        
+        //String imgInfo = graph.getRrdGraphInfo().getImgInfo();
+        //logger.info(imgInfo);
     }
     
     /**
