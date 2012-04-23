@@ -42,6 +42,7 @@ import org.rrd4j.graph.RrdGraphDef;
 
 import uk.org.vacuumtube.util.ByteFormat;
 import uk.org.vacuumtube.util.OS;
+import uk.org.vacuumtube.util.Version;
 
 /**
  * @author clivem
@@ -388,7 +389,7 @@ public class VMGraph {
         //graph.render(bi.getGraphics());
 
         File f = new File(fileName);
-        if (OS.isUnix() && !f.exists()) {
+        if (Version.isGreater(1.65f) && OS.isUnix() && !f.exists()) {
             String attrList = "rw-rw-r--";
 	        try {
     			Set<PosixFilePermission> perms = PosixFilePermissions.fromString(attrList);
