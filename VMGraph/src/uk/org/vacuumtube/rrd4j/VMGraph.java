@@ -32,6 +32,10 @@ import org.rrd4j.graph.RrdGraphDef;
 
 import uk.org.vacuumtube.util.ByteFormat;
 
+/**
+ * @author clivem
+ *
+ */
 public class VMGraph {
 	
 	protected final static Logger logger = Logger.getLogger(VMGraph.class);
@@ -55,6 +59,16 @@ public class VMGraph {
     protected String archiveInName;
     protected String archiveOutName;
     
+    /**
+     * @param rrdDb
+     * @param outputPath
+     * @param year
+     * @param month
+     * @param day
+     * @param serviceList
+     * @param archiveInName
+     * @param archiveOutName
+     */
     public VMGraph(RrdDb rrdDb, String outputPath, int year, int month, int day, 
     		Profile[] serviceList, String archiveInName, String archiveOutName) {
     	this.rrdDb = rrdDb;
@@ -67,6 +81,9 @@ public class VMGraph {
     	this.archiveOutName = archiveOutName;
     }
     
+    /**
+     * @throws IOException
+     */
     public void graph() throws IOException {
 		for (int i = 0; i < profileList.length; i++) {
 			Calendar calendar = Calendar.getInstance();
@@ -81,6 +98,12 @@ public class VMGraph {
 		}		
     }
     
+    /**
+     * @param startTs
+     * @param endTs
+     * @param profile
+     * @throws IOException
+     */
     public void graph(long startTs, long endTs, Profile profile) throws IOException {
     	//String path = rrdDb.getPath();
     	//RrdDb rrdDb = new RrdDb(rrdFilename, xmlFilename); 
