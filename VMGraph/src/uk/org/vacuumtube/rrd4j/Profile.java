@@ -26,6 +26,7 @@ public class Profile {
 	private static HashMap<String, HashMap<String, Profile>> PROFILE_MAP = 
 			new HashMap<String, HashMap<String, Profile>>();
 
+	private String id;
 	private String serviceName;
 	private int connectionSpeedDownMbps;
 	private int connectionSpeedUpMbps;
@@ -39,98 +40,86 @@ public class Profile {
 		 * XL_30_3
 		 */
     	HashMap<String, Profile> serviceMap = new HashMap<String, Profile>();
-    	serviceMap.put("DAY_BOTH_XL30_3", 
-    			new Profile(XL30_3, 30, 3, Direction.BOTH, 0, 24,
-    					Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
-    	serviceMap.put("1000-1500_DOWN_XL30_3", 
-    			new Profile(XL30_3, 30, 3, Direction.DOWN, 10, 5,
-    					Arrays.asList(new StmProfile(Direction.DOWN, 7000, 50, 5))));
-    	serviceMap.put("1600-2100_DOWN_XL30_3", 
-    			new Profile(XL30_3, 30, 3, Direction.DOWN, 16, 5,
-    					Arrays.asList(new StmProfile(Direction.DOWN, 3500, 50, 5))));
-    	serviceMap.put("1500-2000_UP_XL30_3", 
-    			new Profile(XL30_3, 30, 3, Direction.UP, 15, 5,
-    					Arrays.asList(new StmProfile(Direction.UP, 4200, 75, 5))));
+    	put(serviceMap, new Profile(XL30_3 + "_BOTH_24HR", XL30_3, 30, 3, Direction.BOTH, 0, 24,
+    			Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
+    	put(serviceMap, new Profile(XL30_3 + "_DOWN_1000-1500", XL30_3, 30, 3, Direction.DOWN, 10, 5,
+    			Arrays.asList(new StmProfile(Direction.DOWN, 7000, 50, 5))));
+    	put(serviceMap, new Profile(XL30_3 + "_DOWN_1600-2100", XL30_3, 30, 3, Direction.DOWN, 16, 5,
+    			Arrays.asList(new StmProfile(Direction.DOWN, 3500, 50, 5))));
+    	put(serviceMap, new Profile(XL30_3 + "_UP_1500-2000", XL30_3, 30, 3, Direction.UP, 15, 5,
+    			Arrays.asList(new StmProfile(Direction.UP, 4200, 75, 5))));
 		PROFILE_MAP.put(XL30_3, serviceMap);
 
     	/*
     	 * XXL50_5
     	 */
     	serviceMap = new HashMap<String, Profile>();
-    	serviceMap.put("DAY_BOTH_XXL50_5", 
-    			new Profile(XXL50_5, 50, 5, Direction.BOTH, 0, 24,
-    					Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
-    	serviceMap.put("1000-1500_DOWN_XXL50_5", 
-    			new Profile(XXL50_5, 50, 5, Direction.DOWN, 10, 5,
-    					Arrays.asList(new StmProfile(Direction.DOWN, 10000, 50, 5))));
-    	serviceMap.put("1600-2100_DOWN_XXL50_5", 
-    			new Profile(XXL50_5, 50, 5, Direction.DOWN, 16, 5,
-    					Arrays.asList(new StmProfile(Direction.DOWN, 5000, 50, 5))));
-    	serviceMap.put("1500-2000_UP_XXL50_5", 
-    			new Profile(XXL50_5, 50, 5, Direction.UP, 15, 5,
-    					Arrays.asList(new StmProfile(Direction.UP, 6000, 65, 5))));
+    	put(serviceMap, new Profile(XXL50_5 + "_BOTH_24HR", XXL50_5, 50, 5, Direction.BOTH, 0, 24,
+    			Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
+    	put(serviceMap, new Profile(XXL50_5 + "_DOWN_1000-1500", XXL50_5, 50, 5, Direction.DOWN, 10, 5,
+    			Arrays.asList(new StmProfile(Direction.DOWN, 10000, 50, 5))));
+    	put(serviceMap, new Profile(XXL50_5 + "_DOWN_1600-2100", XXL50_5, 50, 5, Direction.DOWN, 16, 5,
+    			Arrays.asList(new StmProfile(Direction.DOWN, 5000, 50, 5))));
+    	put(serviceMap, new Profile(XXL50_5 + "_UP_1500-2000", XXL50_5, 50, 5, Direction.UP, 15, 5,
+    			Arrays.asList(new StmProfile(Direction.UP, 6000, 65, 5))));
 		PROFILE_MAP.put(XXL50_5, serviceMap);
 
 		/*
 		 * XL60_6
 		 */
     	serviceMap = new HashMap<String, Profile>();
-    	serviceMap.put("DAY_BOTH_XL60_6", 
-    			new Profile(XL60_6, 60, 6, Direction.BOTH, 0, 24,
-    					Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
-    	serviceMap.put("1000-1500_DOWN_XL60_6", 
-    			new Profile(XL60_6, 60, 6, Direction.DOWN, 10, 5,
-    					Arrays.asList(new StmProfile(Direction.DOWN, 10000, 50, 5))));
-    	serviceMap.put("1600-2100_DOWN_XL60_6", 
-    			new Profile(XL60_6, 60, 6, Direction.DOWN, 16, 5,
-    					Arrays.asList(new StmProfile(Direction.DOWN, 5000, 50, 5))));
-    	serviceMap.put("1500-2000_UP_XL60_6", 
-    			new Profile(XL60_6, 60, 6, Direction.UP, 15, 5,
-    					Arrays.asList(new StmProfile(Direction.UP, 7000, 75, 5))));
+    	put(serviceMap, new Profile(XL60_6 + "_BOTH_24HR", XL60_6, 60, 6, Direction.BOTH, 0, 24,
+    			Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
+    	put(serviceMap, new Profile(XL60_6 + "_DOWN_1000-1500", XL60_6, 60, 6, Direction.DOWN, 10, 5,
+    			Arrays.asList(new StmProfile(Direction.DOWN, 10000, 50, 5))));
+    	put(serviceMap, new Profile(XL60_6 + "_DOWN_1600-2100", XL60_6, 60, 6, Direction.DOWN, 16, 5,
+    			Arrays.asList(new StmProfile(Direction.DOWN, 5000, 50, 5))));
+    	put(serviceMap, new Profile(XL60_6 + "_UP_1500-2000", XL60_6, 60, 6, Direction.UP, 15, 5,
+    			Arrays.asList(new StmProfile(Direction.UP, 7000, 75, 5))));
 		PROFILE_MAP.put(XL60_6, serviceMap);
 
 		/*
 		 * XL100_5
 		 */
     	serviceMap = new HashMap<String, Profile>();
-    	serviceMap.put("DAY_BOTH_XL100_5", 
-    			new Profile(XL100_5, 100, 5, Direction.BOTH, 0, 24,
-    					Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
-    	serviceMap.put("1000-1500_DOWN_XL100_5", 
-    			new Profile(XL100_5, 100, 5, Direction.DOWN, 10, 5,
-    					Arrays.asList(new StmProfile(Direction.DOWN, 20000, 50, 5))));
-    	serviceMap.put("1600-2100_DOWN_XL100_5", 
-    			new Profile(XL100_5, 100, 5, Direction.DOWN, 16, 5,
-    					Arrays.asList(new StmProfile(Direction.DOWN, 10000, 50, 5))));
-    	serviceMap.put("1500-2000_UP_XL100_5", 
-    			new Profile(XL100_5, 100, 5, Direction.UP, 15, 5,
-    					Arrays.asList(new StmProfile(Direction.UP, 6000, 65, 5))));
+    	put(serviceMap, new Profile(XL100_5 + "_BOTH_24HR", XL100_5, 100, 5, Direction.BOTH, 0, 24,
+    			Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
+    	put(serviceMap, new Profile(XL100_5 + "_DOWN_1000-1500", XL100_5, 100, 5, Direction.DOWN, 10, 5,
+    			Arrays.asList(new StmProfile(Direction.DOWN, 20000, 50, 5))));
+    	put(serviceMap, new Profile(XL100_5 + "_DOWN_1600-2100", XL100_5, 100, 5, Direction.DOWN, 16, 5,
+    			Arrays.asList(new StmProfile(Direction.DOWN, 10000, 50, 5))));
+    	put(serviceMap, new Profile(XL100_5 + "_UP_1500-2000", XL100_5, 100, 5, Direction.UP, 15, 5,
+    			Arrays.asList(new StmProfile(Direction.UP, 6000, 65, 5))));
 		PROFILE_MAP.put(XL100_5, serviceMap);
 
 		/*
 		 * XL100_10
 		 */
     	serviceMap = new HashMap<String, Profile>();
-    	serviceMap.put("DAY_BOTH_XL100_10", 
-    			new Profile(XL100_10, 100, 10, Direction.BOTH, 0, 24,
-    					Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
-    	serviceMap.put("1000-1500_DOWN_XL100_10", 
-    			new Profile(XL100_10, 100, 10, Direction.DOWN, 10, 5,
-    					Arrays.asList(new StmProfile(Direction.DOWN, 20000, 50, 5))));
-    	serviceMap.put("1600-2100_DOWN_XL100_10", 
-    			new Profile(XL100_10, 100, 10, Direction.DOWN, 16, 5,
-    					Arrays.asList(new StmProfile(Direction.DOWN, 10000, 50, 5))));
-    	serviceMap.put("1500-2000_UP_XL100_10", 
-    			new Profile(XL100_10, 100, 10, Direction.UP, 15, 5,
-    					Arrays.asList(new StmProfile(Direction.UP, 12000, 75, 5))));
+    	put(serviceMap, new Profile(XL100_10 + "_BOTH_24HR", XL100_10, 100, 10, Direction.BOTH, 0, 24,
+    			Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
+    	put(serviceMap, new Profile(XL100_10 + "_DOWN_1000-1500", XL100_10, 100, 10, Direction.DOWN, 10, 5,
+    			Arrays.asList(new StmProfile(Direction.DOWN, 20000, 50, 5))));
+    	put(serviceMap, new Profile(XL100_10 + "_DOWN_1600-2100", XL100_10, 100, 10, Direction.DOWN, 16, 5,
+    			Arrays.asList(new StmProfile(Direction.DOWN, 10000, 50, 5))));
+    	put(serviceMap, new Profile(XL100_10 + "_UP_1500-2000", XL100_10, 100, 10, Direction.UP, 15, 5,
+    			Arrays.asList(new StmProfile(Direction.UP, 12000, 75, 5))));
 		PROFILE_MAP.put(XL100_10, serviceMap);
     }
     
+	/**
+	 * @param map
+	 * @param profile
+	 */
+	public final static void put(HashMap<String, Profile> map, Profile profile) {
+		map.put(profile.getId(), profile);
+	}
+	
     /**
      * @param serviceName
      * @return
      */
-    public static Profile[] getProfileList(String serviceName) {
+    public final static Profile[] getProfileList(String serviceName) {
 		HashMap<String, Profile> serviceMap = PROFILE_MAP.get(serviceName);
 		if (serviceMap != null) {
 			return serviceMap.values().toArray(new Profile[serviceMap.size()]);
@@ -145,8 +134,9 @@ public class Profile {
      * @param durationHours
      * @param smtProfileList
      */
-    public Profile(String serviceName, int connectionSpeedDownMbps, int connectionSpeedUpMbps, 
+    public Profile(String id, String serviceName, int connectionSpeedDownMbps, int connectionSpeedUpMbps, 
     		Direction direction, int startHour, int durationHours, List<StmProfile> smtProfileList) {
+    	this.id = id;
     	this.serviceName = serviceName;
     	this.connectionSpeedDownMbps = connectionSpeedDownMbps;
     	this.connectionSpeedUpMbps = connectionSpeedUpMbps;
@@ -175,6 +165,13 @@ public class Profile {
     	return both;
     }
     
+	/**
+	 * @return id
+	 */
+	public String getId() {
+		return id;
+	}	
+
 	/**
 	 * @return the serviceName
 	 */
