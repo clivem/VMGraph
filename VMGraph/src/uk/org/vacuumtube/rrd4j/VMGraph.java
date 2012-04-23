@@ -30,6 +30,7 @@ import org.rrd4j.core.Util;
 import org.rrd4j.graph.RrdGraph;
 import org.rrd4j.graph.RrdGraphDef;
 
+import uk.org.vacuumtube.rrd4j.Profile.Direction;
 import uk.org.vacuumtube.util.ByteFormat;
 
 /**
@@ -39,7 +40,7 @@ import uk.org.vacuumtube.util.ByteFormat;
 public class VMGraph {
 	
 	protected final static Logger logger = Logger.getLogger(VMGraph.class);
-
+	
     protected final static DateFormat DF_FULL = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
     protected final static DateFormat DF_DATE = new SimpleDateFormat("yyyy/MM/dd");
     protected final static DateFormat DF_TIME = new SimpleDateFormat("HH:mm");
@@ -122,8 +123,8 @@ public class VMGraph {
         	endTs = lastUpdateTime;
         }
         
-    	long downLimit = profile.getLimitDownBytes();
-    	long upLimit = profile.getLimitUpBytes();
+    	long downLimit = profile.getLimitBytes(Direction.DOWN);
+    	long upLimit = profile.getLimitBytes(Direction.UP);
     	Profile.Direction direction = profile.getDirection();
 		
         FetchRequest request = rrdDb.createFetchRequest(AVERAGE, startTs / 1000L, endTs / 1000L);
@@ -205,14 +206,14 @@ public class VMGraph {
     	        	
     	        	Calendar cal = Calendar.getInstance();
     	        	cal.setTime(date);
-    	        	cal.add(Calendar.HOUR, profile.getLimitDownReductionHours());
+    	        	cal.add(Calendar.HOUR, profile.getLimitReductionHours(Direction.DOWN));
     	        	
         			downLimitBreached = "VM STM download limit (of " + ByteFormat.humanReadableByteCount(downLimit, true) + 
         					") exceeded (by " + ByteFormat.humanReadableByteCount(((long)inTotal) - downLimit, true) + ") at " + 
         					DF_TIME.format(date) + "."; 
-        			downLimitBreachedDetail = "Max download speed reduced by " + profile.getLimitDownReductionPercentage() + "% (to " +  
-        					ByteFormat.humanReadableBitCount(profile.getDownConnectionSpeedbpsAfterSTM()) + " for " + 
-        					profile.getLimitDownReductionHours() + " hours) until " +
+        			downLimitBreachedDetail = "Max download speed reduced by " + profile.getLimitReductionPercentage(Direction.DOWN) + "% (to " +  
+        					ByteFormat.humanReadableBitCount(profile.getConnectionSpeedDownBpsAfterSTM()) + " for " + 
+        					profile.getLimitReductionHours(Direction.DOWN) + " hours) until " +
         					DF_FULL.format(cal.getTime()) + ".";
         			logger.info(downLimitBreached + " " + downLimitBreachedDetail);
         			downLimitBreachedTs = ts;
@@ -223,14 +224,14 @@ public class VMGraph {
     	        	
     	        	Calendar cal = Calendar.getInstance();
     	        	cal.setTime(date);
-    	        	cal.add(Calendar.HOUR, profile.getLimitUpReductionHours());
+    	        	cal.add(Calendar.HOUR, profile.getLimitReductionHours(Direction.UP));
     	        	
         			upLimitBreached = "VM STM upload limit (of " + ByteFormat.humanReadableByteCount(upLimit, true) + 
         					") exceeded (by " + ByteFormat.humanReadableByteCount(((long)outTotal) - upLimit, true) + ") at " + 
         					DF_TIME.format(date) + ".";
-        			upLimitBreachedDetail = "Max upload speed reduced by " + profile.getLimitUpReductionPercentage() + "% (to " + 
-        					ByteFormat.humanReadableBitCount(profile.getUpConnectionSpeedbpsAfterSTM()) + " for " + 
-        					profile.getLimitUpReductionHours() + " hours) until " +
+        			upLimitBreachedDetail = "Max upload speed reduced by " + profile.getLimitReductionPercentage(Direction.UP) + "% (to " + 
+        					ByteFormat.humanReadableBitCount(profile.getConnectionSpeedUpBpsAfterSTM()) + " for " + 
+        					profile.getLimitReductionHours(Direction.UP) + " hours) until " +
         					DF_FULL.format(cal.getTime()) + ".";
         			logger.info(upLimitBreached + " " + upLimitBreachedDetail);
         			upLimitBreachedTs = ts;
