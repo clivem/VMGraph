@@ -4,9 +4,7 @@ import static org.rrd4j.ConsolFun.AVERAGE;
 import static org.rrd4j.ConsolFun.MAX;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -22,7 +20,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.apache.log4j.Logger;
 import org.rrd4j.ConsolFun;
 import org.rrd4j.core.FetchData;
@@ -341,14 +338,14 @@ public class VMGraph {
         	*/
         }
 
-        String gName = "VM_" + profile.getServiceName() + "_" + 
+        String graphName = "VM_" + profile.getServiceName() + "_" + 
         		DF_OUTNAME_DATETIME.format(new Date(startTs)) +
         		((direction == Profile.Direction.DOWN) ? "_DOWN" : (direction == Profile.Direction.UP) ? "_UP" : "");
-        String fName = outputPath + Util.getFileSeparator() + gName + ".png";
+        String fileName = outputPath + Util.getFileSeparator() + graphName + ".png";
         
-        graphDef.setFilename(fName);
+        graphDef.setFilename(fileName);
         graphDef.setImageFormat("PNG");
-        graphDef.setImageInfo("<IMG SRC='%s' WIDTH='%d' HEIGHT='%d' ALT='" + gName + "'>");
+        graphDef.setImageInfo("<IMG SRC='%s' WIDTH='%d' HEIGHT='%d' ALT='" + graphName + "'>");
         //graphDef.setAltYMrtg(true);
         
         RrdGraph graph = new RrdGraph(graphDef);
