@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <jardesc>
     <jar path="SnmpGet.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/SnmpGet/SnmpGet.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
@@ -12,11 +12,7 @@
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
         <javaElement handleIdentifier="=SnmpGet/resources"/>
-        <file path="/SnmpGet/.project"/>
-        <file path="/SnmpGet/SnmpGet.jardesc"/>
-        <file path="/SnmpGet/.gitignore"/>
         <javaElement handleIdentifier="=SnmpGet/src"/>
         <javaElement handleIdentifier="=Util/src"/>
-        <file path="/SnmpGet/.classpath"/>
     </selectedElements>
 </jardesc>
