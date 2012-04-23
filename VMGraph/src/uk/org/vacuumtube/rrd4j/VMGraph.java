@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package uk.org.vacuumtube.rrd4j;
 
 import static org.rrd4j.ConsolFun.AVERAGE;
@@ -30,7 +33,7 @@ import org.rrd4j.core.Util;
 import org.rrd4j.graph.RrdGraph;
 import org.rrd4j.graph.RrdGraphDef;
 
-import uk.org.vacuumtube.rrd4j.Profile.Direction;
+import uk.org.vacuumtube.rrd4j.Direction;
 import uk.org.vacuumtube.util.ByteFormat;
 
 /**
@@ -125,7 +128,7 @@ public class VMGraph {
         
     	long downLimit = profile.getLimitBytes(Direction.DOWN);
     	long upLimit = profile.getLimitBytes(Direction.UP);
-    	Profile.Direction direction = profile.getDirection();
+    	Direction direction = profile.getDirection();
 		
         FetchRequest request = rrdDb.createFetchRequest(AVERAGE, startTs / 1000L, endTs / 1000L);
         //println(request.dump());
@@ -251,7 +254,7 @@ public class VMGraph {
         //((service.getDurationHours() < 24)
         
         graphDef.setTitle("VM " + profile.getServiceName() + 
-        		((direction == Profile.Direction.DOWN) ? " DOWN " : (direction == Profile.Direction.UP) ? " UP " : " ") +
+        		((direction == Direction.DOWN) ? " DOWN " : (direction == Direction.UP) ? " UP " : " ") +
         		DF_DATETIME.format(new Date(startTs)) + " - " + ((endTs - startTs < 1000 * 60 * 60 * 24) ? 
         				DF_TIME.format(new Date(endTs)) : DF_DATETIME.format(new Date(endTs))));
         graphDef.setVerticalLabel("bits per second");
@@ -364,7 +367,7 @@ public class VMGraph {
 
         String graphName = "VM_" + profile.getServiceName() + "_" + 
         		DF_OUTNAME_DATETIME.format(new Date(startTs)) +
-        		((direction == Profile.Direction.DOWN) ? "_DOWN" : (direction == Profile.Direction.UP) ? "_UP" : "");
+        		((direction == Direction.DOWN) ? "_DOWN" : (direction == Direction.UP) ? "_UP" : "");
         String fileName = outputPath + Util.getFileSeparator() + graphName + ".png";
         
         graphDef.setFilename(fileName);

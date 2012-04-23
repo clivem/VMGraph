@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package uk.org.vacuumtube.util;
 
 import java.text.DecimalFormat;

@@ -1,6 +1,9 @@
+/**
+ * 
+ */
 package uk.org.vacuumtube.rrd4j;
 
-import uk.org.vacuumtube.rrd4j.Profile.Direction;
+import uk.org.vacuumtube.rrd4j.Direction;
 
 /**
  * @author clivem
@@ -21,8 +24,6 @@ public class StmProfile {
 	 */
 	public StmProfile(Direction direction, int limitMB, int limitReductionPercentage, int limitReductionHours) {
 		this.direction = direction;
-		//this.startHour = startHour;
-		//this.durationHours = durationHours;
 		this.limitMB = limitMB;
 		this.limitReductionPercentage = limitReductionPercentage;
 		this.limitReductionHours = limitReductionHours;
@@ -91,14 +92,14 @@ public class StmProfile {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("StmProfile[");
-	    buf.append("direction=");
-	    buf.append(direction);
-	    buf.append(", limitMB=");
-	    buf.append(limitMB);
-	    buf.append(", limitReductionPercentage=");
-	    buf.append(limitReductionPercentage);
-	    buf.append(", limitReductionHours=");
-	    buf.append(limitReductionHours);
+		buf.append("direction=");
+		buf.append(direction);
+		buf.append(", limitMB=");
+		buf.append(limitMB);
+		buf.append(", limitReductionPercentage=");
+		buf.append(limitReductionPercentage);
+		buf.append(", limitReductionHours=");
+		buf.append(limitReductionHours);
 		buf.append("]");
 		return buf.toString();
 	}
