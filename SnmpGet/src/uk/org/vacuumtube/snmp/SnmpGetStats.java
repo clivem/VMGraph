@@ -267,7 +267,7 @@ public class SnmpGetStats {
 		Iterator<Option> it = cmd.iterator();
 		while (it.hasNext()) {
 			Option op = it.next();
-			buf.append(" -" + op.getOpt() + " " + op.getValue());
+			buf.append(" -" + op.getOpt() + ((op.getValue() != null) ? " " + op.getValue() : ""));
 		}
 		logger.info(buf);
 		
