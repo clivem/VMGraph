@@ -64,6 +64,14 @@ public class SnmpGetStats {
 	
 	protected Timer timer = null;
 	
+	/**
+	 * @param snmpAddress
+	 * @param snmpInOid
+	 * @param snmpOutOid
+	 * @param rrdDbFileName
+	 * @param archiveInName
+	 * @param archiveOutName
+	 */
 	public SnmpGetStats(String snmpAddress, String snmpInOid, String snmpOutOid, String rrdDbFileName,
 			String archiveInName, String archiveOutName) {
 		if (logger.isDebugEnabled()) {
@@ -79,6 +87,10 @@ public class SnmpGetStats {
 		this.archiveOutName = archiveOutName;
 	}
 	
+	/**
+	 * @param interval
+	 * @throws IOException
+	 */
 	public void execute(int interval) throws IOException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("SnmpGetStats.execute(interval=" + interval + ")");
@@ -110,6 +122,9 @@ public class SnmpGetStats {
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	public void close() {
 		if (logger.isDebugEnabled()) {
 			logger.debug("SnmpGetStats.close()");
@@ -126,6 +141,10 @@ public class SnmpGetStats {
 		}
 	}
 	
+	/**
+	 * @return
+	 * @throws IOException
+	 */
 	public RrdDb openRrdDb() throws IOException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("SnmpGetStats.createRrdDb()");
@@ -305,6 +324,14 @@ public class SnmpGetStats {
 		logger.info("Exiting...");
 	}
 
+	/**
+	 * @author clivem
+	 *
+	 */
+	/**
+	 * @author clivem
+	 *
+	 */
 	class GetSnmpInterfaceStatisticsTask extends TimerTask {
 
 		//final Logger logger = Logger.getLogger(GetSnmpInterfaceStatisticsTask.class);
@@ -313,6 +340,11 @@ public class SnmpGetStats {
 		private OID bytes_in_oid;
 		private OID bytes_out_oid;
 		
+		/**
+		 * @param address
+		 * @param bytes_in_oid
+		 * @param bytes_out_oid
+		 */
 		GetSnmpInterfaceStatisticsTask(String address, String bytes_in_oid, String bytes_out_oid) {
 			this.address = address;
 			this.bytes_in_oid = new OID(bytes_in_oid);

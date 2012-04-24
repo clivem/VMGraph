@@ -32,6 +32,10 @@ public class SnmpClient {
 	private String address;
 	private Snmp snmp;
 
+	/**
+	 * @param address
+	 * @throws IOException
+	 */
 	public SnmpClient(String address) throws IOException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("SnmpClient(address=" + address + ")");
@@ -40,6 +44,9 @@ public class SnmpClient {
 		start();
 	}
 	
+	/**
+	 * @throws IOException
+	 */
 	private void start() throws IOException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("SnmpClient.start(): START");
@@ -54,6 +61,9 @@ public class SnmpClient {
 		}
 	}
 	
+	/**
+	 * @throws IOException
+	 */
 	public void stop() throws IOException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("SnmpClient.stop()");
@@ -61,6 +71,11 @@ public class SnmpClient {
 		snmp.close();
 	}
 	
+	/**
+	 * @param oids
+	 * @return
+	 * @throws IOException
+	 */
 	public ResponseEvent get(OID oids[]) throws IOException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("SnmpClient.get(oids=" + oids + ")");
@@ -69,6 +84,9 @@ public class SnmpClient {
 		return(snmp.send(getPDU(oids), getTarget(), null));
 	}
 
+	/**
+	 * @return
+	 */
 	private Target getTarget() {
 		if (logger.isDebugEnabled()) {
 			logger.debug("SnmpClient.getTarget()");
@@ -83,6 +101,10 @@ public class SnmpClient {
 		return target;
 	}
 
+	/**
+	 * @param oids
+	 * @return
+	 */
 	private PDU getPDU(OID oids[]) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("SnmpClient.getPDU(oids=" + oids + ")");

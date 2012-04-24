@@ -1,16 +1,26 @@
+/**
+ * 
+ */
 package uk.org.vacuumtube.rrd4j;
 
 import static org.rrd4j.ConsolFun.AVERAGE;
 import static org.rrd4j.ConsolFun.MAX;
 
 import java.awt.Color;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -31,11 +41,17 @@ import org.rrd4j.graph.RrdGraph;
 import org.rrd4j.graph.RrdGraphDef;
 
 import uk.org.vacuumtube.util.ByteFormat;
+import uk.org.vacuumtube.util.OS;
+import uk.org.vacuumtube.util.Version;
 
+/**
+ * @author clivem
+ *
+ */
 public class VMGraph {
 	
 	protected final static Logger logger = Logger.getLogger(VMGraph.class);
-
+	
     protected final static DateFormat DF_FULL = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
     protected final static DateFormat DF_DATE = new SimpleDateFormat("yyyy/MM/dd");
     protected final static DateFormat DF_TIME = new SimpleDateFormat("HH:mm");
@@ -55,6 +71,16 @@ public class VMGraph {
     protected String archiveInName;
     protected String archiveOutName;
     
+    /**
+     * @param rrdDb
+     * @param outputPath
+     * @param year
+     * @param month
+     * @param day
+     * @param serviceList
+     * @param archiveInName
+     * @param archiveOutName
+     */
     public VMGraph(RrdDb rrdDb, String outputPath, int year, int month, int day, 
     		Profile[] serviceList, String archiveInName, String archiveOutName) {
     	this.rrdDb = rrdDb;
@@ -67,6 +93,9 @@ public class VMGraph {
     	this.archiveOutName = archiveOutName;
     }
     
+    /**
+     * @throws IOException
+     */
     public void graph() throws IOException {
 		for (int i = 0; i < profileList.length; i++) {
 			Calendar calendar = Calendar.getInstance();
@@ -81,6 +110,12 @@ public class VMGraph {
 		}		
     }
     
+    /**
+     * @param startTs
+     * @param endTs
+     * @param profile
+     * @throws IOException
+     */
     public void graph(long startTs, long endTs, Profile profile) throws IOException {
     	//String path = rrdDb.getPath();
     	//RrdDb rrdDb = new RrdDb(rrdFilename, xmlFilename); 
@@ -99,9 +134,9 @@ public class VMGraph {
         	endTs = lastUpdateTime;
         }
         
-    	long downLimit = profile.getLimitDownBytes();
-    	long upLimit = profile.getLimitUpBytes();
-    	Profile.Direction direction = profile.getDirection();
+    	long downLimit = profile.getLimitBytes(Direction.DOWN);
+    	long upLimit = profile.getLimitBytes(Direction.UP);
+    	Direction direction = profile.getDirection();
 		
         FetchRequest request = rrdDb.createFetchRequest(AVERAGE, startTs / 1000L, endTs / 1000L);
         //println(request.dump());
@@ -182,14 +217,14 @@ public class VMGraph {
     	        	
     	        	Calendar cal = Calendar.getInstance();
     	        	cal.setTime(date);
-    	        	cal.add(Calendar.HOUR, profile.getLimitDownReductionHours());
+    	        	cal.add(Calendar.HOUR, profile.getLimitReductionHours(Direction.DOWN));
     	        	
         			downLimitBreached = "VM STM download limit (of " + ByteFormat.humanReadableByteCount(downLimit, true) + 
         					") exceeded (by " + ByteFormat.humanReadableByteCount(((long)inTotal) - downLimit, true) + ") at " + 
         					DF_TIME.format(date) + "."; 
-        			downLimitBreachedDetail = "Max download speed reduced by " + profile.getLimitDownReductionPercentage() + "% (to " +  
-        					ByteFormat.humanReadableBitCount(profile.getDownConnectionSpeedbpsAfterSTM()) + " for " + 
-        					profile.getLimitDownReductionHours() + " hours) until " +
+        			downLimitBreachedDetail = "Max download speed reduced by " + profile.getLimitReductionPercentage(Direction.DOWN) + "% (to " +  
+        					ByteFormat.humanReadableBitCount(profile.getConnectionSpeedDownBpsAfterSTM()) + " for " + 
+        					profile.getLimitReductionHours(Direction.DOWN) + " hours) until " +
         					DF_FULL.format(cal.getTime()) + ".";
         			logger.info(downLimitBreached + " " + downLimitBreachedDetail);
         			downLimitBreachedTs = ts;
@@ -200,14 +235,14 @@ public class VMGraph {
     	        	
     	        	Calendar cal = Calendar.getInstance();
     	        	cal.setTime(date);
-    	        	cal.add(Calendar.HOUR, profile.getLimitUpReductionHours());
+    	        	cal.add(Calendar.HOUR, profile.getLimitReductionHours(Direction.UP));
     	        	
         			upLimitBreached = "VM STM upload limit (of " + ByteFormat.humanReadableByteCount(upLimit, true) + 
         					") exceeded (by " + ByteFormat.humanReadableByteCount(((long)outTotal) - upLimit, true) + ") at " + 
         					DF_TIME.format(date) + ".";
-        			upLimitBreachedDetail = "Max upload speed reduced by " + profile.getLimitUpReductionPercentage() + "% (to " + 
-        					ByteFormat.humanReadableBitCount(profile.getUpConnectionSpeedbpsAfterSTM()) + " for " + 
-        					profile.getLimitUpReductionHours() + " hours) until " +
+        			upLimitBreachedDetail = "Max upload speed reduced by " + profile.getLimitReductionPercentage(Direction.UP) + "% (to " + 
+        					ByteFormat.humanReadableBitCount(profile.getConnectionSpeedUpBpsAfterSTM()) + " for " + 
+        					profile.getLimitReductionHours(Direction.UP) + " hours) until " +
         					DF_FULL.format(cal.getTime()) + ".";
         			logger.info(upLimitBreached + " " + upLimitBreachedDetail);
         			upLimitBreachedTs = ts;
@@ -227,7 +262,7 @@ public class VMGraph {
         //((service.getDurationHours() < 24)
         
         graphDef.setTitle("VM " + profile.getServiceName() + 
-        		((direction == Profile.Direction.DOWN) ? " DOWN " : (direction == Profile.Direction.UP) ? " UP " : " ") +
+        		((direction == Direction.DOWN) ? " DOWN " : (direction == Direction.UP) ? " UP " : " ") +
         		DF_DATETIME.format(new Date(startTs)) + " - " + ((endTs - startTs < 1000 * 60 * 60 * 24) ? 
         				DF_TIME.format(new Date(endTs)) : DF_DATETIME.format(new Date(endTs))));
         graphDef.setVerticalLabel("bits per second");
@@ -340,10 +375,11 @@ public class VMGraph {
 
         String graphName = "VM_" + profile.getServiceName() + "_" + 
         		DF_OUTNAME_DATETIME.format(new Date(startTs)) +
-        		((direction == Profile.Direction.DOWN) ? "_DOWN" : (direction == Profile.Direction.UP) ? "_UP" : "");
+        		((direction == Direction.DOWN) ? "_DOWN" : (direction == Direction.UP) ? "_UP" : "");
         String fileName = outputPath + Util.getFileSeparator() + graphName + ".png";
         
-        graphDef.setFilename(fileName);
+        //graphDef.setFilename(fileName);
+        graphDef.setFilename("-");
         graphDef.setImageFormat("PNG");
         graphDef.setImageInfo("<IMG SRC='%s' WIDTH='%d' HEIGHT='%d' ALT='" + graphName + "'>");
         //graphDef.setAltYMrtg(true);
@@ -351,9 +387,28 @@ public class VMGraph {
         RrdGraph graph = new RrdGraph(graphDef);
         //BufferedImage bi = new BufferedImage(100,100,BufferedImage.TYPE_INT_RGB);
         //graph.render(bi.getGraphics());
+
+        File f = new File(fileName);
+        if (Version.isGreater(1.65f) && OS.isUnix() && !f.exists()) {
+            String attrList = "rw-rw-r--";
+	        try {
+    			Set<PosixFilePermission> perms = PosixFilePermissions.fromString(attrList);
+    			FileAttribute<Set<PosixFilePermission>> at =
+    				    PosixFilePermissions.asFileAttribute(perms);
+    			Files.createFile(f.toPath(), at);
+	        } catch (IOException ioe) {
+	        	logger.warn("Error creating file with attributes [" + attrList + "]: " + fileName, ioe);
+	        } catch (UnsupportedOperationException uoe) {
+	        	logger.warn("Error creating file with attributes [" + attrList + "]: " + fileName, uoe);
+	        }
+        }
         
-        String imgInfo = graph.getRrdGraphInfo().getImgInfo();
-        logger.info(imgInfo);
+    	BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
+    	bos.write(graph.getRrdGraphInfo().getBytes());
+    	bos.close();
+        
+        //String imgInfo = graph.getRrdGraphInfo().getImgInfo();
+        //logger.info(imgInfo);
     }
     
     /**

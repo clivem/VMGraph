@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package uk.org.vacuumtube.routeros;
 import java.io.File;
 import java.io.IOException;
@@ -49,15 +52,24 @@ public class RouterOSGetStats {
 	
 	private RrdDb rrdDb = null;
 
+	/**
+	 * 
+	 */
 	public RouterOSGetStats() {
 	}
 	
+	/**
+	 * @throws SQLException
+	 */
 	public void openJdbc() throws SQLException {
 		conn = DriverManager.getConnection("jdbc:mysql://192.168.0.60/routeros?user=routeros&password=louise");
 		String sql = "insert into stats values(?,?,?,?,?)";
 		stmt = conn.prepareStatement(sql);
 	}
 	
+	/**
+	 * 
+	 */
 	public void releaseJdbc() {
 		if (stmt != null) {
 			try {
@@ -72,6 +84,11 @@ public class RouterOSGetStats {
 		}
 	}
 	
+	/**
+	 * @param fileName
+	 * @return
+	 * @throws IOException
+	 */
 	public RrdDb createRrdDb(String fileName) 
 			throws IOException {
 		
@@ -98,6 +115,9 @@ public class RouterOSGetStats {
 		return rrdDb;
 	}
 	
+	/**
+	 * 
+	 */
 	public void test() {
 		if (!ret.isConnected()) {
 			ret.start();
@@ -304,6 +324,11 @@ public class RouterOSGetStats {
 		}
 	}
 	
+	/**
+	 * @param tag
+	 * @param text
+	 * @return
+	 */
 	public static long getLong(String tag, String text) {
 		if (text.contains(tag)) {
 			String[] tmp = text.split(tag);
