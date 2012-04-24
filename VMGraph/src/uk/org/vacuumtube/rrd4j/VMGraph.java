@@ -389,6 +389,7 @@ public class VMGraph {
         //graph.render(bi.getGraphics());
 
         File f = new File(fileName);
+        /*
         if (Version.isGreater(1.65f) && OS.isUnix() && !f.exists()) {
             String attrList = "rw-rw-r--";
 	        try {
@@ -402,7 +403,7 @@ public class VMGraph {
 	        	logger.warn("Error creating file with attributes [" + attrList + "]: " + fileName, uoe);
 	        }
         }
-        
+        */
     	BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
     	bos.write(graph.getRrdGraphInfo().getBytes());
     	bos.close();
