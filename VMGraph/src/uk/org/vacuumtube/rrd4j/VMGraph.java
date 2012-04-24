@@ -479,14 +479,14 @@ public class VMGraph {
 		@SuppressWarnings("static-access")
 		Option archive_in_name_option = OptionBuilder.withArgName("name")
                 .hasArg()
-                .withDescription("use given name for archive in/down name. default: traffic_in")
+                .withDescription("use given name for DOWN/IN stats archive in rrd file. default: traffic_in")
                 .create("archive_in_name");
 		options.addOption(archive_in_name_option);
 		
 		@SuppressWarnings("static-access")
 		Option archive_out_name_option = OptionBuilder.withArgName("name")
                 .hasArg()
-                .withDescription("use given name for archive out/up name. default: traffic_out")
+                .withDescription("use given name for UP/OUT stats archive in rrd file. default: traffic_out")
                 .create("archive_out_name");
 		options.addOption(archive_out_name_option);
 		
