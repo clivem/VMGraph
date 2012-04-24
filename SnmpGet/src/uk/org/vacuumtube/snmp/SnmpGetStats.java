@@ -176,13 +176,17 @@ public class SnmpGetStats {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+
+		Options options = new Options();
+
 		/*
 		Option property = OptionBuilder.withArgName("property=value")
                 .hasArgs(2)
                 .withValueSeparator()
                 .withDescription("use value for given property")
                 .create("D");
-                */
+		options.addOption(property);
+        */
 		
 		@SuppressWarnings("static-access")
 		Option service_option = OptionBuilder.withArgName("interval")
@@ -190,12 +194,14 @@ public class SnmpGetStats {
                 .withDescription("use given polling interval (minutes)")
                 .create("service");
 		service_option.setType(Integer.class);
+		options.addOption(service_option);
 		
 		@SuppressWarnings("static-access")
 		Option snmp_addr_option = OptionBuilder.withArgName("address")
                 .hasArg()
                 .withDescription("use given snmp address. eg. udp:192.168.0.1/161")
                 .create("snmp_addr");
+		options.addOption(snmp_addr_option);
 		
 		@SuppressWarnings("static-access")
 		Option in_oid_option = OptionBuilder.withArgName("oid")
@@ -203,6 +209,7 @@ public class SnmpGetStats {
                 .withDescription("use given oid for in/down. eg. .1.3.6.1.2.1.2.2.1.10.1")
                 .create("in_oid");
 		in_oid_option.setRequired(true);
+		options.addOption(in_oid_option);
 		
 		@SuppressWarnings("static-access")
 		Option out_oid_option = OptionBuilder.withArgName("oid")
@@ -210,6 +217,7 @@ public class SnmpGetStats {
                 .withDescription("use given oid for out/up. eg. .1.3.6.1.2.1.2.2.1.16.1")
                 .create("out_oid");
 		out_oid_option.setRequired(true);
+		options.addOption(out_oid_option);
 
 		@SuppressWarnings("static-access")
 		Option rrd_file_option = OptionBuilder.withArgName("filename")
@@ -217,36 +225,29 @@ public class SnmpGetStats {
                 .withDescription("use given filename for rrd database file")
                 .create("rrd_file");
 		rrd_file_option.setRequired(true);
+		options.addOption(rrd_file_option);
 		
 		@SuppressWarnings("static-access")
 		Option archive_in_name_option = OptionBuilder.withArgName("name")
                 .hasArg()
                 .withDescription("use given name for archive in/down name. default: traffic_in")
                 .create("archive_in_name");
+		options.addOption(archive_in_name_option);
 		
 		@SuppressWarnings("static-access")
 		Option archive_out_name_option = OptionBuilder.withArgName("name")
                 .hasArg()
                 .withDescription("use given name for archive out/up name. default: traffic_out")
                 .create("archive_out_name");
+		options.addOption(archive_out_name_option);
 		
 		Option help_option = new Option( "help", "print this message" );
-		Option nostdin_option = new Option( "nostdin", "run as a service with stdin" );
-
-		Options options = new Options();
-		//options.addOption(property);
-		options.addOption(service_option);
-		options.addOption(snmp_addr_option);
-		options.addOption(in_oid_option);
-		options.addOption(out_oid_option);
-		options.addOption(rrd_file_option);
-		options.addOption(archive_in_name_option);
-		options.addOption(archive_out_name_option);
 		options.addOption(help_option);
-		options.addOption(nostdin_option);
-		
-		CommandLineParser parser = new GnuParser();
 
+		Option nostdin_option = new Option( "nostdin", "run as a service with stdin" );
+		options.addOption(nostdin_option);
+
+		CommandLineParser parser = new GnuParser();
 		CommandLine cmd = null;
 		try {
 			cmd = parser.parse(options, args);

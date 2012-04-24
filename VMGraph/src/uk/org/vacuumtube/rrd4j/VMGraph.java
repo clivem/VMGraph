@@ -411,24 +411,38 @@ public class VMGraph {
 	 */
 	public static void main(String[] args) {
 		
+		Options options = new Options();
+
+		/*
+		Option property = OptionBuilder.withArgName("property=value")
+                .hasArgs(2)
+                .withValueSeparator()
+                .withDescription("use value for given property")
+                .create("D");
+		options.addOption(property);
+        */
+		
 		@SuppressWarnings("static-access")
 		Option rrd_file_option = OptionBuilder.withArgName("name")
                 .hasArg()
                 .withDescription("use given name for rrd database file")
                 .create("rrd_file");
 		rrd_file_option.setRequired(true);
+		options.addOption(rrd_file_option);
 		
 		@SuppressWarnings("static-access")
 		Option out_dir_option = OptionBuilder.withArgName("name")
                 .hasArg()
                 .withDescription("use given name for out dir")
                 .create("out_dir");
+		options.addOption(out_dir_option);
 		
 		@SuppressWarnings("static-access")
 		Option rrdtool_file_option = OptionBuilder.withArgName("name")
                 .hasArg()
                 .withDescription("use given name for rrdtool src filename")
                 .create("rrdtool_file");
+		options.addOption(rrdtool_file_option);
 		
 		@SuppressWarnings("static-access")
 		Option profile_option = OptionBuilder.withArgName("name")
@@ -436,6 +450,7 @@ public class VMGraph {
                 .withDescription("use given name for profile")
                 .create("profile");
 		profile_option.setRequired(true);
+		options.addOption(profile_option);
 		
 		@SuppressWarnings("static-access")
 		Option year_option = OptionBuilder.withArgName("YYYY")
@@ -443,6 +458,7 @@ public class VMGraph {
                 .withDescription("use given YYYY for year")
                 .create("year");
 		year_option.setType(Integer.class);
+		options.addOption(year_option);
 		
 		@SuppressWarnings("static-access")
 		Option month_option = OptionBuilder.withArgName("MM")
@@ -450,6 +466,7 @@ public class VMGraph {
                 .withDescription("use given MM for month")
                 .create("month");
 		month_option.setType(Integer.class);
+		options.addOption(month_option);
 		
 		@SuppressWarnings("static-access")
 		Option day_option = OptionBuilder.withArgName("DD")
@@ -457,35 +474,26 @@ public class VMGraph {
                 .withDescription("use given DD for day")
                 .create("day");
 		day_option.setType(Integer.class);
+		options.addOption(day_option);
 		
 		@SuppressWarnings("static-access")
 		Option archive_in_name_option = OptionBuilder.withArgName("name")
                 .hasArg()
                 .withDescription("use given name for archive in/down name. default: traffic_in")
                 .create("archive_in_name");
+		options.addOption(archive_in_name_option);
 		
 		@SuppressWarnings("static-access")
 		Option archive_out_name_option = OptionBuilder.withArgName("name")
                 .hasArg()
                 .withDescription("use given name for archive out/up name. default: traffic_out")
                 .create("archive_out_name");
+		options.addOption(archive_out_name_option);
 		
 		Option help_option = new Option( "help", "print this message" );
-
-		Options options = new Options();
-		options.addOption(rrd_file_option);
-		options.addOption(out_dir_option);
-		options.addOption(rrdtool_file_option);
-		options.addOption(profile_option);
-		options.addOption(year_option);
-		options.addOption(month_option);
-		options.addOption(day_option);
-		options.addOption(archive_in_name_option);
-		options.addOption(archive_out_name_option);
 		options.addOption(help_option);
 		
 		CommandLineParser parser = new GnuParser();
-
 		CommandLine cmd = null;
 		try {
 			cmd = parser.parse(options, args);
