@@ -308,7 +308,7 @@ public class VMGraph {
     			graphDef.comment("\\c");
     			graphDef.comment(profile.getDirection().getDescription() + " Limit: " +
     					profile.getLimitMB() + "MB. Speed reduction penalty: " + profile.getLimitReductionPercentage() +
-    					"% for " + profile.getLimitReductionHours() + " hours, if exceeded!");
+    					"% for " + profile.getLimitReductionHours() + " hours, if exceeded!\\c");
     		}
     	}
     	
