@@ -305,10 +305,13 @@ public class VMGraph {
     	
     	for (StmProfile profile : service.getStmProfileMapValues()) {
     		if (profile.getLimitMB() > 0) {
-    			graphDef.comment("\\c");
-    			graphDef.comment(profile.getDirection().getDescription() + " Limit: " +
-    					profile.getLimitMB() + "MB. Speed reduction penalty: " + profile.getLimitReductionPercentage() +
-    					"% for " + profile.getLimitReductionHours() + " hours, if exceeded!\\c");
+    			if ((profile.getDirection() == Direction.DOWN && downLimitExceeded == null) ||
+    					(profile.getDirection() == Direction.UP && upLimitExceeded == null)) {
+	    			graphDef.comment("\\c");
+	    			graphDef.comment(profile.getDirection().getDescription() + " Limit: " +
+	    					profile.getLimitMB() + "MB. Speed reduction penalty: " + profile.getLimitReductionPercentage() +
+	    					"% for " + profile.getLimitReductionHours() + " hours, if exceeded!\\c");
+    			}
     		}
     	}
     	
