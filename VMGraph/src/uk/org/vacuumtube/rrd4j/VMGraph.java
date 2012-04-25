@@ -60,7 +60,7 @@ public class VMGraph {
     protected int year;
     protected int month;
     protected int day;
-    protected Profile[] profileList;
+    protected Service[] profileList;
     protected String archiveInName;
     protected String archiveOutName;
     
@@ -75,7 +75,7 @@ public class VMGraph {
      * @param archiveOutName
      */
     public VMGraph(RrdDb rrdDb, String outputPath, int year, int month, int day, 
-    		Profile[] serviceList, String archiveInName, String archiveOutName) {
+    		Service[] serviceList, String archiveInName, String archiveOutName) {
     	this.rrdDb = rrdDb;
     	this.outputPath = outputPath;
     	this.year = year;
@@ -101,7 +101,7 @@ public class VMGraph {
      * @param profile
      * @throws IOException
      */
-    public void graph(Profile profile) throws IOException {
+    public void graph(Service profile) throws IOException {
     	if (logger.isDebugEnabled()) {
     		logger.debug("graph(profile=" + profile + ")");
     	}
@@ -490,10 +490,10 @@ public class VMGraph {
 			System.exit(-1);
 		}
 		
-		Profile[] profileList = Profile.getProfileList(cmd.getOptionValue("profile"));
+		Service[] profileList = Service.getProfileList(cmd.getOptionValue("profile"));
 		if (profileList == null || profileList.length < 1) {
 			String vpl = "";
-			for (String p : Profile.SERVICE_NAME_LIST) {
+			for (String p : Service.SERVICE_NAME_LIST) {
 				vpl += (" " + p);
 			}
 			logger.error("Invalid profile: " + cmd.getOptionValue("profile") + "! Valid profiles:" + vpl + ".");
