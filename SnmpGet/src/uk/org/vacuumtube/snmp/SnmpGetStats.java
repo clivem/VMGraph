@@ -101,6 +101,7 @@ public class SnmpGetStats {
 		}
 		
 		if (interval < 1) {
+			logger.info("Polling once.");
 			GetSnmpInterfaceStatisticsTask task = 
 					new GetSnmpInterfaceStatisticsTask(snmpAddress, snmpInOid, snmpOutOid);
 			task.run();
@@ -116,7 +117,7 @@ public class SnmpGetStats {
 			long mod = start % 60000;
 			Date date = new Date(start - mod);
 			
-			logger.info("First Poll Start Time: " + DF_FULL.format(date));
+			logger.info("Service using timer interval: " + interval + "m. Starting at: " + DF_FULL.format(date));
 			
 			timer.scheduleAtFixedRate(new GetSnmpInterfaceStatisticsTask(snmpAddress, snmpInOid, snmpOutOid), date, interval * 60000);
 		}
