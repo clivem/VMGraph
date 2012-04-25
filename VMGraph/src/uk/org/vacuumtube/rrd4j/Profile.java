@@ -4,9 +4,10 @@
 package uk.org.vacuumtube.rrd4j;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author clivem
@@ -23,8 +24,7 @@ public class Profile {
 	public final static String XL100_10 = "XL_100_10";
 	public final static String[] SERVICE_NAME_LIST = {XL30_3, XXL50_5, XL60_6, XL100_5, XL100_10};
 
-	private static HashMap<String, HashMap<String, Profile>> PROFILE_MAP = 
-			new HashMap<String, HashMap<String, Profile>>();
+	private static Map<String, Map<String, Profile>> PROFILE_MAP = new TreeMap<String, Map<String, Profile>>();
 
 	private String id;
 	private String serviceName;
@@ -39,7 +39,7 @@ public class Profile {
 		/*
 		 * XL_30_3
 		 */
-    	HashMap<String, Profile> serviceMap = new HashMap<String, Profile>();
+    	Map<String, Profile> serviceMap = new TreeMap<String, Profile>();
     	put(serviceMap, new Profile(XL30_3 + "_BOTH_24HR", XL30_3, 30, 3, Direction.BOTH, 0, 24,
     			Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
     	put(serviceMap, new Profile(XL30_3 + "_DOWN_1000-1500", XL30_3, 30, 3, Direction.DOWN, 10, 5,
@@ -53,7 +53,7 @@ public class Profile {
     	/*
     	 * XXL50_5
     	 */
-    	serviceMap = new HashMap<String, Profile>();
+    	serviceMap = new TreeMap<String, Profile>();
     	put(serviceMap, new Profile(XXL50_5 + "_BOTH_24HR", XXL50_5, 50, 5, Direction.BOTH, 0, 24,
     			Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
     	put(serviceMap, new Profile(XXL50_5 + "_DOWN_1000-1500", XXL50_5, 50, 5, Direction.DOWN, 10, 5,
@@ -67,7 +67,7 @@ public class Profile {
 		/*
 		 * XL60_6
 		 */
-    	serviceMap = new HashMap<String, Profile>();
+    	serviceMap = new TreeMap<String, Profile>();
     	put(serviceMap, new Profile(XL60_6 + "_BOTH_24HR", XL60_6, 60, 6, Direction.BOTH, 0, 24,
     			Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
     	put(serviceMap, new Profile(XL60_6 + "_DOWN_1000-1500", XL60_6, 60, 6, Direction.DOWN, 10, 5,
@@ -81,7 +81,7 @@ public class Profile {
 		/*
 		 * XL100_5
 		 */
-    	serviceMap = new HashMap<String, Profile>();
+    	serviceMap = new TreeMap<String, Profile>();
     	put(serviceMap, new Profile(XL100_5 + "_BOTH_24HR", XL100_5, 100, 5, Direction.BOTH, 0, 24,
     			Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
     	put(serviceMap, new Profile(XL100_5 + "_DOWN_1000-1500", XL100_5, 100, 5, Direction.DOWN, 10, 5,
@@ -95,7 +95,7 @@ public class Profile {
 		/*
 		 * XL100_10
 		 */
-    	serviceMap = new HashMap<String, Profile>();
+    	serviceMap = new TreeMap<String, Profile>();
     	put(serviceMap, new Profile(XL100_10 + "_BOTH_24HR", XL100_10, 100, 10, Direction.BOTH, 0, 24,
     			Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
     	put(serviceMap, new Profile(XL100_10 + "_DOWN_1000-1500", XL100_10, 100, 10, Direction.DOWN, 10, 5,
@@ -111,7 +111,7 @@ public class Profile {
 	 * @param map
 	 * @param profile
 	 */
-	public final static void put(HashMap<String, Profile> map, Profile profile) {
+	public final static void put(Map<String, Profile> map, Profile profile) {
 		map.put(profile.getId(), profile);
 	}
 	
@@ -120,7 +120,7 @@ public class Profile {
      * @return
      */
     public final static Profile[] getProfileList(String serviceName) {
-		HashMap<String, Profile> serviceMap = PROFILE_MAP.get(serviceName);
+		Map<String, Profile> serviceMap = PROFILE_MAP.get(serviceName);
 		if (serviceMap != null) {
 			return serviceMap.values().toArray(new Profile[serviceMap.size()]);
 		}
@@ -304,7 +304,9 @@ public class Profile {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("Service[");
-	    buf.append("serviceName=");
+	    buf.append("id=");
+	    buf.append(id);
+	    buf.append(", serviceName=");
 	    buf.append(serviceName);
 	    buf.append(", direction=");
 	    buf.append(direction);
@@ -312,7 +314,6 @@ public class Profile {
 	    buf.append(connectionSpeedDownMbps);
 	    buf.append(", connectionSpeedUpMbps=");
 	    buf.append(connectionSpeedUpMbps);
-	    buf.append(", limitUpMB=");
 	    buf.append(", startHour=");
 	    buf.append(startHour);
 	    buf.append(", durationHours=");

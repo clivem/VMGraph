@@ -91,15 +91,7 @@ public class VMGraph {
      */
     public void graph() throws IOException {
 		for (int i = 0; i < profileList.length; i++) {
-			Calendar calendar = Calendar.getInstance();
-	        calendar.clear();
-	        calendar.set(year, month, day, profileList[i].getStartHour(), 0);
-	        
-	        long startTs = Util.getTimestamp(calendar) * 1000;
-	        calendar.add(Calendar.HOUR_OF_DAY, profileList[i].getDurationHours());
-	        long endTs = Util.getTimestamp(calendar) * 1000;
-	        
-			graph(startTs, endTs, profileList[i]);
+			graph(profileList[i]);
 		}		
     }
     
@@ -109,38 +101,49 @@ public class VMGraph {
      * @param profile
      * @throws IOException
      */
-    public void graph(long startTs, long endTs, Profile profile) throws IOException {
-    	//String path = rrdDb.getPath();
-    	//RrdDb rrdDb = new RrdDb(rrdFilename, xmlFilename); 
-		//RrdDb rrdDb = new RrdDb(rrdFilename, true);
-        //println("File reopen in read-only mode");
+    public void graph(Profile profile) throws IOException {
+    	if (logger.isDebugEnabled()) {
+    		logger.debug("graph(profile=" + profile + ")");
+    	}
+
+		Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.set(year, month, day, profile.getStartHour(), 0);
+        
+        long startTs = Util.getTimestamp(calendar) * 1000;
+        calendar.add(Calendar.HOUR_OF_DAY, profile.getDurationHours());
+        long endTs = Util.getTimestamp(calendar) * 1000;
+
+    	logger.info("Graphing Profile: " + profile.getId() + ", Start: " + startTs + " [" + DF_FULL.format(new Date(startTs)) + 
+    			"], End: " + endTs + " [" + DF_FULL.format(new Date(endTs)) + "]");
+
     	long lastUpdateTime = rrdDb.getLastUpdateTime() * 1000;
-        logger.info("DB Last update time was: " + DF_FULL.format(new Date(lastUpdateTime)));
-        //logger.info("DB Last info was: " + rrdDb.getInfo());
+        logger.info("RRD last update time: " + lastUpdateTime + " [" + DF_FULL.format(new Date(lastUpdateTime)) + "]");
 
         if (lastUpdateTime < startTs) {
-        	logger.warn("DB LastUpdateTime < requested start time! Not graphing!");
+        	logger.info("RRD last update time < requested start time. Will not create graph for this profile!");
         	return;
         }
         
         if (lastUpdateTime < endTs) {
         	endTs = lastUpdateTime;
+        	logger.info("RRD last update time < requested end time. Graphing until last update time.");
         }
         
     	long downLimit = profile.getLimitBytes(Direction.DOWN);
     	long upLimit = profile.getLimitBytes(Direction.UP);
     	Direction direction = profile.getDirection();
-		
-        FetchRequest request = rrdDb.createFetchRequest(AVERAGE, startTs / 1000L, endTs / 1000L);
-        //println(request.dump());
-        FetchData fetchData = request.fetchData();
-        logger.debug("DB Data fetched. " + fetchData.getRowCount() + " data points obtained.");
-        //println(fetchData.exportXml());
-        logger.debug("DB Fetch completed");
 
-        logger.debug("DB ArcStep: " + fetchData.getArcStep() + ", ArcEndTime: " + 
-        		DF_FULL.format(new Date(fetchData.getArcEndTime() * 1000)));
-        
+    	/*
+    	 * Fetch the data
+    	 */
+        FetchRequest request = rrdDb.createFetchRequest(AVERAGE, startTs / 1000L, endTs / 1000L);
+        //logger.debug(request.dump());
+        FetchData fetchData = request.fetchData();
+        logger.info("RRD data fetched: " + fetchData.getRowCount() + " data points obtained. Fetch ArcStep: " + 
+        		fetchData.getArcStep() + "s. Fetch ArcEndTime: " + DF_FULL.format(new Date(fetchData.getArcEndTime() * 1000)));
+        //logger.debug(fetchData.exportXml());
+
         long step = fetchData.getStep();
         long[] tstamp = fetchData.getTimestamps();
         double in[] = fetchData.getValues(archiveInName);
@@ -243,17 +246,7 @@ public class VMGraph {
         	}
         }
         
-        //rrdDb.close();
-        
         RrdGraphDef graphDef = new RrdGraphDef();
-        //long endTime = Util.getTime();
-        //long startTime = endTime - (24*60*60L);
-        //graphDef.setTimeSpan(startTime, endTime);
-        //long duration = fins - finishTs;
-        //long dayD = 1000 * 60 * 60 * 24; 
-        //(finishTs - startTs < 1000 * 60 * 60 * 24)
-        //((service.getDurationHours() < 24)
-        
         graphDef.setTitle("VM " + profile.getServiceName() + 
         		((direction == Direction.DOWN) ? " DOWN " : (direction == Direction.UP) ? " UP " : " ") +
         		DF_DATETIME.format(new Date(startTs)) + " - " + ((endTs - startTs < 1000 * 60 * 60 * 24) ? 
@@ -292,10 +285,8 @@ public class VMGraph {
                 graphDef.gprint("inbps", AVERAGE, "Speed Avg: %.2f %sbps");
                 graphDef.datasource("inTotal", "in,STEP,*");
                 graphDef.gprint("inTotal", ConsolFun.TOTAL, "Bytes: %3.2f %sB\\c");
-                //graphDef.comment("Down Bytes: " + ByteFormat.humanReadableByteCount((long)inTotal, true) + "\\c");
-        		
+                //graphDef.comment("Down Bytes: " + ByteFormat.humanReadableByteCount((long)inTotal, true) + "\\c");        		
                 //graphDef.comment("\\c");
-            	
                 graphDef.datasource("out", rrdDb.getPath(), archiveOutName, ConsolFun.AVERAGE);
             	graphDef.datasource("outbps", "out,8,*");
                 graphDef.line("outbps", new Color(0, 0, 0xFF), "Upload", 1);
@@ -307,43 +298,14 @@ public class VMGraph {
                 break;
         }
 
-        //graphDef.setValueAxis(10000000d, 1);
-        //graphDef.setMaxValue(55000000d);
-        //graphDef.setRigid(true);
         graphDef.hrule(50000000, Color.DARK_GRAY, null);
         
-        /*
-        graphDef.setTimeAxis(RrdGraphConstants.MINUTE, 10,
-                RrdGraphConstants.HOUR, 1,
-                RrdGraphConstants.HOUR, 1,
-                0, "%H:%M");
-         */
-
-        /*
-        if (total != null) {
-        	graphDef.comment("\\l");
-        	graphDef.comment(total + "\\c");
-        };
-        */
-
         if (downLimitBreached != null) {
         	graphDef.comment("\\l");
         	graphDef.vrule(downLimitBreachedTs / 1000L, Color.BLACK, downLimitBreached + "\\c", 2.0F);
         	if (downLimitBreachedDetail != null) {
         		graphDef.comment(downLimitBreachedDetail + "\\c");
         	}
-        	/*
-        	String[] list = downLimitBreached.split("\\n");
-        	for (int i = 0; i < list.length; i++) {
-        		if (list[i] != null) {
-        			if (i < 1) {
-        	        	graphDef.vrule(downLimitBreachedTs / 1000L, Color.BLACK, list[i] + "\\c", 2.0F);
-        			} else {
-        				graphDef.comment(list[i] + "\\c");
-        			}
-        		}
-        	}
-        	*/
         };
         
         if (upLimitBreached != null) {
@@ -352,18 +314,6 @@ public class VMGraph {
         	if (upLimitBreachedDetail != null) {
         		graphDef.comment(upLimitBreachedDetail + "\\c");
         	}
-        	/*
-        	String[] list = upLimitBreached.split("\\n");
-        	for (int i = 0; i < list.length; i++) {
-        		if (list[i] != null) {
-        			if (i < 1) {
-        				graphDef.vrule(upLimitBreachedTs / 1000L, Color.RED, list[i] + "\\c", 2.0F);
-        			} else {
-        				graphDef.comment(list[i] + "\\c");
-        			}
-        		}
-        	}
-        	*/
         }
 
         String graphName = "VM_" + profile.getServiceName() + "_" + 
@@ -383,6 +333,8 @@ public class VMGraph {
 
         File f = new File(fileName);
         /*
+         * Set posix group write permissions
+         * 
         if (Version.isGreater(1.65f) && OS.isUnix() && !f.exists()) {
             String attrList = "rw-rw-r--";
 	        try {
@@ -398,6 +350,7 @@ public class VMGraph {
         }
         */
         
+        logger.info("Writing graph: " + f.getAbsolutePath());
     	BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
     	bos.write(graph.getRrdGraphInfo().getBytes());
     	bos.close();
@@ -555,42 +508,41 @@ public class VMGraph {
 			try {
 				year = Integer.parseInt(cmd.getOptionValue("year"));
 			} catch (NumberFormatException nfe) {
-				logger.error("Invalid year: " + cmd.hasOption("year"), nfe);
+				logger.error("Invalid -year: " + cmd.getOptionValue("year"), nfe);
 				System.exit(-1);
 			}
 			
 			try {
 				month = Integer.parseInt(cmd.getOptionValue("month"));
 				if (month < 1 || month > 12) {
-					logger.error("Invalid month: " + month + ". Valid value: 1-12.");
+					logger.error("Invalid -month: " + month + ". Valid value: 1-12.");
 					System.exit(-1);
 				} else {
 					month -= 1;
 				}
 			} catch (NumberFormatException nfe) {
-				logger.error("Invalid month: " + cmd.getOptionValue("month"), nfe);
+				logger.error("Invalid -month: " + cmd.getOptionValue("month"), nfe);
 				System.exit(-1);
 			}
 			
 			try {
 				day = Integer.parseInt(cmd.getOptionValue("day"));
 				if (day < 1 || day > 31) {
-					logger.error("Invalid day: " + day + ". Valid value: 1-31.");
+					logger.error("Invalid -day: " + day + ". Valid value: 1-31.");
 					System.exit(-1);
 				}
 			} catch (NumberFormatException nfe) {
-				logger.error("Invalid day: " + cmd.getOptionValue("day"), nfe);
+				logger.error("Invalid -day: " + cmd.getOptionValue("day"), nfe);
 				System.exit(-1);
 			}
 		} else {
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DAY_OF_MONTH, -1);
-			if (logger.isDebugEnabled()) {
-				logger.debug("YYYY/MM/DD not set. Using [" + DF_FULL.format(cal.getTime()) + "] for date.");
-			}
 			year = cal.get(Calendar.YEAR);
 			month = cal.get(Calendar.MONTH);
 			day = cal.get(Calendar.DATE);
+			logger.info("-year|-month|-day not set on cmd line. Graphing yesterday: [" + 
+					DF_FULL.format(cal.getTime()) + "]");
 		}
 				
 		RrdDb rrdDb = null;
