@@ -111,13 +111,13 @@ public class Profile {
 	 * @param map
 	 * @param profile
 	 */
-	public final static void put(Map<String, Profile> map, Profile profile) {
+	private final static void put(Map<String, Profile> map, Profile profile) {
 		map.put(profile.getId(), profile);
 	}
 	
     /**
      * @param serviceName
-     * @return
+     * @return a list of STM profiles for the given serviceName
      */
     public final static Profile[] getProfileList(String serviceName) {
 		Map<String, Profile> serviceMap = PROFILE_MAP.get(serviceName);
@@ -147,15 +147,15 @@ public class Profile {
 	}
 
     /**
-     * @param dir
-     * @return
+     * @param direction
+     * @return the STM profile for the given direction
      */
-    public StmProfile getStmProfile(Direction dir) {
+    public StmProfile getStmProfile(Direction direction) {
     	StmProfile both = null;
     	Iterator<StmProfile> stmIterator = stmProfileList.iterator();
     	while (stmIterator.hasNext()) {
     		StmProfile stmProfile = stmIterator.next();
-    		if (stmProfile.getDirection() == dir) {
+    		if (stmProfile.getDirection() == direction) {
     			return stmProfile;
     		}
     		if (both == null && stmProfile.getDirection() == Direction.BOTH) {
@@ -166,84 +166,84 @@ public class Profile {
     }
     
 	/**
-	 * @return id
+	 * @return the unique id for this service STM period
 	 */
 	public String getId() {
 		return id;
 	}	
 
 	/**
-	 * @return the serviceName
+	 * @return the service profile name
 	 */
 	public String getServiceName() {
 		return serviceName;
 	}
 
 	/**
-	 * @return
+	 * @return the DOWN connection speed in Mbps
 	 */
 	public int getConnectionSpeedDownMbps() {
 		return connectionSpeedDownMbps;
 	}
 
 	/**
-	 * @return
+	 * @return the the DOWN connection speed in bps
 	 */
 	public long getConnectionSpeedDownBps() {
 		return connectionSpeedDownMbps * KILO_MULT * KILO_MULT;
 	}
 
 	/**
-	 * @return
+	 * @return the DOWN connection speed after STM is applied
 	 */
 	public long getConnectionSpeedDownBpsAfterSTM() {
 		return (long) (getConnectionSpeedDownBps() *  ((100 - getLimitReductionPercentage(Direction.DOWN)) / 100d));
 	}
 
 	/**
-	 * @return 
+	 * @return the UP connection speed in Mbps
 	 */
 	public int getConnectionSpeedUpMbps() {
 		return connectionSpeedUpMbps;
 	}
 
 	/**
-	 * @return
+	 * @return the UP connection speed in bps 
 	 */
 	public long getConnectionSpeedUpBps() {
 		return connectionSpeedUpMbps * KILO_MULT * KILO_MULT;
 	}
 
 	/**
-	 * @return
+	 * @return the UP connection speed after STM is applied
 	 */
 	public long getConnectionSpeedUpBpsAfterSTM() {
 		return (long) (getConnectionSpeedUpBps() *  ((100 - getLimitReductionPercentage(Direction.UP)) / 100d));
 	}
 
 	/**
-	 * @return the direction
+	 * @return the connection direction BOTH|UP|DOWN
 	 */
 	public Direction getDirection() {
 		return direction;
 	}
 
 	/**
-	 * @return the startHour
+	 * @return the startHour of the period
 	 */
 	public int getStartHour() {
 		return startHour;
 	}
 
 	/**
-	 * @return the endHour
+	 * @return the endHour of the period
 	 */
 	public int getEndHour() {
 		return startHour + durationHours;
 	}
 
 	/**
-	 * @return the durationHours
+	 * @return the durationHours of the period
 	 */
 	public int getDurationHours() {
 		return durationHours;
@@ -251,7 +251,7 @@ public class Profile {
 	
 	/**
 	 * @param dir
-	 * @return
+	 * @return the data limit in MBytes
 	 */
 	public long getLimitMBytes(Direction dir) {
 		StmProfile p = getStmProfile(dir);
@@ -263,7 +263,7 @@ public class Profile {
 	
 	/**
 	 * @param dir
-	 * @return
+	 * @return the data limit in bytes
 	 */
 	public long getLimitBytes(Direction dir) {
 		StmProfile p = getStmProfile(dir);
@@ -275,7 +275,8 @@ public class Profile {
 	
 	/**
 	 * @param dir
-	 * @return
+	 * @return the percentage speed reduction after exceeding the 
+	 * period data limit
 	 */
 	public int getLimitReductionPercentage(Direction dir) {
 		StmProfile p = getStmProfile(dir);
@@ -287,7 +288,8 @@ public class Profile {
 	
 	/**
 	 * @param dir
-	 * @return
+	 * @return the number of hours the speed reduction applies 
+	 * after exceeding the period data limit
 	 */
 	public int getLimitReductionHours(Direction dir) {
 		StmProfile p = getStmProfile(dir);
