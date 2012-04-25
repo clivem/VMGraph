@@ -117,6 +117,12 @@ public class VMGraph {
     	logger.info("Graphing Profile: " + service.getServiceId() + ", Start: " + startTs + " [" + DF_FULL.format(new Date(startTs)) + 
     			"], End: " + endTs + " [" + DF_FULL.format(new Date(endTs)) + "]");
 
+    	for (StmProfile profile : service.getStmProfileMapValues()) {
+    		if (profile.getLimitMB() > 0) {
+    			logger.info(profile.getLimitDescription());
+    		}
+    	}
+    	
     	long lastUpdateTime = rrdDb.getLastUpdateTime() * 1000;
         logger.info("RRD last update time: " + lastUpdateTime + " [" + DF_FULL.format(new Date(lastUpdateTime)) + "]");
 
@@ -308,9 +314,7 @@ public class VMGraph {
     			if ((profile.getDirection() == Direction.DOWN && downLimitExceeded == null) ||
     					(profile.getDirection() == Direction.UP && upLimitExceeded == null)) {
 	    			graphDef.comment("\\c");
-	    			graphDef.comment(profile.getDirection().getDescription() + " Limit: " +
-	    					profile.getLimitMB() + "MB. Speed reduction penalty: " + profile.getLimitReductionPercentage() +
-	    					"% for " + profile.getLimitReductionHours() + " hours, if exceeded!\\c");
+	    			graphDef.comment(profile.getLimitDescription() + "\\c");
     			}
     		}
     	}

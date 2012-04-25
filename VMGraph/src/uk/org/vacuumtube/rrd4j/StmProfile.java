@@ -87,6 +87,15 @@ public class StmProfile {
 	public void setLimitReductionHours(int limitReductionHours) {
 		this.limitReductionHours = limitReductionHours;
 	}
+	
+	public String getLimitDescription() {
+		if (getLimitMB() > 0) {
+			return(getDirection().getDescription() + " Limit: " +
+					getLimitMB() + "MB. Speed reduction penalty: " + getLimitReductionPercentage() +
+					"% for " + getLimitReductionHours() + " hours, if exceeded!");
+		}
+		return "";
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
