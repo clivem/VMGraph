@@ -3,10 +3,9 @@
  */
 package uk.org.vacuumtube.rrd4j;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -30,80 +29,89 @@ public class Service {
 	private String serviceName;
 	private int connectionSpeedDownMbps;
 	private int connectionSpeedUpMbps;
-	private Direction direction;
 	private int startHour;
 	private int durationHours;
-	private List<StmProfile> stmProfileList;
+	private Map<Direction, StmProfile> stmProfileMap;
 
     static {
 		/*
 		 * XL_30_3
 		 */
     	Map<String, Service> serviceMap = new TreeMap<String, Service>();
-    	put(serviceMap, new Service(XL30_3 + "_BOTH_24HR", XL30_3, 30, 3, Direction.BOTH, 0, 24,
-    			Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
-    	put(serviceMap, new Service(XL30_3 + "_DOWN_1000-1500", XL30_3, 30, 3, Direction.DOWN, 10, 5,
-    			Arrays.asList(new StmProfile(Direction.DOWN, 7000, 50, 5))));
-    	put(serviceMap, new Service(XL30_3 + "_DOWN_1600-2100", XL30_3, 30, 3, Direction.DOWN, 16, 5,
-    			Arrays.asList(new StmProfile(Direction.DOWN, 3500, 50, 5))));
-    	put(serviceMap, new Service(XL30_3 + "_UP_1500-2000", XL30_3, 30, 3, Direction.UP, 15, 5,
-    			Arrays.asList(new StmProfile(Direction.UP, 4200, 75, 5))));
+    	put(serviceMap, new Service(XL30_3 + "_BOTH_24HR", XL30_3, 30, 3, /*Direction.BOTH,*/ 0, 24,
+    			StmProfile.createMap(new StmProfile[]{
+    					new StmProfile(Direction.DOWN, -1, 0, 0), 
+    					new StmProfile(Direction.UP, -1, 0, 0)})));
+    	put(serviceMap, new Service(XL30_3 + "_DOWN_1000-1500", XL30_3, 30, 3, /*Direction.DOWN,*/ 10, 5,
+    			StmProfile.createMap(new StmProfile[]{new StmProfile(Direction.DOWN, 7000, 50, 5)})));
+    	put(serviceMap, new Service(XL30_3 + "_DOWN_1600-2100", XL30_3, 30, 3, /*Direction.DOWN,*/ 16, 5,
+    			StmProfile.createMap(new StmProfile[]{new StmProfile(Direction.DOWN, 3500, 50, 5)})));
+    	put(serviceMap, new Service(XL30_3 + "_UP_1500-2000", XL30_3, 30, 3, /*Direction.UP,*/ 15, 5,
+    			StmProfile.createMap(new StmProfile[]{new StmProfile(Direction.UP, 4200, 75, 5)})));
 		PROFILE_MAP.put(XL30_3, serviceMap);
 
     	/*
     	 * XXL50_5
     	 */
     	serviceMap = new TreeMap<String, Service>();
-    	put(serviceMap, new Service(XXL50_5 + "_BOTH_24HR", XXL50_5, 50, 5, Direction.BOTH, 0, 24,
-    			Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
-    	put(serviceMap, new Service(XXL50_5 + "_DOWN_1000-1500", XXL50_5, 50, 5, Direction.DOWN, 10, 5,
-    			Arrays.asList(new StmProfile(Direction.DOWN, 10000, 50, 5))));
-    	put(serviceMap, new Service(XXL50_5 + "_DOWN_1600-2100", XXL50_5, 50, 5, Direction.DOWN, 16, 5,
-    			Arrays.asList(new StmProfile(Direction.DOWN, 5000, 50, 5))));
-    	put(serviceMap, new Service(XXL50_5 + "_UP_1500-2000", XXL50_5, 50, 5, Direction.UP, 15, 5,
-    			Arrays.asList(new StmProfile(Direction.UP, 6000, 65, 5))));
+    	put(serviceMap, new Service(XXL50_5 + "_BOTH_24HR", XXL50_5, 50, 5, /*Direction.BOTH,*/ 0, 24,
+    			StmProfile.createMap(new StmProfile[]{
+    					new StmProfile(Direction.DOWN, -1, 0, 0), 
+    					new StmProfile(Direction.UP, -1, 0, 0)})));
+    	put(serviceMap, new Service(XXL50_5 + "_DOWN_1000-1500", XXL50_5, 50, 5, /*Direction.DOWN,*/ 10, 5,
+    			StmProfile.createMap(new StmProfile[]{new StmProfile(Direction.DOWN, 10000, 50, 5)})));
+    	put(serviceMap, new Service(XXL50_5 + "_DOWN_1600-2100", XXL50_5, 50, 5, /*Direction.DOWN,*/ 16, 5,
+    			StmProfile.createMap(new StmProfile[]{new StmProfile(Direction.DOWN, 5000, 50, 5)})));
+    	put(serviceMap, new Service(XXL50_5 + "_UP_1500-2000", XXL50_5, 50, 5, /*Direction.UP,*/ 15, 5,
+    			StmProfile.createMap(new StmProfile[]{new StmProfile(Direction.UP, 6000, 65, 5)})));
 		PROFILE_MAP.put(XXL50_5, serviceMap);
 
 		/*
 		 * XL60_6
 		 */
     	serviceMap = new TreeMap<String, Service>();
-    	put(serviceMap, new Service(XL60_6 + "_BOTH_24HR", XL60_6, 60, 6, Direction.BOTH, 0, 24,
-    			Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
-    	put(serviceMap, new Service(XL60_6 + "_DOWN_1000-1500", XL60_6, 60, 6, Direction.DOWN, 10, 5,
-    			Arrays.asList(new StmProfile(Direction.DOWN, 10000, 50, 5))));
-    	put(serviceMap, new Service(XL60_6 + "_DOWN_1600-2100", XL60_6, 60, 6, Direction.DOWN, 16, 5,
-    			Arrays.asList(new StmProfile(Direction.DOWN, 5000, 50, 5))));
-    	put(serviceMap, new Service(XL60_6 + "_UP_1500-2000", XL60_6, 60, 6, Direction.UP, 15, 5,
-    			Arrays.asList(new StmProfile(Direction.UP, 7000, 75, 5))));
+    	put(serviceMap, new Service(XL60_6 + "_BOTH_24HR", XL60_6, 60, 6, /*Direction.BOTH,*/ 0, 24,
+    			StmProfile.createMap(new StmProfile[]{
+    					new StmProfile(Direction.DOWN, -1, 0, 0), 
+    					new StmProfile(Direction.UP, -1, 0, 0)})));
+    	put(serviceMap, new Service(XL60_6 + "_DOWN_1000-1500", XL60_6, 60, 6, /*Direction.DOWN,*/ 10, 5,
+    			StmProfile.createMap(new StmProfile[]{new StmProfile(Direction.DOWN, 10000, 50, 5)})));
+    	put(serviceMap, new Service(XL60_6 + "_DOWN_1600-2100", XL60_6, 60, 6, /*Direction.DOWN,*/ 16, 5,
+    			StmProfile.createMap(new StmProfile[]{new StmProfile(Direction.DOWN, 5000, 50, 5)})));
+    	put(serviceMap, new Service(XL60_6 + "_UP_1500-2000", XL60_6, 60, 6, /*Direction.UP,*/ 15, 5,
+    			StmProfile.createMap(new StmProfile[]{new StmProfile(Direction.UP, 7000, 75, 5)})));
 		PROFILE_MAP.put(XL60_6, serviceMap);
 
 		/*
 		 * XL100_5
 		 */
     	serviceMap = new TreeMap<String, Service>();
-    	put(serviceMap, new Service(XL100_5 + "_BOTH_24HR", XL100_5, 100, 5, Direction.BOTH, 0, 24,
-    			Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
-    	put(serviceMap, new Service(XL100_5 + "_DOWN_1000-1500", XL100_5, 100, 5, Direction.DOWN, 10, 5,
-    			Arrays.asList(new StmProfile(Direction.DOWN, 20000, 50, 5))));
-    	put(serviceMap, new Service(XL100_5 + "_DOWN_1600-2100", XL100_5, 100, 5, Direction.DOWN, 16, 5,
-    			Arrays.asList(new StmProfile(Direction.DOWN, 10000, 50, 5))));
-    	put(serviceMap, new Service(XL100_5 + "_UP_1500-2000", XL100_5, 100, 5, Direction.UP, 15, 5,
-    			Arrays.asList(new StmProfile(Direction.UP, 6000, 65, 5))));
+    	put(serviceMap, new Service(XL100_5 + "_BOTH_24HR", XL100_5, 100, 5, /*Direction.BOTH,*/ 0, 24,
+    			StmProfile.createMap(new StmProfile[]{
+    					new StmProfile(Direction.DOWN, -1, 0, 0), 
+    					new StmProfile(Direction.UP, -1, 0, 0)})));
+    	put(serviceMap, new Service(XL100_5 + "_DOWN_1000-1500", XL100_5, 100, 5, /*Direction.DOWN,*/ 10, 5,
+    			StmProfile.createMap(new StmProfile[]{new StmProfile(Direction.DOWN, 20000, 50, 5)})));
+    	put(serviceMap, new Service(XL100_5 + "_DOWN_1600-2100", XL100_5, 100, 5, /*Direction.DOWN,*/ 16, 5,
+    			StmProfile.createMap(new StmProfile[]{new StmProfile(Direction.DOWN, 10000, 50, 5)})));
+    	put(serviceMap, new Service(XL100_5 + "_UP_1500-2000", XL100_5, 100, 5, /*Direction.UP,*/ 15, 5,
+    			StmProfile.createMap(new StmProfile[]{new StmProfile(Direction.UP, 6000, 65, 5)})));
 		PROFILE_MAP.put(XL100_5, serviceMap);
 
 		/*
 		 * XL100_10
 		 */
     	serviceMap = new TreeMap<String, Service>();
-    	put(serviceMap, new Service(XL100_10 + "_BOTH_24HR", XL100_10, 100, 10, Direction.BOTH, 0, 24,
-    			Arrays.asList(new StmProfile(Direction.BOTH, -1, 0, 0))));
-    	put(serviceMap, new Service(XL100_10 + "_DOWN_1000-1500", XL100_10, 100, 10, Direction.DOWN, 10, 5,
-    			Arrays.asList(new StmProfile(Direction.DOWN, 20000, 50, 5))));
-    	put(serviceMap, new Service(XL100_10 + "_DOWN_1600-2100", XL100_10, 100, 10, Direction.DOWN, 16, 5,
-    			Arrays.asList(new StmProfile(Direction.DOWN, 10000, 50, 5))));
-    	put(serviceMap, new Service(XL100_10 + "_UP_1500-2000", XL100_10, 100, 10, Direction.UP, 15, 5,
-    			Arrays.asList(new StmProfile(Direction.UP, 12000, 75, 5))));
+    	put(serviceMap, new Service(XL100_10 + "_BOTH_24HR", XL100_10, 100, 10, /*Direction.BOTH,*/ 0, 24,
+    			StmProfile.createMap(new StmProfile[]{
+    					new StmProfile(Direction.DOWN, -1, 0, 0), 
+    					new StmProfile(Direction.UP, -1, 0, 0)})));
+    	put(serviceMap, new Service(XL100_10 + "_DOWN_1000-1500", XL100_10, 100, 10, /*Direction.DOWN,*/ 10, 5,
+    			StmProfile.createMap(new StmProfile[]{new StmProfile(Direction.DOWN, 20000, 50, 5)})));
+    	put(serviceMap, new Service(XL100_10 + "_DOWN_1600-2100", XL100_10, 100, 10, /*Direction.DOWN,*/ 16, 5,
+    			StmProfile.createMap(new StmProfile[]{new StmProfile(Direction.DOWN, 10000, 50, 5)})));
+    	put(serviceMap, new Service(XL100_10 + "_UP_1500-2000", XL100_10, 100, 10, /*Direction.UP,*/ 15, 5,
+    			StmProfile.createMap(new StmProfile[]{new StmProfile(Direction.UP, 12000, 75, 5)})));
 		PROFILE_MAP.put(XL100_10, serviceMap);
     }
     
@@ -112,7 +120,7 @@ public class Service {
 	 * @param profile
 	 */
 	private final static void put(Map<String, Service> map, Service profile) {
-		map.put(profile.getId(), profile);
+		map.put(profile.getServiceId(), profile);
 	}
 	
     /**
@@ -128,22 +136,24 @@ public class Service {
     }
     
     /**
+     * @param id
      * @param serviceName
-     * @param direction
+     * @param connectionSpeedDownMbps
+     * @param connectionSpeedUpMbps
      * @param startHour
      * @param durationHours
-     * @param smtProfileList
+     * @param stmProfileMap
      */
     public Service(String id, String serviceName, int connectionSpeedDownMbps, int connectionSpeedUpMbps, 
-    		Direction direction, int startHour, int durationHours, List<StmProfile> smtProfileList) {
+    		/*Direction direction, */int startHour, int durationHours, /*List<StmProfile> smtProfileList*/
+    		Map<Direction, StmProfile> stmProfileMap) {
     	this.serviceId = id;
     	this.serviceName = serviceName;
     	this.connectionSpeedDownMbps = connectionSpeedDownMbps;
     	this.connectionSpeedUpMbps = connectionSpeedUpMbps;
-		this.direction = direction;
 		this.startHour = startHour;
 		this.durationHours = durationHours;
-		this.stmProfileList = smtProfileList;
+		this.stmProfileMap = stmProfileMap;
 	}
 
     /**
@@ -151,24 +161,13 @@ public class Service {
      * @return the STM profile for the given direction
      */
     public StmProfile getStmProfile(Direction direction) {
-    	StmProfile both = null;
-    	Iterator<StmProfile> stmIterator = stmProfileList.iterator();
-    	while (stmIterator.hasNext()) {
-    		StmProfile stmProfile = stmIterator.next();
-    		if (stmProfile.getDirection() == direction) {
-    			return stmProfile;
-    		}
-    		if (both == null && stmProfile.getDirection() == Direction.BOTH) {
-    			both = stmProfile;
-    		}
-    	}
-    	return both;
+    	return stmProfileMap.get(direction);
     }
     
 	/**
-	 * @return the unique id for this service STM period
+	 * @return the unique serviceId for this service STM period
 	 */
-	public String getId() {
+	public String getServiceId() {
 		return serviceId;
 	}	
 
@@ -219,13 +218,6 @@ public class Service {
 	 */
 	public long getConnectionSpeedUpBpsAfterSTM() {
 		return (long) (getConnectionSpeedUpBps() *  ((100 - getLimitReductionPercentage(Direction.UP)) / 100d));
-	}
-
-	/**
-	 * @return the connection direction BOTH|UP|DOWN
-	 */
-	public Direction getDirection() {
-		return direction;
 	}
 
 	/**
@@ -299,6 +291,36 @@ public class Service {
 		return 0;
 	}
 	
+	/**
+	 * @return a Set containing the stmProfileMap keys
+	 */
+	public Set<Direction> getStmProfileMapKeySet() {
+		return stmProfileMap.keySet();
+	}
+		
+	/**
+	 * @return a Collection containing the stmProfileMap values
+	 */
+	public Collection<StmProfile> getStmProfileMapValues() {
+		return stmProfileMap.values();
+	}
+		
+	/**
+	 * @param direction
+	 * @return true if the stmProfileList contains a profile for the direction
+	 */
+	public boolean stmProfileListHasDirection(Direction direction) {
+		return (stmProfileMap.get(direction) != null);
+	}
+
+	/**
+	 * @param direction
+	 * @return true if the stmProfileList only contains one direction profile and it matches direction
+	 */
+	public boolean stmProfileListHasSingleProfile(Direction direction) {
+		return (stmProfileMap.size() == 1 && stmProfileMap.containsKey(direction));
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -306,12 +328,10 @@ public class Service {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("Service[");
-	    buf.append("id=");
+	    buf.append("serviceId=");
 	    buf.append(serviceId);
 	    buf.append(", serviceName=");
 	    buf.append(serviceName);
-	    buf.append(", direction=");
-	    buf.append(direction);
 	    buf.append(", connectionSpeedDownMbps=");
 	    buf.append(connectionSpeedDownMbps);
 	    buf.append(", connectionSpeedUpMbps=");
@@ -320,8 +340,8 @@ public class Service {
 	    buf.append(startHour);
 	    buf.append(", durationHours=");
 	    buf.append(durationHours);
-	    buf.append(", stmProfileList=");
-	    buf.append(stmProfileList);
+	    buf.append(", stmProfileMap=");
+	    buf.append(stmProfileMap);
 		buf.append("]");
 		return buf.toString();
 	}

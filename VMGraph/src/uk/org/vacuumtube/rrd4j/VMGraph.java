@@ -98,23 +98,23 @@ public class VMGraph {
     /**
      * @param startTs
      * @param endTs
-     * @param profile
+     * @param service
      * @throws IOException
      */
-    public void graph(Service profile) throws IOException {
+    public void graph(Service service) throws IOException {
     	if (logger.isDebugEnabled()) {
-    		logger.debug("graph(profile=" + profile + ")");
+    		logger.debug("graph(profile=" + service + ")");
     	}
 
 		Calendar calendar = Calendar.getInstance();
         calendar.clear();
-        calendar.set(year, month, day, profile.getStartHour(), 0);
+        calendar.set(year, month, day, service.getStartHour(), 0);
         
         long startTs = Util.getTimestamp(calendar) * 1000;
-        calendar.add(Calendar.HOUR_OF_DAY, profile.getDurationHours());
+        calendar.add(Calendar.HOUR_OF_DAY, service.getDurationHours());
         long endTs = Util.getTimestamp(calendar) * 1000;
 
-    	logger.info("Graphing Profile: " + profile.getId() + ", Start: " + startTs + " [" + DF_FULL.format(new Date(startTs)) + 
+    	logger.info("Graphing Profile: " + service.getServiceId() + ", Start: " + startTs + " [" + DF_FULL.format(new Date(startTs)) + 
     			"], End: " + endTs + " [" + DF_FULL.format(new Date(endTs)) + "]");
 
     	long lastUpdateTime = rrdDb.getLastUpdateTime() * 1000;
@@ -130,10 +130,6 @@ public class VMGraph {
         	logger.info("RRD last update time < requested end time. Graphing until last update time.");
         }
         
-    	long downLimit = profile.getLimitBytes(Direction.DOWN);
-    	long upLimit = profile.getLimitBytes(Direction.UP);
-    	Direction direction = profile.getDirection();
-
     	/*
     	 * Fetch the data
     	 */
@@ -148,107 +144,118 @@ public class VMGraph {
         long[] tstamp = fetchData.getTimestamps();
         double in[] = fetchData.getValues(archiveInName);
         double out[] = fetchData.getValues(archiveOutName);
-        double inTotal = 0;
-        double outTotal = 0;
-        long upLimitBreachedTs = -1;
-        long downLimitBreachedTs = -1;
-        String upLimitBreached = null;
-        String upLimitBreachedDetail = null;
-        String downLimitBreached = null;
-        String downLimitBreachedDetail = null;
+
+    	long upLimitBytes = service.getLimitBytes(Direction.UP);        
+    	double upTotalBytes = 0;
+        long upLimitExceededTs = -1;
+        String upLimitExceeded = null;
+        String upLimitExceededDetail = null;
+
+    	long downLimitBytes = service.getLimitBytes(Direction.DOWN);
+        double downTotalBytes = 0;
+        long downLimitExceededTs = -1;
+        String downLimitExceeded = null;
+        String downLimitExceededDetail = null;
         
         for (int i = 0; i < tstamp.length; i++) {
         	
-        	long ts = tstamp[i] * 1000;
-        	double temp_in = in[i] * step;
-        	double temp_out = out[i] * step;
+        	long stepTs = tstamp[i] * 1000;
+        	double stepDownBytes = in[i] * step;
+        	double stepUpBytes = out[i] * step;
         	
-        	if (logger.isTraceEnabled()) {
-	        	switch (direction) {
-	        		case DOWN:
-	        			logger.trace(DF_FULL.format(new Date(ts)) + 
-	                			", Down: " + ByteFormat.humanReadableByteCount((long)temp_in, true) +
-	                			" (" + ByteFormat.humanReadableBitCount((long)(in[i] * 8)) + ")");
-	        			break;
-	        		case UP:
-	        			logger.trace(DF_FULL.format(new Date(ts)) + 
-	                			", Up: " + ByteFormat.humanReadableByteCount((long)temp_out, true) +
-	                			" (" + ByteFormat.humanReadableBitCount((long)(out[i] * 8)) + ")");
-	        			break;
-	        		default:
-	        			logger.trace(DF_FULL.format(new Date(ts)) + 
-	                			", Down: " + ByteFormat.humanReadableByteCount((long)temp_in, true) +
-	                			" (" + ByteFormat.humanReadableBitCount((long)(in[i] * 8)) + ")" + 
-	                			" / Up: " + ByteFormat.humanReadableByteCount((long)temp_out, true) +
-	                			" (" + ByteFormat.humanReadableBitCount((long)(out[i] * 8)) + ")");
-	        			break;
-	        	}
+        	String stepTsDate = stepTs + " [" + DF_FULL.format(new Date(stepTs)) + "] ";
+        	   		
+        	if (logger.isDebugEnabled()) {
+	        	for (Direction direction : service.getStmProfileMapKeySet()) {
+		        	switch (direction) {
+		        		case DOWN:
+		        			logger.debug(stepTsDate + direction + ": " + 
+		        					ByteFormat.humanReadableByteCount((long)stepDownBytes, true) +
+		                			" (" + ByteFormat.humanReadableBitCount((long)(in[i] * 8)) + ")");
+		        			break;
+		        		case UP:
+		        			logger.debug(stepTsDate + direction + ": " + 
+		        					ByteFormat.humanReadableByteCount((long)stepUpBytes, true) +
+		                			" (" + ByteFormat.humanReadableBitCount((long)(out[i] * 8)) + ")");
+		        			break;
+			        }
+		        }
         	}
         	
         	if (i > 0) {
-        		if (!Double.isNaN(temp_in)) {
-            		inTotal += temp_in;
+        		if (!Double.isNaN(stepDownBytes)) {
+            		downTotalBytes += stepDownBytes;
         		}
-        		if (!Double.isNaN(temp_out)) {
-        			outTotal += temp_out;
+        		if (!Double.isNaN(stepUpBytes)) {
+        			upTotalBytes += stepUpBytes;
         		}
         		
-        		if (logger.isTraceEnabled()) {
+            	for (Direction direction : service.getStmProfileMapKeySet()) {
 	        		switch (direction) {
 	        			case DOWN:
-	    	    	        logger.trace("Total Downloaded: " + ByteFormat.humanReadableByteCount((long)inTotal, true));
+	                		if (logger.isDebugEnabled() && i < tstamp.length - 1) {
+	                			logger.debug(stepTsDate + "Cumulative " + direction + ": " + ByteFormat.humanReadableByteCount((long)downTotalBytes, true));
+	                    	}
+	            	        if (i == tstamp.length - 1) {
+	            	    		logger.info(stepTsDate + "Total " + direction + ": " + ByteFormat.humanReadableByteCount((long)downTotalBytes, true));
+	            	        }
+	                		
+	            	        if ((downLimitBytes > 0) && downLimitExceeded == null && downTotalBytes >= downLimitBytes) {
+	            	        	Date date = new Date(stepTs);
+	            	        	
+	            	        	Calendar cal = Calendar.getInstance();
+	            	        	cal.setTime(date);
+	            	        	cal.add(Calendar.HOUR, service.getLimitReductionHours(Direction.DOWN));
+	            	        	
+	                			downLimitExceeded = "VM STM download limit (of " + ByteFormat.humanReadableByteCount(downLimitBytes, true) + 
+	                					") exceeded (by " + ByteFormat.humanReadableByteCount(((long)downTotalBytes) - downLimitBytes, true) + ") at " + 
+	                					DF_TIME.format(date) + "."; 
+	                			downLimitExceededDetail = "Max download speed reduced by " + service.getLimitReductionPercentage(Direction.DOWN) + "% (to " +  
+	                					ByteFormat.humanReadableBitCount(service.getConnectionSpeedDownBpsAfterSTM()) + " for " + 
+	                					service.getLimitReductionHours(Direction.DOWN) + " hours) until " +
+	                					DF_FULL.format(cal.getTime()) + ".";
+	                			logger.info(downLimitExceeded + " " + downLimitExceededDetail);
+	                			downLimitExceededTs = stepTs;
+	                		}	                		
+	            	        
 	        				break;
 	        			case UP:
-	    	    	        logger.trace("Total Uploaded: " + ByteFormat.humanReadableByteCount((long)outTotal, true));
-	        				break;
-	    				default:
-	    	    	        logger.trace("Total Downloaded: " + ByteFormat.humanReadableByteCount((long)inTotal, true) +
-		    	        	" / Total Uploaded: " + ByteFormat.humanReadableByteCount((long)outTotal, true));
-	    					break;
+	                		if (logger.isDebugEnabled() && i < tstamp.length - 1) {
+	                			logger.debug(stepTsDate + "Cumulative " + direction + ": " + 
+	                					ByteFormat.humanReadableByteCount((long)upTotalBytes, true));
+	                    	}
+	                		if (i == tstamp.length - 1) {
+	                			logger.info(stepTsDate + "Total " + direction + ": " + 
+	                					ByteFormat.humanReadableByteCount((long)upTotalBytes, true));
+	                		}
+	                		
+	                		if ((upLimitBytes > 0) && upLimitExceeded == null && upTotalBytes >= upLimitBytes) {
+	            	        	Date date = new Date(stepTs);
+	            	        	
+	            	        	Calendar cal = Calendar.getInstance();
+	            	        	cal.setTime(date);
+	            	        	cal.add(Calendar.HOUR, service.getLimitReductionHours(Direction.UP));
+	            	        	
+	                			upLimitExceeded = "VM STM upload limit (of " + ByteFormat.humanReadableByteCount(upLimitBytes, true) + 
+	                					") exceeded (by " + ByteFormat.humanReadableByteCount(((long)upTotalBytes) - upLimitBytes, true) + ") at " + 
+	                					DF_TIME.format(date) + ".";
+	                			upLimitExceededDetail = "Max upload speed reduced by " + service.getLimitReductionPercentage(Direction.UP) + "% (to " + 
+	                					ByteFormat.humanReadableBitCount(service.getConnectionSpeedUpBpsAfterSTM()) + " for " + 
+	                					service.getLimitReductionHours(Direction.UP) + " hours) until " +
+	                					DF_FULL.format(cal.getTime()) + ".";
+	                			logger.info(upLimitExceeded + " " + upLimitExceededDetail);
+	                			upLimitExceededTs = stepTs;
+	                		}
+	                		break;
 	        		}
-        		}
-
-    	        if ((downLimit > 0) && downLimitBreached == null && inTotal >= downLimit) {
-    	        	Date date = new Date(ts);
-    	        	
-    	        	Calendar cal = Calendar.getInstance();
-    	        	cal.setTime(date);
-    	        	cal.add(Calendar.HOUR, profile.getLimitReductionHours(Direction.DOWN));
-    	        	
-        			downLimitBreached = "VM STM download limit (of " + ByteFormat.humanReadableByteCount(downLimit, true) + 
-        					") exceeded (by " + ByteFormat.humanReadableByteCount(((long)inTotal) - downLimit, true) + ") at " + 
-        					DF_TIME.format(date) + "."; 
-        			downLimitBreachedDetail = "Max download speed reduced by " + profile.getLimitReductionPercentage(Direction.DOWN) + "% (to " +  
-        					ByteFormat.humanReadableBitCount(profile.getConnectionSpeedDownBpsAfterSTM()) + " for " + 
-        					profile.getLimitReductionHours(Direction.DOWN) + " hours) until " +
-        					DF_FULL.format(cal.getTime()) + ".";
-        			logger.info(downLimitBreached + " " + downLimitBreachedDetail);
-        			downLimitBreachedTs = ts;
-        		}
-        		
-        		if ((upLimit > 0) && upLimitBreached == null && outTotal >= upLimit) {
-    	        	Date date = new Date(ts);
-    	        	
-    	        	Calendar cal = Calendar.getInstance();
-    	        	cal.setTime(date);
-    	        	cal.add(Calendar.HOUR, profile.getLimitReductionHours(Direction.UP));
-    	        	
-        			upLimitBreached = "VM STM upload limit (of " + ByteFormat.humanReadableByteCount(upLimit, true) + 
-        					") exceeded (by " + ByteFormat.humanReadableByteCount(((long)outTotal) - upLimit, true) + ") at " + 
-        					DF_TIME.format(date) + ".";
-        			upLimitBreachedDetail = "Max upload speed reduced by " + profile.getLimitReductionPercentage(Direction.UP) + "% (to " + 
-        					ByteFormat.humanReadableBitCount(profile.getConnectionSpeedUpBpsAfterSTM()) + " for " + 
-        					profile.getLimitReductionHours(Direction.UP) + " hours) until " +
-        					DF_FULL.format(cal.getTime()) + ".";
-        			logger.info(upLimitBreached + " " + upLimitBreachedDetail);
-        			upLimitBreachedTs = ts;
-        		}
+	        	}            	
         	}
         }
         
-        RrdGraphDef graphDef = new RrdGraphDef();
-        graphDef.setTitle("VM " + profile.getServiceName() + 
-        		((direction == Direction.DOWN) ? " DOWN " : (direction == Direction.UP) ? " UP " : " ") +
+		RrdGraphDef graphDef = new RrdGraphDef();
+        graphDef.setTitle("VM " + service.getServiceName() + 
+        		(service.stmProfileListHasSingleProfile(Direction.DOWN) ? " DOWN " : 
+        			service.stmProfileListHasSingleProfile(Direction.UP) ? " UP " : " ") +
         		DF_DATETIME.format(new Date(startTs)) + " - " + ((endTs - startTs < 1000 * 60 * 60 * 24) ? 
         				DF_TIME.format(new Date(endTs)) : DF_DATETIME.format(new Date(endTs))));
         graphDef.setVerticalLabel("bits per second");
@@ -256,69 +263,61 @@ public class VMGraph {
         graphDef.setHeight(120);
         graphDef.setWidth(500);
         
-        switch(direction) {
-        	case DOWN:
-            	graphDef.datasource("in", rrdDb.getPath(), archiveInName, ConsolFun.AVERAGE);
-                graphDef.datasource("inbps", "in,8,*");
-                graphDef.area("inbps", new Color(0, 0xFF, 0), "Download");
-                graphDef.gprint("inbps", MAX, "Speed Max: %.2f %sbps");
-                graphDef.gprint("inbps", AVERAGE, "Speed Avg: %.2f %sbps");
-                graphDef.datasource("inTotal", "in,STEP,*");
-                graphDef.gprint("inTotal", ConsolFun.TOTAL, "Bytes: %3.2f %sB\\c");
-                //graphDef.comment("Down Bytes: " + ByteFormat.humanReadableByteCount((long)inTotal, true) + "\\c");	
-                break;
-        	case UP:
-            	graphDef.datasource("out", rrdDb.getPath(), archiveOutName, ConsolFun.AVERAGE);
-            	graphDef.datasource("outbps", "out,8,*");
-                graphDef.area("outbps", new Color(0, 0, 0xFF), "Upload");
-                graphDef.gprint("outbps", MAX, "Speed Max: %.2f %sbps");
-                graphDef.gprint("outbps", AVERAGE, "Speed Avg: %.2f %sbps");            
-                graphDef.datasource("outTotal", "out,STEP,*");
-                graphDef.gprint("outTotal", ConsolFun.TOTAL, "Bytes: %3.2f %sB\\c");
-                //graphDef.comment("Up Bytes: " + ByteFormat.humanReadableByteCount((long)outTotal, true) + "\\c");        		
-                break;
-        	default:
-            	graphDef.datasource("in", rrdDb.getPath(), archiveInName, ConsolFun.AVERAGE);
-                graphDef.datasource("inbps", "in,8,*");
-                graphDef.area("inbps", new Color(0, 0xFF, 0), "Download");
-                graphDef.gprint("inbps", MAX, "Speed Max: %.2f %sbps");
-                graphDef.gprint("inbps", AVERAGE, "Speed Avg: %.2f %sbps");
-                graphDef.datasource("inTotal", "in,STEP,*");
-                graphDef.gprint("inTotal", ConsolFun.TOTAL, "Bytes: %3.2f %sB\\c");
-                //graphDef.comment("Down Bytes: " + ByteFormat.humanReadableByteCount((long)inTotal, true) + "\\c");        		
-                //graphDef.comment("\\c");
-                graphDef.datasource("out", rrdDb.getPath(), archiveOutName, ConsolFun.AVERAGE);
-            	graphDef.datasource("outbps", "out,8,*");
-                graphDef.line("outbps", new Color(0, 0, 0xFF), "Upload", 1);
-                graphDef.gprint("outbps", MAX, "Speed Max: %.2f %sbps");
-                graphDef.gprint("outbps", AVERAGE, "Speed Avg: %.2f %sbps");
-                graphDef.datasource("outTotal", "out,STEP,*");
-                graphDef.gprint("outTotal", ConsolFun.TOTAL, "Bytes: %3.2f %sB\\c");
-                //graphDef.comment("Up Bytes: " + ByteFormat.humanReadableByteCount((long)outTotal, true) + "\\c");
-                break;
-        }
-
+        
+    	for (Direction direction : service.getStmProfileMapKeySet()) {
+	        switch(direction) {
+	        	case DOWN:
+	            	graphDef.datasource("in", rrdDb.getPath(), archiveInName, ConsolFun.AVERAGE);
+	                graphDef.datasource("inbps", "in,8,*");
+	                graphDef.area("inbps", new Color(0, 0xFF, 0), "Download");
+	                graphDef.gprint("inbps", MAX, "Speed Max: %.2f %sbps");
+	                graphDef.gprint("inbps", AVERAGE, "Speed Avg: %.2f %sbps");
+	                graphDef.datasource("inTotal", "in,STEP,*");
+	                graphDef.gprint("inTotal", ConsolFun.TOTAL, "Bytes: %3.2f %sB\\c");
+	                //graphDef.comment("Down Bytes: " + ByteFormat.humanReadableByteCount((long)inTotal, true) + "\\c");	
+	                if (downLimitExceeded != null) {
+	                	graphDef.comment("\\l");
+	                	graphDef.vrule(downLimitExceededTs / 1000L, Color.BLACK, downLimitExceeded + "\\c", 2.0F);
+	                	if (downLimitExceededDetail != null) {
+	                		graphDef.comment(downLimitExceededDetail + "\\c");
+	                	}
+	                };	                
+	                break;
+	        	case UP:
+	            	graphDef.datasource("out", rrdDb.getPath(), archiveOutName, ConsolFun.AVERAGE);
+	            	graphDef.datasource("outbps", "out,8,*");
+	                graphDef.area("outbps", new Color(0, 0, 0xFF), "Upload");
+	                graphDef.gprint("outbps", MAX, "Speed Max: %.2f %sbps");
+	                graphDef.gprint("outbps", AVERAGE, "Speed Avg: %.2f %sbps");            
+	                graphDef.datasource("outTotal", "out,STEP,*");
+	                graphDef.gprint("outTotal", ConsolFun.TOTAL, "Bytes: %3.2f %sB\\c");
+	                //graphDef.comment("Up Bytes: " + ByteFormat.humanReadableByteCount((long)outTotal, true) + "\\c");        		
+	                if (upLimitExceeded != null) {
+	                	graphDef.comment("\\l");
+	                	graphDef.vrule(upLimitExceededTs / 1000L, Color.RED, upLimitExceeded + "\\c", 2.0F);
+	                	if (upLimitExceededDetail != null) {
+	                		graphDef.comment(upLimitExceededDetail + "\\c");
+	                	}
+	                }	                
+	                break;
+	        }
+    	}
+    	
+    	for (StmProfile profile : service.getStmProfileMapValues()) {
+    		if (profile.getLimitMB() > 0) {
+    			graphDef.comment("\\c");
+    			graphDef.comment(profile.getDirection().getDescription() + " Limit: " +
+    					profile.getLimitMB() + "MB. Speed reduction penalty: " + profile.getLimitReductionPercentage() +
+    					"% for " + profile.getLimitReductionHours() + " hours, if exceeded!");
+    		}
+    	}
+    	
         graphDef.hrule(50000000, Color.DARK_GRAY, null);
         
-        if (downLimitBreached != null) {
-        	graphDef.comment("\\l");
-        	graphDef.vrule(downLimitBreachedTs / 1000L, Color.BLACK, downLimitBreached + "\\c", 2.0F);
-        	if (downLimitBreachedDetail != null) {
-        		graphDef.comment(downLimitBreachedDetail + "\\c");
-        	}
-        };
-        
-        if (upLimitBreached != null) {
-        	graphDef.comment("\\l");
-        	graphDef.vrule(upLimitBreachedTs / 1000L, Color.RED, upLimitBreached + "\\c", 2.0F);
-        	if (upLimitBreachedDetail != null) {
-        		graphDef.comment(upLimitBreachedDetail + "\\c");
-        	}
-        }
-
-        String graphName = "VM_" + profile.getServiceName() + "_" + 
+        String graphName = "VM_" + service.getServiceName() + "_" + 
         		DF_OUTNAME_DATETIME.format(new Date(startTs)) +
-        		((direction == Direction.DOWN) ? "_DOWN" : (direction == Direction.UP) ? "_UP" : "");
+        		(service.stmProfileListHasSingleProfile(Direction.DOWN) ? "_DOWN" : 
+        			service.stmProfileListHasSingleProfile(Direction.UP) ? "_UP" : "");
         String fileName = outputPath + Util.getFileSeparator() + graphName + ".png";
         
         //graphDef.setFilename(fileName);

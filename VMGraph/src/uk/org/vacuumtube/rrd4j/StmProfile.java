@@ -3,6 +3,9 @@
  */
 package uk.org.vacuumtube.rrd4j;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import uk.org.vacuumtube.rrd4j.Direction;
 
 /**
@@ -103,4 +106,16 @@ public class StmProfile {
 		buf.append("]");
 		return buf.toString();
 	}
+	
+	/**
+	 * @param stmProfileList
+	 * @return a Map containing the StmProfile[] keyed by Profile.direction
+	 */
+	public static final Map<Direction, StmProfile> createMap(StmProfile[] stmProfileList) {
+		TreeMap<Direction, StmProfile> map = new TreeMap<Direction, StmProfile>();
+		for (StmProfile profile : stmProfileList) {
+			map.put(profile.getDirection(), profile);
+		}
+		return map;
+	} 
 }
