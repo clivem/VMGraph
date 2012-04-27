@@ -25,7 +25,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.log4j.Logger;
 import org.rrd4j.ConsolFun;
 import org.rrd4j.core.FetchData;
 import org.rrd4j.core.FetchRequest;
@@ -34,6 +33,8 @@ import org.rrd4j.core.RrdDb;
 import org.rrd4j.core.Util;
 import org.rrd4j.graph.RrdGraph;
 import org.rrd4j.graph.RrdGraphDef;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.org.vacuumtube.util.ByteFormat;
 
@@ -43,7 +44,8 @@ import uk.org.vacuumtube.util.ByteFormat;
  */
 public class VMGraph {
 	
-	protected final static Logger logger = Logger.getLogger(VMGraph.class);
+	//protected final static Logger logger = Logger.getLogger(VMGraph.class);
+	private static final Logger logger = LoggerFactory.getLogger(VMGraph.class);
 	
     protected final static DateFormat DF_FULL = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
     protected final static DateFormat DF_DATE = new SimpleDateFormat("yyyy/MM/dd");
@@ -370,6 +372,11 @@ public class VMGraph {
 	 */
 	public static void main(String[] args) {
 		
+		// assume SLF4J is bound to logback in the current environment
+	    //LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+	    // print logback's internal status
+	    //StatusPrinter.print(lc);
+
 		Options options = new Options();
 
 		/*
@@ -474,7 +481,7 @@ public class VMGraph {
 			Option op = it.next();
 			buf.append(" -" + op.getOpt() + ((op.getValue() != null) ? " " + op.getValue() : ""));
 		}
-		logger.info(buf);
+		logger.info(buf.toString());
 		
 		File rrdDbFile = new File(cmd.getOptionValue("rrd_file"));
 		if (!rrdDbFile.exists()) {
