@@ -10,7 +10,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import uk.org.vacuumtube.routeros.spring.dao.StatsDao;
 import uk.org.vacuumtube.routeros.spring.jdbc.JdbcStatsDaoImpl;
-import uk.org.vacuumtube.routeros.spring.service.RouterStatsService;
+//import uk.org.vacuumtube.routeros.spring.service.RouterStatsService;
 
 /**
  * @author clivem
