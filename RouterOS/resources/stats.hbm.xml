@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="uk.org.vacuumtube.routeros.Stats" table="stats">
+    
+    <id name="id" type="long" column="id" >
+      <generator class="identity"/>
+    </id>
+
+    <property name="millis">
+      <column name="millis" />
+    </property>
+  
+    <property name="rxBytes">
+      <column name="rxbytes"/>
+    </property>
+  
+    <property name="txBytes">
+      <column name="txbytes"/>
+    </property>
+    
+    <property name="created">
+      <column name="created"/>
+    </property>
+    
+  </class>
+</hibernate-mapping>
