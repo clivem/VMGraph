@@ -11,8 +11,10 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <javaElement handleIdentifier="=SnmpGet/resources"/>
+        <file path="/SnmpGet/resources/logback_console_info.xml"/>
         <javaElement handleIdentifier="=SnmpGet/src"/>
         <javaElement handleIdentifier="=Util/src"/>
+        <file path="/SnmpGet/resources/logback.xml"/>
+        <file path="/SnmpGet/resources/logback_file_info.xml"/>
     </selectedElements>
 </jardesc>

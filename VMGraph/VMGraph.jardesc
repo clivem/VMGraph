@@ -12,7 +12,9 @@
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
         <javaElement handleIdentifier="=VMGraph/src"/>
-        <javaElement handleIdentifier="=VMGraph/resources"/>
+        <file path="/VMGraph/resources/logback_console_info.xml"/>
         <javaElement handleIdentifier="=Util/src"/>
+        <file path="/VMGraph/resources/logback_file_info.xml"/>
+        <file path="/VMGraph/resources/logback.xml"/>
     </selectedElements>
 </jardesc>
