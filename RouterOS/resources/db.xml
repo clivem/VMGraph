@@ -20,6 +20,8 @@
 		<property name="password" value="${jdbc.password}"/>
 	</bean>
 	
+	<context:property-placeholder location="jdbc.properties"/>
+
 	<bean id="jdbcStatsDao" class="uk.org.vacuumtube.routeros.spring.jdbc.JdbcStatsDaoImpl">
 		<property name="dataSource" ref="dataSource"/>
 	</bean>
@@ -44,16 +46,14 @@
 		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
-
     <tx:annotation-driven/>
-    	
+    
 	<bean id="hibernateStatsDao" class="uk.org.vacuumtube.routeros.spring.hibernate.StatsDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
-
+	
 	<bean id="routerStatsService" class="uk.org.vacuumtube.routeros.spring.service.RouterStatsServiceImpl">
 		<property name="statsDao" ref="hibernateStatsDao"/>
 	</bean>
 
-	<context:property-placeholder location="jdbc.properties"/>
 </beans>

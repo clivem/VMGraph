@@ -8,6 +8,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import uk.org.vacuumtube.routeros.spring.dao.StatsDao;
+import uk.org.vacuumtube.routeros.spring.jdbc.JdbcStatsDaoImpl;
 import uk.org.vacuumtube.routeros.spring.service.RouterStatsService;
 
 /**
@@ -25,7 +27,9 @@ public class RouterStatsTest {
 		ClassPathXmlApplicationContext ctx  = new ClassPathXmlApplicationContext("classpath:db.xml");
 		ctx.registerShutdownHook();
 		
-		RouterStatsService service = ctx.getBean("routerStatsService", RouterStatsService.class);
+		//RouterStatsService service = ctx.getBean("routerStatsService", RouterStatsService.class);
+		
+		StatsDao service = JdbcStatsDaoImpl.getStatsDao(ctx);
 
 		int count = service.getCount();
 		LOGGER.info("Number of records in stats table: " + count);
@@ -49,9 +53,7 @@ public class RouterStatsTest {
 		LOGGER.info(stats);
 
 		/*
-		//StatsDao dao = ctx.getBean("statsDao", JdbcStatsDao.class);
-		//StatsDao dao = JdbcStatsDao.getStatsDao(ctx);
-		StatsDao dao = StatsDaoImpl.getStatsDao(ctx);
+		StatsDao dao = JdbcStatsDaoImpl.getStatsDao(ctx);
 		
 		int count = dao.getCount();
 		LOGGER.info("Number of records in stats table: " + count);

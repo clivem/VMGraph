@@ -13,10 +13,15 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 
 import uk.org.vacuumtube.routeros.Stats;
 import uk.org.vacuumtube.routeros.spring.dao.StatsDao;
@@ -25,9 +30,13 @@ import uk.org.vacuumtube.routeros.spring.dao.StatsDao;
  * @author clivem
  *
  */
+@Repository
 public class JdbcStatsDaoImpl implements StatsDao {
 	
+	private final static Logger LOGGER = Logger.getLogger(JdbcStatsDaoImpl.class);
+	
 	private JdbcTemplate jdbcTemplate;
+	private NamedParameterJdbcTemplate namedParameterjdbcTemplate;
 	private SimpleJdbcInsert insertStats;
 	//private StatsMappingQueryAll statsMappingQueryAll;
 	//private StatsMappingQueryById statsMappingQueryById;
@@ -35,8 +44,10 @@ public class JdbcStatsDaoImpl implements StatsDao {
 	/**
 	 * @param dataSource
 	 */
+	@Autowired
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.namedParameterjdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 		this.insertStats = new SimpleJdbcInsert(dataSource)
 			.withTableName("stats")
 			.usingGeneratedKeyColumns("id");
@@ -55,6 +66,9 @@ public class JdbcStatsDaoImpl implements StatsDao {
 		parameters.put("created", new Timestamp(stats.getCreated().getTime()));
 		Number newId = insertStats.executeAndReturnKey(parameters);
 		stats.setId(newId.longValue());
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Insert: " + stats);
+		}
 		return stats;
 	}
 	
@@ -63,6 +77,12 @@ public class JdbcStatsDaoImpl implements StatsDao {
 	 */
 	@Override
 	public void delete(Stats stats) {
+		int rowsAffected = namedParameterjdbcTemplate.update(
+				"delete from stats where stats.id = :id", 
+				new MapSqlParameterSource("id", stats.getId()));
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Delete: " + stats + ". Rows Affected: " + rowsAffected);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -70,6 +90,20 @@ public class JdbcStatsDaoImpl implements StatsDao {
 	 */
 	@Override
 	public void update(Stats stats) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("id", stats.getId());
+		map.put("millis", stats.getMillis());
+		map.put("rxbytes", stats.getRxBytes());
+		map.put("txbytes", stats.getTxBytes());
+		map.put("created", new Timestamp(stats.getCreated().getTime()));
+		
+		int rowsAffected = namedParameterjdbcTemplate.update(
+				"update stats set millis = :millis, rxbytes = :rxbytes, txbytes = :txbytes, created = :created"
+				+ " where stats.id = :id",
+				new MapSqlParameterSource(map));
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Update: " + stats + ". Rows Affected: " + rowsAffected);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -77,15 +111,15 @@ public class JdbcStatsDaoImpl implements StatsDao {
 	 */
 	public Stats getStats(long id) {
 		//return statsMappingQueryById.findObject(id);
-		return this.jdbcTemplate.queryForObject("select * from stats where stats.id = ?", 
-				new Object[]{id}, new StatsRowMapper());
+		return namedParameterjdbcTemplate.queryForObject("select * from stats where stats.id = :id", 
+				new MapSqlParameterSource("id", id), new StatsRowMapper());
 	}
 	
 	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.routeros.spring.StatsDao#getCount()
 	 */
 	public int getCount() {
-		return this.jdbcTemplate.queryForInt("select count(*) from stats");
+		return jdbcTemplate.queryForInt("select count(*) from stats");
 	}
 	
 	/**
@@ -93,7 +127,7 @@ public class JdbcStatsDaoImpl implements StatsDao {
 	 */
 	public List<Stats> getStatsList() {
 		//return statsMappingQueryAll.execute();
-		return this.jdbcTemplate.query("select * from stats", new StatsRowMapper());
+		return jdbcTemplate.query("select * from stats", new StatsRowMapper());
 	}
 
 	/**

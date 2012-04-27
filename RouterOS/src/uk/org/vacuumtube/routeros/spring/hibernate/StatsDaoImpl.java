@@ -6,7 +6,9 @@ package uk.org.vacuumtube.routeros.spring.hibernate;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Repository;
 
 import uk.org.vacuumtube.routeros.Stats;
 import uk.org.vacuumtube.routeros.spring.dao.StatsDao;
@@ -15,6 +17,7 @@ import uk.org.vacuumtube.routeros.spring.dao.StatsDao;
  * @author clivem
  *
  */
+@Repository
 public class StatsDaoImpl implements StatsDao {
 
 	private SessionFactory sessionFactory;
@@ -35,6 +38,7 @@ public class StatsDaoImpl implements StatsDao {
 	/**
 	 * @param sessionFactory
 	 */
+	@Autowired
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}	
@@ -44,7 +48,7 @@ public class StatsDaoImpl implements StatsDao {
 	 */
 	@Override
 	public Stats add(Stats stats) {
-		this.sessionFactory.getCurrentSession().save(stats);
+		sessionFactory.getCurrentSession().save(stats);
 		return stats;
 	}
 
@@ -53,7 +57,7 @@ public class StatsDaoImpl implements StatsDao {
 	 */
 	@Override
 	public void delete(Stats stats) {
-		this.sessionFactory.getCurrentSession().delete(stats);
+		sessionFactory.getCurrentSession().delete(stats);
 	}
 
 	/* (non-Javadoc)
@@ -61,7 +65,7 @@ public class StatsDaoImpl implements StatsDao {
 	 */
 	@Override
 	public void update(Stats stats) {
-		this.sessionFactory.getCurrentSession().update(stats);
+		sessionFactory.getCurrentSession().saveOrUpdate(stats);
 	}
 
 	/* (non-Javadoc)
@@ -70,7 +74,7 @@ public class StatsDaoImpl implements StatsDao {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Stats getStats(long id) {
-		List<Stats> list = this.sessionFactory.getCurrentSession()
+		List<Stats> list = sessionFactory.getCurrentSession()
 				.createQuery("from Stats stats where stats.id = :id")
 				.setLong("id", id)
 				.list();
@@ -87,7 +91,7 @@ public class StatsDaoImpl implements StatsDao {
 	 */
 	@Override
 	public int getCount() {
-		Long count = (Long) this.sessionFactory.getCurrentSession()
+		Long count = (Long) sessionFactory.getCurrentSession()
 				.createQuery("select count(*) from Stats").uniqueResult();
 		return count.intValue();
 	}
@@ -98,7 +102,7 @@ public class StatsDaoImpl implements StatsDao {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Stats> getStatsList() {
-		return this.sessionFactory.getCurrentSession()
+		return sessionFactory.getCurrentSession()
 				.createQuery("from Stats stats order by stats.id")
 				.list();
 	}
