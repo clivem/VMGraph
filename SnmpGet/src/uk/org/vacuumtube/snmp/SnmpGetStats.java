@@ -3,14 +3,13 @@
  */
 package uk.org.vacuumtube.snmp;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -300,6 +299,14 @@ public class SnmpGetStats {
 							logger.warn(null, ie);
 						}
 					} else { // interactive
+						Scanner scanner = new Scanner(System.in);
+						while (true) {
+							String input = scanner.nextLine();
+				        	if("quit".equals(input.trim())) {
+				        		break;
+				        	}
+						}
+						/*
 						try {
 							BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 							while (true) {
@@ -311,6 +318,7 @@ public class SnmpGetStats {
 						} catch (IOException ioe) {
 							logger.warn(null, ioe);
 						}
+						*/
 					}
 				} catch (NumberFormatException nfe) {
 					logger.error("Invalid number given for service polling interval: " + cmd.getOptionValue("service"), nfe);

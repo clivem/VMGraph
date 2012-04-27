@@ -7,7 +7,9 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/mysql-connector-5.1.19"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/rrd4j-2.1.1"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/snmp4j-2.1.0"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/log4j-1.2.16"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/commons-cli-1.2"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/logback-classic-1.0.2"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/logback-core-1.0.2"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/slf4j-1.6.4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

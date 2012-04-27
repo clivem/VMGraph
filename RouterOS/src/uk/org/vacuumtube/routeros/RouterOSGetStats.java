@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 import mikrotik.routeros.libAPI.ApiConn;
 import mikrotik.routeros.libAPI.Response;
@@ -235,11 +236,20 @@ public class RouterOSGetStats {
 					//int tag1 = ret.sendCommand("/interface/ethernet/print\n?name=ether1-gateway\n=stats=\n=interval=10\n=.proplist=tx-bytes,driver-tx-byte,rx-bytes,driver-rx-byte");
 					int tag1 = ret.sendCommand("/interface/print\n?name=ether1-gateway\n=stats=\n=interval=60\n=.proplist=tx-byte,rx-byte");
 					
+					/*
 					try {
 						//Thread.sleep(60000);
 						System.in.read();
 					} catch(Exception e) {}
-					
+					*/
+					Scanner scanner = new Scanner(System.in);
+					while (true) {
+						String input = scanner.nextLine();
+			        	if("quit".equals(input.trim())) {
+			        		break;
+			        	}
+					}
+
 					if (tag1 > -1) {
 						ret.sendCommand("/cancel\n=tag=" + tag1);
 					}

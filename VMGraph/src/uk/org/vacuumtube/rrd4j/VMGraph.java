@@ -25,6 +25,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.log4j.Logger;
 import org.rrd4j.ConsolFun;
 import org.rrd4j.core.FetchData;
 import org.rrd4j.core.FetchRequest;
@@ -33,8 +34,8 @@ import org.rrd4j.core.RrdDb;
 import org.rrd4j.core.Util;
 import org.rrd4j.graph.RrdGraph;
 import org.rrd4j.graph.RrdGraphDef;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import uk.org.vacuumtube.util.ByteFormat;
 
@@ -44,8 +45,8 @@ import uk.org.vacuumtube.util.ByteFormat;
  */
 public class VMGraph {
 	
-	//protected final static Logger logger = Logger.getLogger(VMGraph.class);
-	private static final Logger logger = LoggerFactory.getLogger(VMGraph.class);
+	public static final Logger LOGGER = Logger.getLogger(VMGraph.class);
+	//public final static Logger LOGGER = LoggerFactory.getLogger(VMGraph.class);
 	
     protected final static DateFormat DF_FULL = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z");
     protected final static DateFormat DF_DATE = new SimpleDateFormat("yyyy/MM/dd");
@@ -104,8 +105,8 @@ public class VMGraph {
      * @throws IOException
      */
     public void graph(Service service) throws IOException {
-    	if (logger.isDebugEnabled()) {
-    		logger.debug("graph(profile=" + service + ")");
+    	if (LOGGER.isDebugEnabled()) {
+    		LOGGER.debug("graph(profile=" + service + ")");
     	}
 
 		Calendar calendar = Calendar.getInstance();
@@ -116,26 +117,26 @@ public class VMGraph {
         calendar.add(Calendar.HOUR_OF_DAY, service.getDurationHours());
         long endTs = Util.getTimestamp(calendar) * 1000;
 
-    	logger.info("Graphing Profile: " + service.getServiceId() + ", Start: " + startTs + " [" + DF_FULL.format(new Date(startTs)) + 
+    	LOGGER.info("Graphing Profile: " + service.getServiceId() + ", Start: " + startTs + " [" + DF_FULL.format(new Date(startTs)) + 
     			"], End: " + endTs + " [" + DF_FULL.format(new Date(endTs)) + "]");
 
     	for (StmProfile profile : service.getStmProfileMapValues()) {
     		if (profile.getLimitMB() > 0) {
-    			logger.info(profile.getLimitDescription());
+    			LOGGER.info(profile.getLimitDescription());
     		}
     	}
     	
     	long lastUpdateTime = rrdDb.getLastUpdateTime() * 1000;
-        logger.info("RRD last update time: " + lastUpdateTime + " [" + DF_FULL.format(new Date(lastUpdateTime)) + "]");
+        LOGGER.info("RRD last update time: " + lastUpdateTime + " [" + DF_FULL.format(new Date(lastUpdateTime)) + "]");
 
         if (lastUpdateTime < startTs) {
-        	logger.info("RRD last update time < requested start time. Will not create graph for this profile!");
+        	LOGGER.info("RRD last update time < requested start time. Will not create graph for this profile!");
         	return;
         }
         
         if (lastUpdateTime < endTs) {
         	endTs = lastUpdateTime;
-        	logger.info("RRD last update time < requested end time. Graphing until last update time.");
+        	LOGGER.info("RRD last update time < requested end time. Graphing until last update time.");
         }
         
     	/*
@@ -144,7 +145,7 @@ public class VMGraph {
         FetchRequest request = rrdDb.createFetchRequest(AVERAGE, startTs / 1000L, endTs / 1000L);
         //logger.debug(request.dump());
         FetchData fetchData = request.fetchData();
-        logger.info("RRD data fetched: " + fetchData.getRowCount() + " data points obtained. Fetch ArcStep: " + 
+        LOGGER.info("RRD data fetched: " + fetchData.getRowCount() + " data points obtained. Fetch ArcStep: " + 
         		fetchData.getArcStep() + "s. Fetch ArcEndTime: " + DF_FULL.format(new Date(fetchData.getArcEndTime() * 1000)));
         //logger.debug(fetchData.exportXml());
 
@@ -173,16 +174,16 @@ public class VMGraph {
         	
         	String stepTsDate = stepTs + " [" + DF_FULL.format(new Date(stepTs)) + "] ";
         	   		
-        	if (logger.isDebugEnabled()) {
+        	if (LOGGER.isDebugEnabled()) {
 	        	for (Direction direction : service.getStmProfileMapKeySet()) {
 		        	switch (direction) {
 		        		case DOWN:
-		        			logger.debug(stepTsDate + direction + ": " + 
+		        			LOGGER.debug(stepTsDate + direction + ": " + 
 		        					ByteFormat.humanReadableByteCount((long)stepDownBytes, true) +
 		                			" (" + ByteFormat.humanReadableBitCount((long)(in[i] * 8)) + ")");
 		        			break;
 		        		case UP:
-		        			logger.debug(stepTsDate + direction + ": " + 
+		        			LOGGER.debug(stepTsDate + direction + ": " + 
 		        					ByteFormat.humanReadableByteCount((long)stepUpBytes, true) +
 		                			" (" + ByteFormat.humanReadableBitCount((long)(out[i] * 8)) + ")");
 		        			break;
@@ -201,11 +202,11 @@ public class VMGraph {
             	for (Direction direction : service.getStmProfileMapKeySet()) {
 	        		switch (direction) {
 	        			case DOWN:
-	                		if (logger.isDebugEnabled() && i < tstamp.length - 1) {
-	                			logger.debug(stepTsDate + "Cumulative " + direction + ": " + ByteFormat.humanReadableByteCount((long)downTotalBytes, true));
+	                		if (LOGGER.isDebugEnabled() && i < tstamp.length - 1) {
+	                			LOGGER.debug(stepTsDate + "Cumulative " + direction + ": " + ByteFormat.humanReadableByteCount((long)downTotalBytes, true));
 	                    	}
 	            	        if (i == tstamp.length - 1) {
-	            	    		logger.info(stepTsDate + "Total " + direction + ": " + ByteFormat.humanReadableByteCount((long)downTotalBytes, true));
+	            	    		LOGGER.info(stepTsDate + "Total " + direction + ": " + ByteFormat.humanReadableByteCount((long)downTotalBytes, true));
 	            	        }
 	                		
 	            	        if ((downLimitBytes > 0) && downLimitExceeded == null && downTotalBytes >= downLimitBytes) {
@@ -222,18 +223,18 @@ public class VMGraph {
 	                					ByteFormat.humanReadableBitCount(service.getConnectionSpeedDownBpsAfterSTM()) + " for " + 
 	                					service.getLimitReductionHours(Direction.DOWN) + " hours) until " +
 	                					DF_FULL.format(cal.getTime()) + ".";
-	                			logger.info(downLimitExceeded + " " + downLimitExceededDetail);
+	                			LOGGER.info(downLimitExceeded + " " + downLimitExceededDetail);
 	                			downLimitExceededTs = stepTs;
 	                		}	                		
 	            	        
 	        				break;
 	        			case UP:
-	                		if (logger.isDebugEnabled() && i < tstamp.length - 1) {
-	                			logger.debug(stepTsDate + "Cumulative " + direction + ": " + 
+	                		if (LOGGER.isDebugEnabled() && i < tstamp.length - 1) {
+	                			LOGGER.debug(stepTsDate + "Cumulative " + direction + ": " + 
 	                					ByteFormat.humanReadableByteCount((long)upTotalBytes, true));
 	                    	}
 	                		if (i == tstamp.length - 1) {
-	                			logger.info(stepTsDate + "Total " + direction + ": " + 
+	                			LOGGER.info(stepTsDate + "Total " + direction + ": " + 
 	                					ByteFormat.humanReadableByteCount((long)upTotalBytes, true));
 	                		}
 	                		
@@ -251,7 +252,7 @@ public class VMGraph {
 	                					ByteFormat.humanReadableBitCount(service.getConnectionSpeedUpBpsAfterSTM()) + " for " + 
 	                					service.getLimitReductionHours(Direction.UP) + " hours) until " +
 	                					DF_FULL.format(cal.getTime()) + ".";
-	                			logger.info(upLimitExceeded + " " + upLimitExceededDetail);
+	                			LOGGER.info(upLimitExceeded + " " + upLimitExceededDetail);
 	                			upLimitExceededTs = stepTs;
 	                		}
 	                		break;
@@ -358,7 +359,7 @@ public class VMGraph {
         }
         */
         
-        logger.info("Writing graph: " + f.getAbsolutePath());
+        LOGGER.info("Writing graph: " + f.getAbsolutePath());
     	BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
     	bos.write(graph.getRrdGraphInfo().getBytes());
     	bos.close();
@@ -464,7 +465,7 @@ public class VMGraph {
 		try {
 			cmd = parser.parse(options, args);
 		} catch (ParseException pe) {
-			logger.error("Error parsing program arguments.", pe);
+			LOGGER.error("Error parsing program arguments.", pe);
 			System.exit(-1);
 		}		
 
@@ -481,25 +482,25 @@ public class VMGraph {
 			Option op = it.next();
 			buf.append(" -" + op.getOpt() + ((op.getValue() != null) ? " " + op.getValue() : ""));
 		}
-		logger.info(buf.toString());
+		LOGGER.info(buf.toString());
 		
 		File rrdDbFile = new File(cmd.getOptionValue("rrd_file"));
 		if (!rrdDbFile.exists()) {
-			logger.debug("RrdDb file does not exist: " + rrdDbFile.getAbsolutePath());
+			LOGGER.debug("RrdDb file does not exist: " + rrdDbFile.getAbsolutePath());
 		}
 		
 		File rrdDbToolFile = null;
 		if (cmd.getOptionValue("rrdtool_file") != null) {
 			rrdDbToolFile = new File(cmd.getOptionValue("rrdtool_file"));
 			if (!rrdDbToolFile.exists()) {
-				logger.error("rddtool input file does not exist: " + rrdDbToolFile.getAbsolutePath());
+				LOGGER.error("rddtool input file does not exist: " + rrdDbToolFile.getAbsolutePath());
 				System.exit(-1);
 			}
 		}
 		
 		File outDir = new File(cmd.getOptionValue("out_dir"));
 		if (!outDir.exists()) {
-			logger.error("Directory for output files must exist: " + outDir.getAbsolutePath());
+			LOGGER.error("Directory for output files must exist: " + outDir.getAbsolutePath());
 			System.exit(-1);
 		}
 		
@@ -509,7 +510,7 @@ public class VMGraph {
 			for (String p : Service.SERVICE_NAME_LIST) {
 				vpl += (" " + p);
 			}
-			logger.error("Invalid profile: " + cmd.getOptionValue("profile") + "! Valid profiles:" + vpl + ".");
+			LOGGER.error("Invalid profile: " + cmd.getOptionValue("profile") + "! Valid profiles:" + vpl + ".");
 			System.exit(-1);
 		}
 		
@@ -521,31 +522,31 @@ public class VMGraph {
 			try {
 				year = Integer.parseInt(cmd.getOptionValue("year"));
 			} catch (NumberFormatException nfe) {
-				logger.error("Invalid -year: " + cmd.getOptionValue("year"), nfe);
+				LOGGER.error("Invalid -year: " + cmd.getOptionValue("year"), nfe);
 				System.exit(-1);
 			}
 			
 			try {
 				month = Integer.parseInt(cmd.getOptionValue("month"));
 				if (month < 1 || month > 12) {
-					logger.error("Invalid -month: " + month + ". Valid value: 1-12.");
+					LOGGER.error("Invalid -month: " + month + ". Valid value: 1-12.");
 					System.exit(-1);
 				} else {
 					month -= 1;
 				}
 			} catch (NumberFormatException nfe) {
-				logger.error("Invalid -month: " + cmd.getOptionValue("month"), nfe);
+				LOGGER.error("Invalid -month: " + cmd.getOptionValue("month"), nfe);
 				System.exit(-1);
 			}
 			
 			try {
 				day = Integer.parseInt(cmd.getOptionValue("day"));
 				if (day < 1 || day > 31) {
-					logger.error("Invalid -day: " + day + ". Valid value: 1-31.");
+					LOGGER.error("Invalid -day: " + day + ". Valid value: 1-31.");
 					System.exit(-1);
 				}
 			} catch (NumberFormatException nfe) {
-				logger.error("Invalid -day: " + cmd.getOptionValue("day"), nfe);
+				LOGGER.error("Invalid -day: " + cmd.getOptionValue("day"), nfe);
 				System.exit(-1);
 			}
 		} else {
@@ -554,7 +555,7 @@ public class VMGraph {
 			year = cal.get(Calendar.YEAR);
 			month = cal.get(Calendar.MONTH);
 			day = cal.get(Calendar.DATE);
-			logger.info("-year|-month|-day not set on cmd line. Graphing yesterday: [" + 
+			LOGGER.info("-year|-month|-day not set on cmd line. Graphing yesterday: [" + 
 					DF_FULL.format(cal.getTime()) + "]");
 		}
 				
@@ -575,15 +576,15 @@ public class VMGraph {
 					cmd.hasOption("archive_out_name") ? cmd.getOptionValue("archive_out_name") : DEFAULT_ARCHIVE_OUT_NAME);
 			graph.graph();
 		} catch (IOException ioe) {
-			logger.error(null, ioe);
+			LOGGER.error(null, ioe);
 		} finally {
 			if (rrdDb != null) {
 				try {
-					logger.info("Closing rrdDb...");
+					LOGGER.info("Closing rrdDb...");
 					rrdDb.close();
 				} catch (IOException ioe) {}
 			}
 		}
-		logger.info("Exiting...");
+		LOGGER.info("Exiting...");
 	}
 }
