@@ -67,6 +67,8 @@ public class VMGraph {
     protected String archiveInName;
     protected String archiveOutName;
     
+    protected HtmlFile htmlFile = null;
+    
     /**
      * @param rrdDb
      * @param outputPath
@@ -95,7 +97,11 @@ public class VMGraph {
     public void graph() throws IOException {
 		for (int i = 0; i < profileList.length; i++) {
 			graph(profileList[i]);
-		}		
+		}
+		
+		if (htmlFile != null) {
+			htmlFile.write();
+		}
     }
     
     /**
@@ -117,9 +123,10 @@ public class VMGraph {
         calendar.add(Calendar.HOUR_OF_DAY, service.getDurationHours());
         long endTs = Util.getTimestamp(calendar) * 1000;
 
-    	LOGGER.info("Graphing Profile: " + service.getServiceId() + ", Start: " + startTs + " [" + DF_FULL.format(new Date(startTs)) + 
+    	LOGGER.info("Graphing Profile: " + service.getServiceId() + 
+    			", Start: " + startTs + " [" + DF_FULL.format(new Date(startTs)) + 
     			"], End: " + endTs + " [" + DF_FULL.format(new Date(endTs)) + "]");
-
+    	
     	for (StmProfile profile : service.getStmProfileMapValues()) {
     		if (profile.getLimitMB() > 0) {
     			LOGGER.info(profile.getLimitDescription());
@@ -139,6 +146,13 @@ public class VMGraph {
         	LOGGER.info("RRD last update time < requested end time. Graphing until last update time.");
         }
         
+    	if (htmlFile == null) {
+    		String title = "Virgin Media Broadband Traffic " + DF_DATE.format(new Date(startTs));
+    		String fileName = outputPath + Util.getFileSeparator() + "VM_" + service.getServiceName() + "_" + 
+            		DF_OUTNAME_DATE.format(new Date(startTs)) + ".html";
+    		htmlFile = new HtmlFile(title, fileName);
+    	}
+
     	/*
     	 * Fetch the data
     	 */
@@ -260,13 +274,15 @@ public class VMGraph {
 	        	}            	
         	}
         }
-        
-		RrdGraphDef graphDef = new RrdGraphDef();
-        graphDef.setTitle("VM " + service.getServiceName() + 
+
+        String graphTitle = "VM " + service.getServiceName() + 
         		(service.stmProfileListHasSingleProfile(Direction.DOWN) ? " DOWN " : 
         			service.stmProfileListHasSingleProfile(Direction.UP) ? " UP " : " ") +
         		DF_DATETIME.format(new Date(startTs)) + " - " + ((endTs - startTs < 1000 * 60 * 60 * 24) ? 
-        				DF_TIME.format(new Date(endTs)) : DF_DATETIME.format(new Date(endTs))));
+        				DF_TIME.format(new Date(endTs)) : DF_DATETIME.format(new Date(endTs)));
+        
+		RrdGraphDef graphDef = new RrdGraphDef();
+        graphDef.setTitle(graphTitle);
         graphDef.setVerticalLabel("bits per second");
         graphDef.setTimeSpan(startTs / 1000L, endTs / 1000L);
         graphDef.setHeight(120);
@@ -324,23 +340,23 @@ public class VMGraph {
     	
         graphDef.hrule(50000000, Color.DARK_GRAY, null);
         
-        String graphName = "VM_" + service.getServiceName() + "_" + 
+        String graphFileTitle = "VM_" + service.getServiceName() + "_" + 
         		DF_OUTNAME_DATETIME.format(new Date(startTs)) +
         		(service.stmProfileListHasSingleProfile(Direction.DOWN) ? "_DOWN" : 
         			service.stmProfileListHasSingleProfile(Direction.UP) ? "_UP" : "");
-        String fileName = outputPath + Util.getFileSeparator() + graphName + ".png";
+        String graphFileName = outputPath + Util.getFileSeparator() + graphFileTitle + ".png";
         
         //graphDef.setFilename(fileName);
         graphDef.setFilename("-");
         graphDef.setImageFormat("PNG");
-        graphDef.setImageInfo("<IMG SRC='%s' WIDTH='%d' HEIGHT='%d' ALT='" + graphName + "'>");
+        //graphDef.setImageInfo("<IMG SRC='%s' WIDTH='%d' HEIGHT='%d' ALT='" + graphName + "'>");
         //graphDef.setAltYMrtg(true);
         
         RrdGraph graph = new RrdGraph(graphDef);
         //BufferedImage bi = new BufferedImage(100,100,BufferedImage.TYPE_INT_RGB);
         //graph.render(bi.getGraphics());
 
-        File f = new File(fileName);
+        File f = new File(graphFileName);
         /*
          * Set posix group write permissions
          * 
@@ -363,7 +379,11 @@ public class VMGraph {
     	BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
     	bos.write(graph.getRrdGraphInfo().getBytes());
     	bos.close();
-        
+    	
+    	htmlFile.append("<p><img src='" + graphFileTitle + ".png' alt='" + graphTitle + 
+    			"' width='" + graph.getRrdGraphInfo().getWidth() + 
+    			"' height='" + graph.getRrdGraphInfo().getHeight() + "' /></p>");
+    	
         //String imgInfo = graph.getRrdGraphInfo().getImgInfo();
         //logger.info(imgInfo);
     }
