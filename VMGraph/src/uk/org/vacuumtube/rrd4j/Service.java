@@ -10,10 +10,6 @@ import java.util.TreeMap;
  * @author clivem
  *
  */
-/**
- * @author clivem
- *
- */
 public class Service {
 	
 	public final static long KILO_MULT = 1000;
