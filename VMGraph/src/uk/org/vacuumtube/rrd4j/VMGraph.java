@@ -584,7 +584,7 @@ public class VMGraph {
 			year = cal.get(Calendar.YEAR);
 			month = cal.get(Calendar.MONTH);
 			day = cal.get(Calendar.DATE);
-			LOGGER.info("-year|-month|-day not set on cmd line. Graphing yesterday: [" + 
+			LOGGER.info("(-year || -month ||-day) options not set on cmd line. Graphing yesterday: [" + 
 					DF_FULL.format(cal.getTime()) + "]");
 		}
 				
