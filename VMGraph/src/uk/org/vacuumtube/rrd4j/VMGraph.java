@@ -389,7 +389,7 @@ public class VMGraph {
     	bos.write(graph.getRrdGraphInfo().getBytes());
     	bos.close();
     	
-    	htmlFile.append("<div>");
+    	htmlFile.append("<div style='border-style:solid;width:800px;'>");
     	htmlFile.append("<h4>" + period.getServicePeriodDescription() + "</h4>");
     	htmlFile.append("<p><img src='" + graphFileTitle + ".png' alt='" + graphTitle + 
     			"' width='" + graph.getRrdGraphInfo().getWidth() + 

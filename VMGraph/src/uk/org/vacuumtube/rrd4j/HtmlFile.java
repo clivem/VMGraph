@@ -6,7 +6,6 @@ package uk.org.vacuumtube.rrd4j;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -73,6 +72,7 @@ public class HtmlFile {
 		append("<center>");
 		append("<h2>" + title + "</h2>");
 		append("<h3>" + service.getServiceDescription() + "</h3>");
+		//append("<p>&nbsp;</p>");
 	}
 	
 	/**
