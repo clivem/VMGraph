@@ -33,20 +33,20 @@ public class Service {
 		 */
     	new Service(XL30_3, 30, 3,
     			ServicePeriod.createMap(new ServicePeriod[] {
-    					new ServicePeriod(XL30_3 + "_BOTH_24HR", 0, 24,
+    					new ServicePeriod("DAY", 0, 24,
     			    			StmProfile.createMap(new StmProfile[] {
     			    					new StmProfile(Direction.DOWN, -1, 0, 0), 
     			    					new StmProfile(Direction.UP, -1, 0, 0)
     			    			})),
-    					new ServicePeriod(XL30_3 + "_DOWN_1000-1500", 10, 5, 
+    					new ServicePeriod("DOWN AM", 10, 5, 
     							StmProfile.createMap(new StmProfile[] {
     									new StmProfile(Direction.DOWN, 7000, 50, 5)
     							})),
-    					new ServicePeriod(XL30_3 + "_DOWN_1600-2100", 16, 5, 
+    					new ServicePeriod("DOWN PM", 16, 5, 
     							StmProfile.createMap(new StmProfile[] {
     									new StmProfile(Direction.DOWN, 3500, 50, 5)
     							})),
-    					new ServicePeriod(XL30_3 + "_UP_1500-2000", 15, 5, 
+    					new ServicePeriod("UP PM", 15, 5, 
     							StmProfile.createMap(new StmProfile[] {
     									new StmProfile(Direction.UP, 4200, 75, 5)
    								}))
@@ -57,20 +57,20 @@ public class Service {
     	 */
     	new Service(XXL50_5, 50, 5,
     			ServicePeriod.createMap(new ServicePeriod[] {
-    					new ServicePeriod(XXL50_5 + "_BOTH_24HR", 0, 24,
+    					new ServicePeriod("DAY", 0, 24,
     			    			StmProfile.createMap(new StmProfile[] {
     			    					new StmProfile(Direction.DOWN, -1, 0, 0), 
     			    					new StmProfile(Direction.UP, -1, 0, 0)
     			    			})),
-    					new ServicePeriod(XXL50_5 + "_DOWN_1000-1500", 10, 5, 
+    					new ServicePeriod("DOWN AM", 10, 5, 
     							StmProfile.createMap(new StmProfile[] {
     									new StmProfile(Direction.DOWN, 10000, 50, 5)
     							})),
-    					new ServicePeriod(XXL50_5 + "_DOWN_1600-2100", 16, 5, 
+    					new ServicePeriod("DOWN PM", 16, 5, 
     							StmProfile.createMap(new StmProfile[] {
     									new StmProfile(Direction.DOWN, 5000, 50, 5)
     							})),
-    					new ServicePeriod(XXL50_5 + "_UP_1500-2000", 15, 5, 
+    					new ServicePeriod("UP PM", 15, 5, 
     							StmProfile.createMap(new StmProfile[] {
     									new StmProfile(Direction.UP, 6000, 65, 5)
    								}))
@@ -81,20 +81,20 @@ public class Service {
 		 */
     	new Service(XL60_6, 50, 5,
     			ServicePeriod.createMap(new ServicePeriod[] {
-    					new ServicePeriod(XL60_6 + "_BOTH_24HR", 0, 24,
+    					new ServicePeriod("DAY", 0, 24,
     			    			StmProfile.createMap(new StmProfile[] {
     			    					new StmProfile(Direction.DOWN, -1, 0, 0), 
     			    					new StmProfile(Direction.UP, -1, 0, 0)
     			    			})),
-    					new ServicePeriod(XL60_6 + "_DOWN_1000-1500", 10, 5, 
+    					new ServicePeriod("DOWN AM", 10, 5, 
     							StmProfile.createMap(new StmProfile[] {
     									new StmProfile(Direction.DOWN, 10000, 50, 5)
     							})),
-    					new ServicePeriod(XL60_6 + "_DOWN_1600-2100", 16, 5, 
+    					new ServicePeriod("DOWN PM", 16, 5, 
     							StmProfile.createMap(new StmProfile[] {
     									new StmProfile(Direction.DOWN, 5000, 50, 5)
     							})),
-    					new ServicePeriod(XL60_6 + "_UP_1500-2000", 15, 5, 
+    					new ServicePeriod("UP PM", 15, 5, 
     							StmProfile.createMap(new StmProfile[] {
     									new StmProfile(Direction.UP, 7000, 75, 5)
    								}))
@@ -105,20 +105,20 @@ public class Service {
 		 */
     	new Service(XL100_5, 50, 5,
     			ServicePeriod.createMap(new ServicePeriod[] {
-    					new ServicePeriod(XL100_5 + "_BOTH_24HR", 0, 24,
+    					new ServicePeriod("DAY", 0, 24,
     			    			StmProfile.createMap(new StmProfile[] {
     			    					new StmProfile(Direction.DOWN, -1, 0, 0), 
     			    					new StmProfile(Direction.UP, -1, 0, 0)
     			    			})),
-    					new ServicePeriod(XL100_5 + "_DOWN_1000-1500", 10, 5, 
+    					new ServicePeriod("DOWN AM", 10, 5, 
     							StmProfile.createMap(new StmProfile[] {
     									new StmProfile(Direction.DOWN, 20000, 50, 5)
     							})),
-    					new ServicePeriod(XL100_5 + "_DOWN_1600-2100", 16, 5, 
+    					new ServicePeriod("DOWN PM", 16, 5, 
     							StmProfile.createMap(new StmProfile[] {
     									new StmProfile(Direction.DOWN, 10000, 50, 5)
     							})),
-    					new ServicePeriod(XL100_5 + "_UP_1500-2000", 15, 5, 
+    					new ServicePeriod("UP PM", 15, 5, 
     							StmProfile.createMap(new StmProfile[] {
     									new StmProfile(Direction.UP, 6000, 65, 5)
    								}))
@@ -129,20 +129,20 @@ public class Service {
 		 */
     	new Service(XL100_10, 50, 5,
     			ServicePeriod.createMap(new ServicePeriod[] {
-    					new ServicePeriod(XL100_10 + "_BOTH_24HR", 0, 24,
+    					new ServicePeriod("DAY", 0, 24,
     			    			StmProfile.createMap(new StmProfile[] {
     			    					new StmProfile(Direction.DOWN, -1, 0, 0), 
     			    					new StmProfile(Direction.UP, -1, 0, 0)
     			    			})),
-    					new ServicePeriod(XL100_10 + "_DOWN_1000-1500", 10, 5, 
+    					new ServicePeriod("DOWN AM", 10, 5, 
     							StmProfile.createMap(new StmProfile[] {
     									new StmProfile(Direction.DOWN, 20000, 50, 5)
     							})),
-    					new ServicePeriod(XL100_10 + "_DOWN_1600-2100", 16, 5, 
+    					new ServicePeriod("DOWN PM", 16, 5, 
     							StmProfile.createMap(new StmProfile[] {
     									new StmProfile(Direction.DOWN, 10000, 50, 5)
     							})),
-    					new ServicePeriod(XL100_10 + "_UP_1500-2000", 15, 5, 
+    					new ServicePeriod("UP PM", 15, 5, 
     							StmProfile.createMap(new StmProfile[] {
     									new StmProfile(Direction.UP, 12000, 75, 5)
    								}))

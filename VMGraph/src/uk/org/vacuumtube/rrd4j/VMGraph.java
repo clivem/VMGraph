@@ -389,17 +389,8 @@ public class VMGraph {
     	bos.write(graph.getRrdGraphInfo().getBytes());
     	bos.close();
     	
-    	htmlFile.append("<div style='border-style:solid;width:800px;'>");
-    	htmlFile.append("<h4>" + period.getServicePeriodDescription() + "</h4>");
-    	htmlFile.append("<p><img src='" + graphFileTitle + ".png' alt='" + graphTitle + 
-    			"' width='" + graph.getRrdGraphInfo().getWidth() + 
-    			"' height='" + graph.getRrdGraphInfo().getHeight() + "' />");
-    	for (StmProfile profile : stmProfiles) {
-    		if (profile.getLimitMB() > 0) {
-    			htmlFile.append("<br/>" + profile.getStmProfileDescription());
-    		}
-    	}
-    	htmlFile.append("</p></div><br/>");
+    	htmlFile.writeGraph(period, graphTitle, graphFileTitle, 
+    			graph.getRrdGraphInfo().getWidth(), graph.getRrdGraphInfo().getHeight());
     	
         //String imgInfo = graph.getRrdGraphInfo().getImgInfo();
         //logger.info(imgInfo);

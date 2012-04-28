@@ -66,13 +66,35 @@ public class HtmlFile {
 		append("<!DOCTYPE html>");
 		append("<html>");
 		append("<head>");
+		append("<link rel='stylesheet' type='text/css' media='all' href='css/all.css' />");
 		append("<title>" + title + "</title>");
 		append("</head>");
 		append("<body>");
-		append("<center>");
+		append("<div class='div_main'>");
 		append("<h2>" + title + "</h2>");
 		append("<h3>" + service.getServiceDescription() + "</h3>");
 		//append("<p>&nbsp;</p>");
+	}
+	
+	/**
+	 * @param period
+	 * @param graphTitle
+	 * @param graphFileTitle
+	 * @param width
+	 * @param height
+	 */
+	public void writeGraph(ServicePeriod period, String graphTitle, String graphFileTitle, int width, int height) {
+    	append("<div class='div_graph'>");
+    	append("<h4>" + period.getServicePeriodDescription() + "</h4>");
+    	append("<p><img src='" + graphFileTitle + ".png' alt='" + graphTitle + 
+    			"' width='" + width + 
+    			"' height='" + height + "' />");
+    	for (StmProfile profile : period.getStmProfileMapValues()) {
+    		if (profile.getLimitMB() > 0) {
+    			append("<p class='strong'>" + profile.getStmProfileDescription() + "</p>");
+    		}
+    	}
+    	append("</p></div><br/>");
 	}
 	
 	/**
@@ -80,7 +102,7 @@ public class HtmlFile {
 	 */
 	private void writeFooter() {
 		if (!writtenFooter) {
-			append("</center>");
+			append("</div>");
 			append("</body>");
 			append("</html>");
 			writtenFooter = true;
