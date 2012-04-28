@@ -25,6 +25,7 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.log4j.Logger;
@@ -407,6 +408,8 @@ public class VMGraph {
 	    //StatusPrinter.print(lc);
 
 		Options options = new Options();
+		
+		OptionGroup dateGroup = new OptionGroup();
 
 		/*
 		Option property = OptionBuilder.withArgName("property=value")
@@ -453,7 +456,8 @@ public class VMGraph {
                 .withDescription("use given YYYY for year")
                 .create("year");
 		year_option.setType(Integer.class);
-		options.addOption(year_option);
+		//options.addOption(year_option);
+		dateGroup.addOption(year_option);
 		
 		@SuppressWarnings("static-access")
 		Option month_option = OptionBuilder.withArgName("MM")
@@ -487,6 +491,12 @@ public class VMGraph {
 		
 		Option help_option = new Option( "help", "print this message" );
 		options.addOption(help_option);
+		
+		Option today_option = new Option( "today", "use current date" );
+		//options.addOption(today_option);
+		dateGroup.addOption(today_option);
+		
+		options.addOptionGroup(dateGroup);
 		
 		CommandLineParser parser = new GnuParser();
 		CommandLine cmd = null;
@@ -578,16 +588,23 @@ public class VMGraph {
 				LOGGER.error("Invalid -day: " + cmd.getOptionValue("day"), nfe);
 				System.exit(-1);
 			}
+		} else if (cmd.hasOption("today")) {
+			Calendar cal = Calendar.getInstance();
+			year = cal.get(Calendar.YEAR);
+			month = cal.get(Calendar.MONTH);
+			day = cal.get(Calendar.DATE);
+			LOGGER.info("(-today) option set on cmd line. Graphing today: [" + 
+					DF_FULL.format(cal.getTime()) + "]");
 		} else {
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DAY_OF_MONTH, -1);
 			year = cal.get(Calendar.YEAR);
 			month = cal.get(Calendar.MONTH);
 			day = cal.get(Calendar.DATE);
-			LOGGER.info("(-year || -month ||-day) options not set on cmd line. Graphing yesterday: [" + 
+			LOGGER.info("(-today || -year || -month ||-day) options not set on cmd line. Graphing yesterday: [" + 
 					DF_FULL.format(cal.getTime()) + "]");
 		}
-				
+						
 		RrdDb rrdDb = null;
 		try {
 			if (rrdDbToolFile != null) {
