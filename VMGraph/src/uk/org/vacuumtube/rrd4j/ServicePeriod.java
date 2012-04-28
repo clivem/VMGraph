@@ -129,18 +129,12 @@ public class ServicePeriod {
 	}
 	
 	/**
-	 * @return the DOWN connection speed after STM is applied
-	 * 	 
+	 * @param direction
+	 * @param connectionSpeedBps
+	 * @return the connection speed after STM is applied
 	 */
-	public long getConnectionSpeedDownBpsAfterSTM(long connectionSpeedDownBps) {
-		return (long) (connectionSpeedDownBps *  ((100 - getLimitReductionPercentage(Direction.DOWN)) / 100d));
-	}
-
-	/**
-	 * @return the UP connection speed after STM is applied
-	 */
-	public long getConnectionSpeedUpBpsAfterSTM(long connectionSpeedUpBps) {
-		return (long) (connectionSpeedUpBps *  ((100 - getLimitReductionPercentage(Direction.UP)) / 100d));
+	public long getConnectionSpeedBpsAfterSTM(Direction direction, long connectionSpeedBps) {
+		return (long) (connectionSpeedBps *  ((100 - getLimitReductionPercentage(direction)) / 100d));
 	}
 
 	/**

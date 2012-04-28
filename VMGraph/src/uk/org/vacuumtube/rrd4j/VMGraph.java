@@ -14,8 +14,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -127,12 +129,15 @@ public class VMGraph {
     	LOGGER.info("Graphing Profile: " + service.getServiceName() + 
     			", Start: " + startTs + " [" + DF_FULL.format(new Date(startTs)) + 
     			"], End: " + endTs + " [" + DF_FULL.format(new Date(endTs)) + "]");
-    	
-    	for (StmProfile profile : period.getStmProfileMapValues()) {
+
+    	Collection<StmProfile> stmProfiles = period.getStmProfileMapValues();
+    	for (StmProfile profile : stmProfiles) {
     		if (profile.getLimitMB() > 0) {
     			LOGGER.info(profile.getLimitDescription());
     		}
     	}
+    	
+    	Set<Direction> directions = period.getStmProfileMapKeySet();
     	
     	long lastUpdateTime = rrdDb.getLastUpdateTime() * 1000;
         LOGGER.info("RRD last update time: " + lastUpdateTime + " [" + DF_FULL.format(new Date(lastUpdateTime)) + "]");
@@ -190,7 +195,7 @@ public class VMGraph {
         	String stepTsDate = stepTs + " [" + DF_FULL.format(new Date(stepTs)) + "] ";
         	   		
         	if (LOGGER.isDebugEnabled()) {
-	        	for (Direction direction : period.getStmProfileMapKeySet()) {
+	        	for (Direction direction : directions) {
 		        	switch (direction) {
 		        		case DOWN:
 		        			LOGGER.debug(stepTsDate + direction + ": " + 
@@ -214,7 +219,7 @@ public class VMGraph {
         			upTotalBytes += stepUpBytes;
         		}
         		
-            	for (Direction direction : period.getStmProfileMapKeySet()) {
+            	for (Direction direction : directions) {
 	        		switch (direction) {
 	        			case DOWN:
 	                		if (LOGGER.isDebugEnabled() && i < tstamp.length - 1) {
@@ -235,7 +240,8 @@ public class VMGraph {
 	                					") exceeded (by " + ByteFormat.humanReadableByteCount(((long)downTotalBytes) - downLimitBytes, true) + ") at " + 
 	                					DF_TIME.format(date) + "."; 
 	                			downLimitExceededDetail = "Max download speed reduced by " + period.getLimitReductionPercentage(Direction.DOWN) + "% (to " +  
-	                					ByteFormat.humanReadableBitCount(period.getConnectionSpeedDownBpsAfterSTM(service.getConnectionSpeedDownBps())) + 
+	                					ByteFormat.humanReadableBitCount(period.getConnectionSpeedBpsAfterSTM(
+	                							Direction.DOWN, service.getConnectionSpeedDownBps())) + 
 	                					" for " + period.getLimitReductionHours(Direction.DOWN) + " hours) until " +
 	                					DF_FULL.format(cal.getTime()) + ".";
 	                			LOGGER.info(downLimitExceeded + " " + downLimitExceededDetail);
@@ -264,7 +270,8 @@ public class VMGraph {
 	                					") exceeded (by " + ByteFormat.humanReadableByteCount(((long)upTotalBytes) - upLimitBytes, true) + ") at " + 
 	                					DF_TIME.format(date) + ".";
 	                			upLimitExceededDetail = "Max upload speed reduced by " + period.getLimitReductionPercentage(Direction.UP) + "% (to " + 
-	                					ByteFormat.humanReadableBitCount(period.getConnectionSpeedUpBpsAfterSTM(service.getConnectionSpeedUpBps())) + 
+	                					ByteFormat.humanReadableBitCount(period.getConnectionSpeedBpsAfterSTM(
+	                							Direction.UP, service.getConnectionSpeedUpBps())) + 
 	                					" for " + period.getLimitReductionHours(Direction.UP) + " hours) until " +
 	                					DF_FULL.format(cal.getTime()) + ".";
 	                			LOGGER.info(upLimitExceeded + " " + upLimitExceededDetail);
@@ -290,7 +297,7 @@ public class VMGraph {
         graphDef.setWidth(500);
         
         
-    	for (Direction direction : period.getStmProfileMapKeySet()) {
+    	for (Direction direction : directions) {
 	        switch(direction) {
 	        	case DOWN:
 	            	graphDef.datasource("in", rrdDb.getPath(), archiveInName, ConsolFun.AVERAGE);
@@ -329,7 +336,7 @@ public class VMGraph {
 	        }
     	}
     	
-    	for (StmProfile profile : period.getStmProfileMapValues()) {
+    	for (StmProfile profile : stmProfiles) {
     		if (profile.getLimitMB() > 0) {
     			if ((profile.getDirection() == Direction.DOWN && downLimitExceeded == null) ||
     					(profile.getDirection() == Direction.UP && upLimitExceeded == null)) {
