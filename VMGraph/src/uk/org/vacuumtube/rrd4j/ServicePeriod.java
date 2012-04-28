@@ -178,6 +178,14 @@ public class ServicePeriod {
 		}
 		return map;
 	}
+	
+	/**
+	 * @return
+	 */
+	public String getServicePeriodDescription() {
+		return("Period: " + servicePeriodName + ". Start: " + startHour + 
+				":00. Finish: " + getEndHour() + ":00. Duration: " + durationHours + " hours.");
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

@@ -6,6 +6,7 @@ package uk.org.vacuumtube.rrd4j;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -21,6 +22,7 @@ public class HtmlFile {
 	private List<String> contentBuf = null;
 	private String title = null;
 	private String fileName = null;
+	private Service service = null;
 	
 	private boolean writtenFooter = false;
 	
@@ -28,10 +30,11 @@ public class HtmlFile {
 	 * @param title
 	 * @param fileName
 	 */
-	public HtmlFile(String title, String fileName) {
+	public HtmlFile(String title, String fileName, Service service) {
 		this.title = title;
 		this.fileName = fileName;
 		contentBuf = new ArrayList<String>();
+		this.service = service;
 		writeHeader();
 	}
 	
@@ -69,7 +72,7 @@ public class HtmlFile {
 		append("<body>");
 		append("<center>");
 		append("<h2>" + title + "</h2>");
-		append("<br />");
+		append("<h3>" + service.getServiceDescription() + "</h3>");
 	}
 	
 	/**
@@ -83,7 +86,7 @@ public class HtmlFile {
 			writtenFooter = true;
 		}
 	}
-	
+
 	/**
 	 * 
 	 */

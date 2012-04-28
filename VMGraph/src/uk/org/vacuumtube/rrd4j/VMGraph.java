@@ -134,7 +134,7 @@ public class VMGraph {
     	Collection<StmProfile> stmProfiles = period.getStmProfileMapValues();
     	for (StmProfile profile : stmProfiles) {
     		if (profile.getLimitMB() > 0) {
-    			LOGGER.info(profile.getLimitDescription());
+    			LOGGER.info(profile.getStmProfileDescription());
     		}
     	}
     	
@@ -157,7 +157,7 @@ public class VMGraph {
     		String title = "Virgin Media Broadband Traffic " + DF_DATE.format(new Date(startTs));
     		String fileName = outputPath + Util.getFileSeparator() + "VM_" + service.getServiceName() + "_" + 
             		DF_OUTNAME_DATE.format(new Date(startTs)) + ".html";
-    		htmlFile = new HtmlFile(title, fileName);
+    		htmlFile = new HtmlFile(title, fileName, service);
     	}
 
     	/*
@@ -342,7 +342,7 @@ public class VMGraph {
     			if ((profile.getDirection() == Direction.DOWN && downLimitExceeded == null) ||
     					(profile.getDirection() == Direction.UP && upLimitExceeded == null)) {
 	    			graphDef.comment("\\c");
-	    			graphDef.comment(profile.getLimitDescription() + "\\c");
+	    			graphDef.comment(profile.getStmProfileDescription() + "\\c");
     			}
     		}
     	}
@@ -389,9 +389,17 @@ public class VMGraph {
     	bos.write(graph.getRrdGraphInfo().getBytes());
     	bos.close();
     	
+    	htmlFile.append("<div>");
+    	htmlFile.append("<h4>" + period.getServicePeriodDescription() + "</h4>");
     	htmlFile.append("<p><img src='" + graphFileTitle + ".png' alt='" + graphTitle + 
     			"' width='" + graph.getRrdGraphInfo().getWidth() + 
-    			"' height='" + graph.getRrdGraphInfo().getHeight() + "' /></p>");
+    			"' height='" + graph.getRrdGraphInfo().getHeight() + "' />");
+    	for (StmProfile profile : stmProfiles) {
+    		if (profile.getLimitMB() > 0) {
+    			htmlFile.append("<br/>" + profile.getStmProfileDescription());
+    		}
+    	}
+    	htmlFile.append("</p></div><br/>");
     	
         //String imgInfo = graph.getRrdGraphInfo().getImgInfo();
         //logger.info(imgInfo);

@@ -221,6 +221,15 @@ public class Service {
     public static Service getService(String serviceName) {
     	return SERVICES.get(serviceName);
     }
+    
+	/**
+	 * @return
+	 */
+	public String getServiceDescription() {
+		return("Service: " + getServiceName() + 
+				". Down Speed: " + getConnectionSpeedDownMbps() + "Mbps" + 
+				". Up Speed: " + getConnectionSpeedUpMbps() + "Mbps.");
+	}
         
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

@@ -88,13 +88,13 @@ public class StmProfile {
 		this.limitReductionHours = limitReductionHours;
 	}
 	
-	public String getLimitDescription() {
-		if (getLimitMB() > 0) {
-			return(getDirection().getDescription() + " Limit: " +
-					getLimitMB() + "MB. Speed reduction penalty: " + getLimitReductionPercentage() +
-					"% for " + getLimitReductionHours() + " hours, if exceeded!");
-		}
-		return "";
+	/**
+	 * @return
+	 */
+	public String getStmProfileDescription() {
+		return("STM " + getDirection().getDescription() + " Limit: " +
+				getLimitMB() + "MB. Speed reduction penalty: " + getLimitReductionPercentage() +
+				"% for " + getLimitReductionHours() + " hours, if exceeded!");
 	}
 
 	/* (non-Javadoc)
