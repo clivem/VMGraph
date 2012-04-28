@@ -57,6 +57,9 @@ public class HtmlFile {
 		return fileName;
 	}
 
+	/**
+	 * 
+	 */
 	private void writeHeader() {
 		append("<!DOCTYPE html>");
 		append("<html>");
@@ -89,7 +92,7 @@ public class HtmlFile {
 			writeFooter();
 		}
 
-		LOGGER.info("Writing: " + fileName);
+		LOGGER.info("Writing html page: " + fileName);
 		
 		PrintWriter writer = null;
 		try {
