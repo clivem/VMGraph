@@ -167,7 +167,8 @@ public class VMGraph {
         //logger.debug(request.dump());
         FetchData fetchData = request.fetchData();
         LOGGER.info("RRD data fetched: " + fetchData.getRowCount() + " data points obtained. Fetch ArcStep: " + 
-        		fetchData.getArcStep() + "s. Fetch ArcEndTime: " + DF_FULL.format(new Date(fetchData.getArcEndTime() * 1000)));
+        		fetchData.getArcStep() + "s. Fetch ArcEndTime: " + 
+        		DF_FULL.format(new Date(fetchData.getArcEndTime() * 1000)));
         //logger.debug(fetchData.exportXml());
 
         long step = fetchData.getStep();
