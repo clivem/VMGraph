@@ -3,6 +3,8 @@
  */
 package uk.org.vacuumtube.routeros;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -10,7 +12,9 @@ import java.util.Date;
  *
  */
 public class Stats {
-	
+
+    protected final static DateFormat DF_FULL = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss,SSS z");
+
 	protected Long id = null;
 	protected Long millis;
 	protected Long rxBytes;
@@ -139,7 +143,9 @@ public class Stats {
 		buf.append(", txBytes=");
 		buf.append(txBytes);
 		buf.append(", created=");
-		buf.append(created);
+		synchronized (DF_FULL) {
+			buf.append(DF_FULL.format(created));
+		}
 		buf.append("]");
 		return buf.toString();
 	}

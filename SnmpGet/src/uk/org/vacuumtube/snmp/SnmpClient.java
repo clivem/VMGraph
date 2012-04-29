@@ -27,7 +27,7 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
  */
 public class SnmpClient {
 
-	static final Logger logger = Logger.getLogger(SnmpClient.class);
+	static final Logger LOGGER = Logger.getLogger(SnmpClient.class);
 
 	private String address;
 	private Snmp snmp;
@@ -37,8 +37,8 @@ public class SnmpClient {
 	 * @throws IOException
 	 */
 	public SnmpClient(String address) throws IOException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("SnmpClient(address=" + address + ")");
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("SnmpClient(address=" + address + ")");
 		}
  		this.address = address;
 		start();
@@ -48,16 +48,16 @@ public class SnmpClient {
 	 * @throws IOException
 	 */
 	private void start() throws IOException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("SnmpClient.start(): START");
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("SnmpClient.start(): START");
 		}
 		
 		TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
 		//TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping(new UdpAddress("192.168.0.60/52222"), true);
 		snmp = new Snmp(transport);
 		transport.listen();		
-		if (logger.isDebugEnabled()) {
-			logger.debug("SnmpClient.start(): END");
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("SnmpClient.start(): END");
 		}
 	}
 	
@@ -65,8 +65,8 @@ public class SnmpClient {
 	 * @throws IOException
 	 */
 	public void stop() throws IOException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("SnmpClient.stop()");
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("SnmpClient.stop()");
 		}
 		snmp.close();
 	}
@@ -77,8 +77,8 @@ public class SnmpClient {
 	 * @throws IOException
 	 */
 	public ResponseEvent get(OID oids[]) throws IOException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("SnmpClient.get(oids=" + oids + ")");
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("SnmpClient.get(oids=" + oids + ")");
 		}
 		
 		return(snmp.send(getPDU(oids), getTarget(), null));
@@ -88,8 +88,8 @@ public class SnmpClient {
 	 * @return
 	 */
 	private Target getTarget() {
-		if (logger.isDebugEnabled()) {
-			logger.debug("SnmpClient.getTarget()");
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("SnmpClient.getTarget()");
 		}
 		Address targetAddress = GenericAddress.parse(address);
 		CommunityTarget target = new CommunityTarget();
@@ -106,8 +106,8 @@ public class SnmpClient {
 	 * @return
 	 */
 	private PDU getPDU(OID oids[]) {
-		if (logger.isDebugEnabled()) {
-			logger.debug("SnmpClient.getPDU(oids=" + oids + ")");
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("SnmpClient.getPDU(oids=" + oids + ")");
 		}
 
 		PDU pdu = new PDU();

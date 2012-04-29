@@ -3,6 +3,7 @@
  */
 package uk.org.vacuumtube.routeros;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Scanner;
 
 import mikrotik.routeros.libAPI.ApiConn;
@@ -103,7 +104,8 @@ public class RouterOSGetStatsMySQL {
 										if (txBytes > -1 && rxBytes > -1) {
 
 											try {
-												Stats stats = service.add(new Stats(timestamp, rxBytes, txBytes));
+												Stats stats = service.add(new Stats(
+														Math.round(timestamp / 1000.0) * 1000L, rxBytes, txBytes));
 												LOGGER.info(stats);
 											} catch (Exception e) {
 												LOGGER.warn(null, e);
@@ -146,6 +148,17 @@ public class RouterOSGetStatsMySQL {
 					t.setDaemon(true);
 					t.setName("ApiResponse");
 					t.start();
+					
+					// Start on minute boundary
+					long ts = System.currentTimeMillis();
+					long delay = 60000 - (ts % 60000);
+					Stats.DF_FULL.format(new Date(ts + delay));
+					try {
+						LOGGER.info("Sleeping for " + delay + "ms until " + Stats.DF_FULL.format(new Date(ts + delay)));
+						Thread.sleep(delay);
+					} catch (Exception e) {
+						LOGGER.warn("Caught exception while sleeping!", e);
+					}
 					
 					//ret.sendCommand("/ip/address/print");
 					
