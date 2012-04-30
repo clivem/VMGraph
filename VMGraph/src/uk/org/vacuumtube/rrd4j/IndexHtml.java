@@ -25,7 +25,9 @@ public class IndexHtml {
 
 	private final static Logger LOGGER = Logger.getLogger(IndexHtml.class);
 	
-	private final static String INDEX_HTML = "index.html";
+	private final static String INDEX_HTML_FILENAME = "index.html";
+	private final static String TITLE_START_TAG = "<title>";
+	private final static String TITLE_END_TAG = "</title>";
 	
 	private List<String> contentList;
 	private File directory;
@@ -76,8 +78,8 @@ public class IndexHtml {
 					if (line == null) {
 						break;
 					}
-					if (line.startsWith("<title>") && line.endsWith("</title>")) {
-						title = line.substring(7, line.length() - 8);
+					if (line.startsWith(TITLE_START_TAG) && line.endsWith(TITLE_END_TAG)) {
+						title = line.substring(TITLE_START_TAG.length(), line.length() - TITLE_END_TAG.length());
 						break;
 					}
 				}
@@ -108,7 +110,7 @@ public class IndexHtml {
 	 * 
 	 */
 	public void write() throws IOException {
-		String fileName = directory.getAbsolutePath() + File.separator + INDEX_HTML;
+		String fileName = directory.getAbsolutePath() + File.separator + INDEX_HTML_FILENAME;
 		
 		LOGGER.info("Writing html page: " + fileName);
 		
