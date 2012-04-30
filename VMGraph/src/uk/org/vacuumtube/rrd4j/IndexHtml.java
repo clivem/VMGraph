@@ -3,11 +3,16 @@
  */
 package uk.org.vacuumtube.rrd4j;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -53,10 +58,42 @@ public class IndexHtml {
 			}
 		});
 		
+		Arrays.sort(dailyHtmlFileNames);
+		
 		writeHeader();
-		for (String fileName : dailyHtmlFileNames) {
+		//for (String fileName : dailyHtmlFileNames) {
+		for (int i = dailyHtmlFileNames.length - 1; i >= 0; i--) {
 			//LOGGER.info(fileName);
-			append("<p><a href='" + fileName + "' title='" + fileName + "'>" + fileName + "</a></p>");
+			String fileName = dailyHtmlFileNames[i];
+			
+			String title = fileName;
+			BufferedReader br = null;
+			try {
+				File f = new File(directory.getAbsolutePath() + File.separator + fileName);
+				br = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
+				while (true) {
+					String line = br.readLine();
+					if (line == null) {
+						break;
+					}
+					if (line.startsWith("<title>") && line.endsWith("</title>")) {
+						title = line.substring(7, line.length() - 8);
+						break;
+					}
+				}
+			} catch (FileNotFoundException fnfe) {
+				LOGGER.warn(null, fnfe);
+			} catch (IOException ioe) {
+				LOGGER.warn(null, ioe);
+			} finally {
+				if (br != null) {
+					try {
+						br.close();
+					} catch (Exception e) {}
+				}
+			}
+
+			append("<p><a href='" + fileName + "' title='" + title + "'>" + title + "</a></p>");
 		}
 		writeFooter();
 		
@@ -92,15 +129,16 @@ public class IndexHtml {
 	 * 
 	 */
 	private void writeHeader() {
+		String title = "Virgin Media Broadband Daily Traffic Graphs";
 		append("<!DOCTYPE html>");
 		append("<html>");
 		append("<head>");
 		append("<link rel='stylesheet' type='text/css' media='all' href='css/all.css' />");
-		append("<title>" + "Virgin Media Daily Traffic Graphs" + "</title>");
+		append("<title>" + title + "</title>");
 		append("</head>");
 		append("<body>");
 		//append("<div class='div_main'>");
-		append("<h2>" + "Virgin Media Daily Traffic Graphs" + "</h2>");
+		append("<h2>" + title + "</h2>");
 	}
 	
 	/**
