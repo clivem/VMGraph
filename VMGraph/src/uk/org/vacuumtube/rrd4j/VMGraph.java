@@ -106,6 +106,8 @@ public class VMGraph {
 		if (htmlFile != null) {
 			htmlFile.write();
 		}
+		
+		new IndexHtml(new File(outputPath)).createIndexHtml();
     }
     
     /**
