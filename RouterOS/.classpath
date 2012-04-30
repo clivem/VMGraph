@@ -26,5 +26,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/hibernate-release-4.1.2"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/aopalliance"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/cglib"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/quartz-1.8.6"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
