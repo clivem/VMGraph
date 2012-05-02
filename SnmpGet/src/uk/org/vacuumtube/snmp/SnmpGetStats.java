@@ -74,7 +74,8 @@ public class SnmpGetStats {
 			String archiveInName, String archiveOutName) {
 		if (logger.isTraceEnabled()) {
 			logger.trace("SnmpGetStats(snmpAddress=" + snmpAddress + ", snmpInOid=" + snmpInOid + 
-					", snmpOutOid=" + snmpOutOid + ", rrdDbFileName=" + rrdDbFileName + ")");
+					", snmpOutOid=" + snmpOutOid + ", rrdDbFileName=" + rrdDbFileName + 
+					", archiveInName=" + archiveInName + ", archiveOutName=" + archiveOutName + ")");
 		}
 		
 		this.snmpAddress = snmpAddress;
@@ -83,6 +84,17 @@ public class SnmpGetStats {
 		this.rrdDbFileName = rrdDbFileName;
 		this.archiveInName = archiveInName;
 		this.archiveOutName = archiveOutName;
+	}
+	
+	/**
+	 * @param snmpAddress
+	 * @param snmpInOid
+	 * @param snmpOutOid
+	 * @param rrdDbFileName
+	 */
+	public SnmpGetStats(String snmpAddress, String snmpInOid, String snmpOutOid, String rrdDbFileName) {
+		this(snmpAddress, snmpInOid, snmpOutOid, rrdDbFileName, 
+				DEFAULT_ARCHIVE_IN_NAME, DEFAULT_ARCHIVE_OUT_NAME);
 	}
 	
 	/**
@@ -134,6 +146,9 @@ public class SnmpGetStats {
 		}
 
 		if (rrdDb != null) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Closing RRDB: " + rrdDbFileName);
+			}
 			try {
 				rrdDb.close();
 			} catch(IOException ioe) {}
@@ -151,6 +166,9 @@ public class SnmpGetStats {
 		
 		File f = new File(rrdDbFileName);
 		if (!f.exists()) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Creating new RRDB: " + rrdDbFileName);
+			}
 			RrdDef rrdDef = new RrdDef(rrdDbFileName);
 			rrdDef.setStep(300 / 5);
 			rrdDef.addDatasource(archiveInName, DsType.COUNTER, 600 / 5, Double.NaN, Double.NaN);
@@ -165,12 +183,57 @@ public class SnmpGetStats {
 			rrdDef.addArchive(ConsolFun.MAX, 0.5, 288 * 5, 797);
 			rrdDb = new RrdDb(rrdDef);
 		} else {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Opening existing RRDB: " + rrdDbFileName);
+			}
 			rrdDb = new RrdDb(rrdDbFileName);
 		}
 		
 		return rrdDb;
 	}
 	
+	/**
+	 * @return the rxBytesPrev
+	 */
+	public long getRxBytesPrev() {
+		return rxBytesPrev;
+	}
+
+	/**
+	 * @param rxBytesPrev the rxBytesPrev to set
+	 */
+	public void setRxBytesPrev(long rxBytesPrev) {
+		this.rxBytesPrev = rxBytesPrev;
+	}
+
+	/**
+	 * @return the txBytesPrev
+	 */
+	public long getTxBytesPrev() {
+		return txBytesPrev;
+	}
+
+	/**
+	 * @param txBytesPrev the txBytesPrev to set
+	 */
+	public void setTxBytesPrev(long txBytesPrev) {
+		this.txBytesPrev = txBytesPrev;
+	}
+
+	/**
+	 * @return the timestampPrev
+	 */
+	public long getTimestampPrev() {
+		return timestampPrev;
+	}
+
+	/**
+	 * @param timestampPrev the timestampPrev to set
+	 */
+	public void setTimestampPrev(long timestampPrev) {
+		this.timestampPrev = timestampPrev;
+	}
+
 	/**
 	 * @param args
 	 */
@@ -301,7 +364,7 @@ public class SnmpGetStats {
 						Scanner scanner = new Scanner(System.in);
 						while (true) {
 							String input = scanner.nextLine();
-				        	if("quit".equals(input.trim())) {
+				        	if(input == null || "quit".equals(input.trim())) {
 				        		break;
 				        	}
 						}
@@ -333,10 +396,6 @@ public class SnmpGetStats {
 		logger.info("Exiting...");
 	}
 
-	/**
-	 * @author clivem
-	 *
-	 */
 	/**
 	 * @author clivem
 	 *
