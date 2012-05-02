@@ -17,6 +17,16 @@
 	  <property name="rrdDbFileName" value="${snmp.rrdDbFileName}" />
 	-->
 
+	<bean id="propertyPlaceholderConfigurer"  
+	      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+	  <property name="locations">  
+	    <list>  
+	      <value>classpath:META-INF/snmp.properties</value>  
+	    </list>  
+	  </property>  
+	  <property name="ignoreUnresolvablePlaceholders">true</property>
+	</bean>  
+
 	<bean name="snmpStatsJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
 	  <property name="jobClass" value="uk.org.vacuumtube.schedule.GetSnmpInterfaceStatisticsJob" />
 	  <property name="jobDataAsMap">
