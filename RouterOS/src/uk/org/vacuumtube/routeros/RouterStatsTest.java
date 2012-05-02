@@ -3,15 +3,11 @@
  */
 package uk.org.vacuumtube.routeros;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import uk.org.vacuumtube.routeros.spring.dao.StatsDao;
-import uk.org.vacuumtube.routeros.spring.jdbc.JdbcStatsDaoImpl;
-//import uk.org.vacuumtube.routeros.spring.service.RouterStatsService;
 import uk.org.vacuumtube.routeros.spring.service.RouterStatsService;
 
 /**
