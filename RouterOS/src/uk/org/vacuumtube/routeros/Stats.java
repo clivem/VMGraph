@@ -16,10 +16,11 @@ public class Stats {
     protected final static DateFormat DF_FULL = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss,SSS z");
 
 	protected Long id = null;
-	protected Long millis;
-	protected Long rxBytes;
-	protected Long txBytes;
-	protected Date created;
+	protected Long millis = null;
+	protected Long rxBytes = null;
+	protected Long txBytes = null;
+	protected Date created = null;
+	protected Date updated = null;
 	
 	/**
 	 * @param id
@@ -33,6 +34,7 @@ public class Stats {
 		this.rxBytes = rxBytes;
 		this.txBytes = txBytes;
 		this.created = new Date(millis);
+		//this.updated = new Date(millis);
 	}
 
 	/**
@@ -41,10 +43,12 @@ public class Stats {
 	 * @param txBytes
 	 */
 	public Stats(Long millis, Long rxBytes, Long txBytes) {
+		this.id = null;
 		this.millis = millis;
 		this.rxBytes = rxBytes;
 		this.txBytes = txBytes;
 		this.created = new Date(millis);
+		//this.updated = new Date(millis);
 	}
 	
 	/**
@@ -56,6 +60,7 @@ public class Stats {
 		this.rxBytes = null;
 		this.txBytes = null;
 		this.created = null;
+		this.updated = null;
 	}
 
 	/**
@@ -128,6 +133,20 @@ public class Stats {
 		this.created = created;
 	}
 
+	/**
+	 * @return the updated
+	 */
+	public Date getUpdated() {
+		return updated;
+	}
+
+	/**
+	 * @param updated the updated to set
+	 */
+	public void setUpdated(Date updated) {
+		this.updated = updated;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -145,6 +164,10 @@ public class Stats {
 		buf.append(", created=");
 		synchronized (DF_FULL) {
 			buf.append(DF_FULL.format(created));
+		}
+		buf.append(", updated=");
+		synchronized (DF_FULL) {
+			buf.append(DF_FULL.format(updated));
 		}
 		buf.append("]");
 		return buf.toString();

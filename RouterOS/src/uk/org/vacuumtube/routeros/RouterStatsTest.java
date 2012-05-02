@@ -3,6 +3,7 @@
  */
 package uk.org.vacuumtube.routeros;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import uk.org.vacuumtube.routeros.spring.dao.StatsDao;
 import uk.org.vacuumtube.routeros.spring.jdbc.JdbcStatsDaoImpl;
 //import uk.org.vacuumtube.routeros.spring.service.RouterStatsService;
+import uk.org.vacuumtube.routeros.spring.service.RouterStatsService;
 
 /**
  * @author clivem
@@ -27,25 +29,26 @@ public class RouterStatsTest {
 		ClassPathXmlApplicationContext ctx  = new ClassPathXmlApplicationContext("classpath:db.xml");
 		ctx.registerShutdownHook();
 		
-		//RouterStatsService service = ctx.getBean("routerStatsService", RouterStatsService.class);
+		RouterStatsService service = ctx.getBean("routerStatsService", RouterStatsService.class);
 		
-		StatsDao service = JdbcStatsDaoImpl.getStatsDao(ctx);
+		//StatsDao service = JdbcStatsDaoImpl.getStatsDao(ctx);
 
 		int count = service.getCount();
 		LOGGER.info("Number of records in stats table: " + count);
 				
-		Stats stats = service.getStats(1L);
-		LOGGER.info(stats);
+		//Stats stats = service.getStats(1L);
+		//LOGGER.info(stats);
 		
 		List<Stats> statsList = service.getStatsList();
 		for (Stats s : statsList) {
 			LOGGER.info(s);
 		}
 		
-		stats = service.add(new Stats(System.currentTimeMillis(), 1L, 1L));		
+		Stats stats = service.add(new Stats(System.currentTimeMillis(), 1L, 1L));		
 		LOGGER.info(stats);
 
 		stats.setRxBytes(100L);
+		//stats.setUpdated(new Date(System.currentTimeMillis()));
 		service.update(stats);		
 		LOGGER.info(stats);
 		

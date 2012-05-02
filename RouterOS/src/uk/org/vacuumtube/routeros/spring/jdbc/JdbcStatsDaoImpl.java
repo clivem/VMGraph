@@ -64,8 +64,9 @@ public class JdbcStatsDaoImpl implements StatsDao {
 		parameters.put("rxbytes", stats.getRxBytes());
 		parameters.put("txbytes", stats.getTxBytes());
 		parameters.put("created", new Timestamp(stats.getCreated().getTime()));
-		Number newId = insertStats.executeAndReturnKey(parameters);
-		stats.setId(newId.longValue());
+		parameters.put("updated", new Timestamp(stats.getUpdated().getTime()));
+		Number id = insertStats.executeAndReturnKey(parameters);
+		stats.setId(id.longValue());
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Insert: " + stats);
 		}
@@ -96,10 +97,11 @@ public class JdbcStatsDaoImpl implements StatsDao {
 		map.put("rxbytes", stats.getRxBytes());
 		map.put("txbytes", stats.getTxBytes());
 		map.put("created", new Timestamp(stats.getCreated().getTime()));
+		map.put("updated", new Timestamp(stats.getUpdated().getTime()));
 		
 		int rowsAffected = namedParameterjdbcTemplate.update(
 				"update stats set millis = :millis, rxbytes = :rxbytes, txbytes = :txbytes, created = :created"
-				+ " where stats.id = :id",
+				+ ", updated = :updated where stats.id = :id",
 				new MapSqlParameterSource(map));
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Update: " + stats + ". Rows Affected: " + rowsAffected);
@@ -146,6 +148,7 @@ public class JdbcStatsDaoImpl implements StatsDao {
 			stats.setRxBytes(rs.getLong("rxbytes"));
 			stats.setTxBytes(rs.getLong("txbytes"));
 			stats.setCreated(new Date(rs.getTimestamp("created").getTime()));
+			stats.setUpdated(new Date(rs.getTimestamp("updated").getTime()));
 			return stats;
 		}
 	}

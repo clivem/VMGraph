@@ -6,6 +6,8 @@
   <id column="id" name="id" type="long">
    <generator class="identity"/>
   </id>
+  <timestamp column="updated" generated="always" name="updated"
+   source="db" unsaved-value="null"/>
   <property generated="never" lazy="false" name="millis">
    <column name="millis" sql-type="BIGINT"/>
   </property>
@@ -16,7 +18,7 @@
    <column name="txbytes" sql-type="BIGINT"/>
   </property>
   <property generated="never" lazy="false" name="created">
-   <column name="created" sql-type="BIGINT"/>
+   <column name="created" sql-type="TIMESTAMP"/>
   </property>
  </class>
 </hibernate-mapping>
