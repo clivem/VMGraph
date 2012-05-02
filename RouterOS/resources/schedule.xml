@@ -16,7 +16,7 @@
 
 	<bean id="testJobTriggerBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
 	  <property name="jobDetail" ref="testJob" />
-	  <property name="cronExpression" value="0,15,30,45 * * * * ?" />
+	  <property name="cronExpression" value="0 * * * * ?" />
 	</bean>
 	
 	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">

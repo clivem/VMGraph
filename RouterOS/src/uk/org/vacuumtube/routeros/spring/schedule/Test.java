@@ -31,6 +31,7 @@ public class Test {
 		ClassPathXmlApplicationContext ctx  = new ClassPathXmlApplicationContext("classpath:schedule.xml");
 		ctx.registerShutdownHook();
 		
+		@SuppressWarnings("unused")
 		Test test = new Test();
 		Scanner scanner = new Scanner(System.in);
 		while (true) {
