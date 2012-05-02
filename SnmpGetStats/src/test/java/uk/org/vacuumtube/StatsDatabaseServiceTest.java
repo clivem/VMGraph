@@ -27,32 +27,47 @@ public class StatsDatabaseServiceTest {
 	@Test
     public void testStartupOfSpringInegrationContext() throws Exception {
         @SuppressWarnings("unused")
-		final ApplicationContext context
-            = new ClassPathXmlApplicationContext("/META-INF/spring/db-context.xml",
-                                                  StatsDatabaseServiceTest.class);
+		final ApplicationContext context = new ClassPathXmlApplicationContext(
+				"/META-INF/spring/db-context.xml", StatsDatabaseServiceTest.class);
+        
         Thread.sleep(2000);
     }
 	
 	@Test
-	public void testGetStatsList() throws Exception {
-		final ApplicationContext context
-        	= new ClassPathXmlApplicationContext("/META-INF/spring/db-context.xml", StatsDatabaseServiceTest.class);
+	public void testGetStatsEntityCount() throws Exception {
+		final ApplicationContext context = new ClassPathXmlApplicationContext(
+				"/META-INF/spring/db-context.xml", StatsDatabaseServiceTest.class);
 		
 		StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
-		List<Stats> statsList = sds.getStatsList();
-		for (Stats stats : statsList) {
-			LOGGER.info(stats);
-		}
+		int count = sds.getCount();
+		Assert.assertTrue(count > -1);
 	}
 
 	@Test
-	public void testCreateStats() throws Exception {
-		final ApplicationContext context
-        	= new ClassPathXmlApplicationContext("/META-INF/spring/db-context.xml", StatsDatabaseServiceTest.class);
+	public void testGetStatsList() throws Exception {
+		final ApplicationContext context = new ClassPathXmlApplicationContext(
+				"/META-INF/spring/db-context.xml", StatsDatabaseServiceTest.class);
+		
+		StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
+		List<Stats> statsList = sds.getStatsList();
+		Assert.assertNotNull(statsList);
+	}
+
+	@Test
+	public void testCreateUpdateDeleteStats() throws Exception {
+		final ApplicationContext context = new ClassPathXmlApplicationContext(
+				"/META-INF/spring/db-context.xml", StatsDatabaseServiceTest.class);
 		
 		StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
 		Stats stats = new Stats(System.currentTimeMillis(), 1L, 1L);
-		sds.add(stats);
-		Assert.assertFalse(stats.getId() == -1L);
+		Long id = sds.add(stats);
+		Assert.assertNotNull("Save Stats object to db failed!", id);
+		stats.setRxBytes(1000L);
+		sds.update(stats);
+		stats = sds.getStats(id);
+		Assert.assertEquals("RxBytes value not updated!", new Long(1000L), stats.getRxBytes());
+		sds.delete(stats);
+		stats = sds.getStats(id);
+		Assert.assertNull("Delete stats object failed!", stats);
 	}
 }

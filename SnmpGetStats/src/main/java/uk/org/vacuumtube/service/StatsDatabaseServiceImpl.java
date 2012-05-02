@@ -49,11 +49,11 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	}
 
 	/* (non-Javadoc)
-	 * @see uk.org.vacuumtube.routeros.spring.dao.StatsDao#add(uk.org.vacuumtube.routeros.Stats)
+	 * @see uk.org.vacuumtube.dao.StatsDao#add(uk.org.vacuumtube.dao.Stats)
 	 */
 	@Override
 	@Transactional
-	public Stats add(Stats stats) {
+	public Long add(Stats stats) {
 		return statsDao.add(stats);
 	}
 

@@ -15,7 +15,7 @@ public interface StatsDao {
 	 * @param stats
 	 * @return
 	 */
-	public Stats add(Stats stats);
+	public Long add(Stats stats);
 	
 	/**
 	 * @param stats

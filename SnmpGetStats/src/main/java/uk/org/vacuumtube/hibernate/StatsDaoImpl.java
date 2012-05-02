@@ -47,9 +47,9 @@ public class StatsDaoImpl implements StatsDao {
 	 * @see uk.org.vacuumtube.routeros.spring.dao.StatsDao#add(uk.org.vacuumtube.routeros.spring.dao.Stats)
 	 */
 	@Override
-	public Stats add(Stats stats) {
-		sessionFactory.getCurrentSession().save(stats);
-		return stats;
+	public Long add(Stats stats) {
+		Long id = (Long) sessionFactory.getCurrentSession().save(stats);
+		return id;
 	}
 
 	/* (non-Javadoc)
@@ -65,25 +65,17 @@ public class StatsDaoImpl implements StatsDao {
 	 */
 	@Override
 	public void update(Stats stats) {
-		sessionFactory.getCurrentSession().saveOrUpdate(stats);
+		sessionFactory.getCurrentSession().update(stats);
 	}
 
 	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.routeros.spring.dao.StatsDao#getStats(long)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public Stats getStats(long id) {
-		List<Stats> list = sessionFactory.getCurrentSession()
-				.createQuery("from Stats stats where stats.id = :id")
-				.setLong("id", id)
-				.list();
-		
-		if (list.size() > 0) {
-			return list.get(0);
-		}
-		
-		return null;
+		Stats stats = (Stats) sessionFactory.getCurrentSession()
+				.get(Stats.class, id);
+		return stats;
 	}
 
 	/* (non-Javadoc)
