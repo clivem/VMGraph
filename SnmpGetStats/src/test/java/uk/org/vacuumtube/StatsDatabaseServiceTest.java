@@ -40,7 +40,7 @@ public class StatsDatabaseServiceTest {
 		
 		StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
 		int count = sds.getCount();
-		LOGGER.info("getCount(): " + count);
+		LOGGER.info("sds.getCount(): " + count);
 		Assert.assertTrue(count > -1);
 	}
 
@@ -53,7 +53,7 @@ public class StatsDatabaseServiceTest {
 		List<Stats> statsList = sds.getStatsList();
 		Assert.assertNotNull(statsList);
 		for (Stats stats : statsList) {
-			LOGGER.info("getStatsList(): " + stats);
+			LOGGER.info("sds.getStatsList(): " + stats);
 		}
 	}
 
@@ -65,17 +65,17 @@ public class StatsDatabaseServiceTest {
 		StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
 		Stats stats = new Stats(System.currentTimeMillis(), 1L, 1L);
 		Long id = sds.add(stats);
-		LOGGER.info("After add(): " + stats);
+		LOGGER.info("After sds.add(): " + stats);
 		Assert.assertNotNull("Save Stats object to db failed!", id);
 		stats.setRxBytes(1000L);
 		sds.update(stats);
-		LOGGER.info("After setRxBytes(1000L). update(): " + stats);
+		LOGGER.info("After stats.setRxBytes(1000L) -> sds.update(): " + stats);
 		stats = sds.getStats(id);
-		LOGGER.info("getStats(id=" + id + "): " + stats);
+		LOGGER.info("sds.getStats(id=" + id + "): " + stats);
 		Assert.assertEquals("RxBytes value not updated!", new Long(1000L), stats.getRxBytes());
 		sds.delete(stats);
 		stats = sds.getStats(id);
-		LOGGER.info("After delete(). getStats(id=" + id + "): " + stats);
+		LOGGER.info("After stats.delete() -> sds.getStats(id=" + id + "): " + stats);
 		Assert.assertNull("Delete stats object failed!", stats);
 	}
 }
