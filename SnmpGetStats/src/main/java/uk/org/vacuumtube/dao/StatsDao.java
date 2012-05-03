@@ -43,4 +43,22 @@ public interface StatsDao {
 	 * @return
 	 */
 	public List<Stats> getStatsList();
+	
+	/**
+	 * @param stats
+	 * @param note
+	 */
+	public void addNote(Stats stats, Notes note);
+
+
+	/**
+	 * @param note
+	 */
+	public void addNote(Notes note);
+	
+	/**
+	 * @param stats
+	 * @return
+	 */
+	public Stats mergeStats(Stats stats);
 }

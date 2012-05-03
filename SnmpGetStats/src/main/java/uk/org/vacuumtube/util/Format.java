@@ -21,6 +21,9 @@ public class Format {
 	private Format() {}
 	
 	public final static String formatDateFull(final Date date) {
+		if (date == null) {
+			return "null";
+		}
 		synchronized (DF_FULL) {
 			return DF_FULL.format(date);
 		}

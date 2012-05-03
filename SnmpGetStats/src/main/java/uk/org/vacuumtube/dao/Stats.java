@@ -4,10 +4,8 @@
 package uk.org.vacuumtube.dao;
 
 import java.util.Date;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import java.util.HashSet;
+import java.util.Set;
 
 import uk.org.vacuumtube.util.Format;
 
@@ -15,19 +13,18 @@ import uk.org.vacuumtube.util.Format;
  * @author clivem
  *
  */
-@Entity
 public class Stats {
 
     //protected final static DateFormat DF_FULL = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss,SSS z");
 
-	@Id
-	@GeneratedValue
 	protected Long id = null;
 	protected Long millis = null;
 	protected Long rxBytes = null;
 	protected Long txBytes = null;
 	protected Date created = null;
 	protected Date updated = null;
+	
+	protected Set<Notes> notes = new HashSet<Notes>();
 
 	/**
 	 * @param millis
@@ -131,6 +128,20 @@ public class Stats {
 		this.updated = updated;
 	}
 
+	/**
+	 * @return the notes
+	 */
+	public Set<Notes> getNotes() {
+		return notes;
+	}
+
+	/**
+	 * @param notes the notes to set
+	 */
+	public void setNotes(Set<Notes> notes) {
+		this.notes = notes;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -138,12 +149,9 @@ public class Stats {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((created == null) ? 0 : created.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((millis == null) ? 0 : millis.hashCode());
 		result = prime * result + ((rxBytes == null) ? 0 : rxBytes.hashCode());
 		result = prime * result + ((txBytes == null) ? 0 : txBytes.hashCode());
-		result = prime * result + ((updated == null) ? 0 : updated.hashCode());
 		return result;
 	}
 
@@ -162,20 +170,6 @@ public class Stats {
 			return false;
 		}
 		Stats other = (Stats) obj;
-		if (created == null) {
-			if (other.created != null) {
-				return false;
-			}
-		} else if (!created.equals(other.created)) {
-			return false;
-		}
-		if (id == null) {
-			if (other.id != null) {
-				return false;
-			}
-		} else if (!id.equals(other.id)) {
-			return false;
-		}
 		if (millis == null) {
 			if (other.millis != null) {
 				return false;
@@ -195,13 +189,6 @@ public class Stats {
 				return false;
 			}
 		} else if (!txBytes.equals(other.txBytes)) {
-			return false;
-		}
-		if (updated == null) {
-			if (other.updated != null) {
-				return false;
-			}
-		} else if (!updated.equals(other.updated)) {
 			return false;
 		}
 		return true;
@@ -225,7 +212,9 @@ public class Stats {
 		buf.append(Format.formatDateFull(created));
 		buf.append(", updated=");
 		buf.append(Format.formatDateFull(updated));
+		buf.append(", notes=");
+		buf.append(notes);
 		buf.append("]");
 		return buf.toString();
-	}
+	}	
 }

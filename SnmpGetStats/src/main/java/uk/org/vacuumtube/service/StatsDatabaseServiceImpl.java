@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.org.vacuumtube.dao.Notes;
 import uk.org.vacuumtube.dao.Stats;
 import uk.org.vacuumtube.dao.StatsDao;
 
@@ -49,6 +50,24 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	}
 
 	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.StatsDao#addNote(uk.org.vacuumtube.dao.Stats, uk.org.vacuumtube.dao.Notes)
+	 */
+	@Override
+	@Transactional
+	public void addNote(Stats stats, Notes note) {
+		statsDao.addNote(stats, note);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.StatsDao#addNote(uk.org.vacuumtube.dao.Notes)
+	 */
+	@Override
+	@Transactional
+	public void addNote(Notes note) {
+		statsDao.addNote(note);
+	}
+
+	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.dao.StatsDao#add(uk.org.vacuumtube.dao.Stats)
 	 */
 	@Override
@@ -73,6 +92,15 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	@Transactional
 	public void update(Stats stats) {
 		statsDao.update(stats);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.StatsDao#mergeStats(uk.org.vacuumtube.dao.Stats)
+	 */
+	@Override
+	@Transactional
+	public Stats mergeStats(Stats stats) {
+		return statsDao.mergeStats(stats);
 	}
 
 	/* (non-Javadoc)
