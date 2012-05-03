@@ -24,7 +24,9 @@
 	      <value>classpath:META-INF/snmp.properties</value>  
 	    </list>  
 	  </property>  
-	  <property name="ignoreUnresolvablePlaceholders">true</property>
+	  <property name="ignoreUnresolvablePlaceholders">
+	    <value>true</value>
+	  </property>
 	</bean>  
 
 	<bean name="snmpStatsJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">

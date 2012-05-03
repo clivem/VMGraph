@@ -20,7 +20,9 @@
 	      <value>classpath:META-INF/jdbc.properties</value>  
 	    </list>  
 	  </property>  
-	  <property name="ignoreUnresolvablePlaceholders">true</property>
+	  <property name="ignoreUnresolvablePlaceholders">
+	    <value>true</value>
+	  </property>
 	</bean>  
 
 	<!--
