@@ -28,7 +28,7 @@
 	    <value>true</value>
 	  </property>
 	</bean>  
-
+<!--
 	<bean name="snmpStatsJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
 	  <property name="jobClass" value="uk.org.vacuumtube.schedule.GetSnmpInterfaceStatisticsJob" />
 	  <property name="jobDataAsMap">
@@ -52,16 +52,47 @@
 	   </map>
 	  </property>
 	</bean>
-
-	<bean id="snmpStatsJobTriggerBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
-	  <property name="jobDetail" ref="snmpStatsJobDetail" />
-	  <property name="cronExpression" value="0,15,30,45 * * * * ?" />
+-->
+	<bean name="snmpStatsJobDetail" class="org.quartz.impl.JobDetailImpl">
+	  <property name="jobClass" value="uk.org.vacuumtube.schedule.GetSnmpInterfaceStatisticsJob" />
+	  <property name="name" value="GetSnmpInterfaceStatisticsJob" />
+	  <property name="jobDataMap">
+	   <map>
+	     <entry>
+	       <key><value>address</value></key>
+	       <value>${snmp.address}</value>
+	     </entry>
+	     <entry>
+	       <key><value>bytesInOid</value></key>
+	       <value>${snmp.bytesInOid}</value>
+	     </entry>
+	     <entry>
+	       <key><value>bytesOutOid</value></key>
+	       <value>${snmp.bytesOutOid}</value>
+	     </entry>
+	     <entry>
+	       <key><value>rrdDbFileName</value></key>
+	       <value>${snmp.rrdDbFileName}</value>
+	     </entry>
+	   </map>
+	  </property>
 	</bean>
-	
+
+	<bean id="snmpStatsJobCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	  <property name="jobDetail" ref="snmpStatsJobDetail" />
+	  <property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+<!--	
+	<bean id="snmpStatsJobSimpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+	  <property name="jobDetail" ref="snmpStatsJobDetail"/>
+	  <property name="startDelay" value="10000"/>
+	  <property name="repeatInterval" value="60000"/>
+	</bean>
+-->	
 	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 	  <property name="triggers">
 	    <list>
-	      <ref bean="snmpStatsJobTriggerBean" />
+	      <ref bean="snmpStatsJobCronTrigger" />
 	    </list>
 	  </property>
 	</bean>

@@ -6,10 +6,11 @@ package uk.org.vacuumtube.schedule;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.StatefulJob;
+//import org.quartz.StatefulJob;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import uk.org.vacuumtube.snmp.GetSnmpInterfaceStatistics;
@@ -18,10 +19,21 @@ import uk.org.vacuumtube.snmp.GetSnmpInterfaceStatistics;
  * @author clivem
  *
  */
-public class GetSnmpInterfaceStatisticsJob extends QuartzJobBean implements StatefulJob {
-
+//public class GetSnmpInterfaceStatisticsJob extends QuartzJobBean implements StatefulJob {
+@DisallowConcurrentExecution
+public class GetSnmpInterfaceStatisticsJob extends QuartzJobBean {
+	
 	private static final Logger LOGGER = Logger.getLogger(GetSnmpInterfaceStatisticsJob.class);
 
+	private final static String PREV_TS = "prevTs";
+	private final static String PREV_RX_BYTES = "prevRxBytes";
+	private final static String PREV_TX_BYTES = "prevTxBytes";
+	
+	private final static String SNMP_ADDRESS = "address";
+	private final static String SNMP_BYTES_IN_OID = "bytesInOid";
+	private final static String SNMP_BYTES_OUT_OID = "bytesOutOid";
+	private final static String SNMP_RRDDB_FILENAME = "rrdDbFileName";
+	
 	/**
 	 * 
 	 */
@@ -43,25 +55,31 @@ public class GetSnmpInterfaceStatisticsJob extends QuartzJobBean implements Stat
 
 		JobDataMap jdm = context.getJobDetail().getJobDataMap();
 
-		GetSnmpInterfaceStatistics getStats = new GetSnmpInterfaceStatistics(jdm.getString("address"), 
-				jdm.getString("bytesInOid"), jdm.getString("bytesOutOid"), jdm.getString("rrdDbFileName"));
-		
-		try {
-			getStats.setTimestampPrev(jdm.getLong("prevTs"));
-		} catch (Exception e) {
-			getStats.setTimestampPrev(-1L);
+		if (!jdm.containsKey(SNMP_ADDRESS) || !jdm.containsKey(SNMP_BYTES_IN_OID) || 
+				!jdm.containsKey(SNMP_BYTES_OUT_OID) || !jdm.containsKey(SNMP_RRDDB_FILENAME)) {
+			throw new JobExecutionException("SNMP Properties not set!", false);
 		}
 		
-		try {
-			getStats.setRxBytesPrev(jdm.getLong("prevRxBytes"));
-		} catch (Exception e) {
-			getStats.setRxBytesPrev(-1L);
+		GetSnmpInterfaceStatistics getStats = new GetSnmpInterfaceStatistics(
+				jdm.getString(SNMP_ADDRESS), jdm.getString(SNMP_BYTES_IN_OID), 
+				jdm.getString(SNMP_BYTES_OUT_OID), jdm.getString(SNMP_RRDDB_FILENAME));
+		
+		if (jdm.containsKey(PREV_TS)) {
+			try {
+				getStats.setTimestampPrev(jdm.getLong(PREV_TS));
+			} catch (Exception e) {}
 		}
 		
-		try {
-			getStats.setTxBytesPrev(jdm.getLong("prevTxBytes"));
-		} catch (Exception e) {
-			getStats.setTxBytesPrev(-1L);
+		if (jdm.containsKey(PREV_RX_BYTES)) {
+			try {
+				getStats.setRxBytesPrev(jdm.getLong(PREV_RX_BYTES));
+			} catch (Exception e) {}
+		}
+		
+		if (jdm.containsKey(PREV_TX_BYTES)) {
+			try {
+				getStats.setTxBytesPrev(jdm.getLong(PREV_TX_BYTES));
+			} catch (Exception e) {}
 		}
 		
 		try {
@@ -72,9 +90,9 @@ public class GetSnmpInterfaceStatisticsJob extends QuartzJobBean implements Stat
 			getStats.close();
 		}
 
-		jdm.put("prevTs", getStats.getTimestampPrev());
-		jdm.put("prevRxBytes", getStats.getRxBytesPrev());
-		jdm.put("prevTxBytes", getStats.getTxBytesPrev());
+		jdm.put(PREV_TS, getStats.getTimestampPrev());
+		jdm.put(PREV_RX_BYTES, getStats.getRxBytesPrev());
+		jdm.put(PREV_TX_BYTES, getStats.getTxBytesPrev());
 		
 		LOGGER.info("Timer Job: Finished.");
 
