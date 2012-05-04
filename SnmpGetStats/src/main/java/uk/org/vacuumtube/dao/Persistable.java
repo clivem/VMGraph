@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.org.vacuumtube.hibernate;
+package uk.org.vacuumtube.dao;
 
 import java.util.Date;
 

@@ -3,7 +3,6 @@
  */
 package uk.org.vacuumtube.dao;
 
-import uk.org.vacuumtube.hibernate.Persistable;
 import uk.org.vacuumtube.util.Format;
 
 /**

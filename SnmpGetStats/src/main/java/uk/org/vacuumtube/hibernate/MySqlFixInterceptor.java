@@ -8,6 +8,8 @@ import java.util.Iterator;
 
 import org.hibernate.EmptyInterceptor;
 
+import uk.org.vacuumtube.dao.Persistable;
+
 /**
  * @author clivem
  *

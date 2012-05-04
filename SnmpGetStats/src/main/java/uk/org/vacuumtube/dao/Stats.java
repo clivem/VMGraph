@@ -6,7 +6,6 @@ package uk.org.vacuumtube.dao;
 import java.util.HashSet;
 import java.util.Set;
 
-import uk.org.vacuumtube.hibernate.Persistable;
 import uk.org.vacuumtube.util.Format;
 
 /**
