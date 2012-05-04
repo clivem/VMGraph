@@ -153,7 +153,18 @@ public class Notes {
 	 */
 	@Override
 	public String toString() {
-		return "Notes[id=" + id + ", note=" + note + ", created=" + Format.formatDateFull(created)
-				+ ", updated=" + Format.formatDateFull(updated) + ", stats.id=" + stats.getId() + "]";
+		StringBuffer buf = new StringBuffer();
+		buf.append("Notes[id=");
+		buf.append(id);
+		buf.append(", note=");
+		buf.append(note);
+		buf.append(", created=");
+		buf.append(Format.formatDateFull(created));
+		buf.append(", updated=");
+		buf.append(Format.formatDateFull(updated));
+		buf.append(", stats=");
+		buf.append(((stats != null) ? "Stats[id=" + stats.getId() + "]" : "null"));
+		buf.append("]");
+		return buf.toString();
 	}	
 }

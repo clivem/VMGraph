@@ -30,7 +30,7 @@
 	</bean>  
 
 	<bean name="snmpStatsJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
-	  <property name="jobClass" value="uk.org.vacuumtube.schedule.GetSnmpInterfaceStatisticsJob" />
+	  <property name="jobClass" value="uk.org.vacuumtube.schedule.test.TestJob" />
 	  <property name="jobDataAsMap">
 	   <map>
 	     <entry>

@@ -12,7 +12,7 @@
    <column name="CREATED" sql-type="TIMESTAMP"/>
   </property>
   <property generated="never" lazy="false" name="note" not-null="true" type="string">
-   <column name="NOTE" sql-type="VARCHAR"/>
+   <column name="NOTE" sql-type="VARCHAR(100)"/>
   </property>  
   <many-to-one name="stats" 
     class="uk.org.vacuumtube.dao.Stats" 

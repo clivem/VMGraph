@@ -19,6 +19,10 @@ import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.Variable;
 
+import uk.org.vacuumtube.SnmpGetStats;
+import uk.org.vacuumtube.dao.Stats;
+import uk.org.vacuumtube.service.StatsDatabaseService;
+import uk.org.vacuumtube.service.StatsDatabaseServiceImpl;
 import uk.org.vacuumtube.util.ByteFormat;
 
 /**
@@ -160,10 +164,28 @@ public class GetSnmpInterfaceStatistics {
 							if (rrdDb != null) {
 								try {
 									String update = Math.round(timestamp / 1000.0) + ":" + rxBytes + ":" + txBytes;
-									logger.info("Updating RRD: " + update);
+									if (logger.isDebugEnabled()) {
+										logger.debug("Updating RRD: " + update);
+									}
 									rrdDb.createSample().setAndUpdate(update);
+									logger.info("Updated RRD: " + update);
 								} catch (Exception ioe) {
 									logger.warn("Error updating RRD!", ioe);
+								}
+							}
+							
+							if (true) {
+								Stats stats = new Stats(timestamp, rxBytes, txBytes);
+								try {
+									StatsDatabaseService sds = 
+											StatsDatabaseServiceImpl.getStatsDatabaseService(SnmpGetStats.CONTEXT);
+									if (logger.isDebugEnabled()) {
+										logger.debug("Updating MySQL: " + stats);
+									}
+									sds.add(stats);
+									logger.info("Updated MySQL: " + stats);
+								} catch (Exception e) {
+									logger.warn("Error updating MySQL: " + stats, e);
 								}
 							}
 							
@@ -283,5 +305,4 @@ public class GetSnmpInterfaceStatistics {
 	 */
 	public static void main(String[] args) {
 	}
-
 }

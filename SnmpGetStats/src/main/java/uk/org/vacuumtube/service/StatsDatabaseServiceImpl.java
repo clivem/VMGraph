@@ -99,8 +99,8 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	 */
 	@Override
 	@Transactional
-	public Stats mergeStats(Stats stats) {
-		return statsDao.mergeStats(stats);
+	public Stats merge(Stats stats) {
+		return statsDao.merge(stats);
 	}
 
 	/* (non-Javadoc)

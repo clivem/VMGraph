@@ -60,5 +60,5 @@ public interface StatsDao {
 	 * @param stats
 	 * @return
 	 */
-	public Stats mergeStats(Stats stats);
+	public Stats merge(Stats stats);
 }

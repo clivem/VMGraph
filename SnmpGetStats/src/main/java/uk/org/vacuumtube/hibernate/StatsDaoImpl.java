@@ -106,12 +106,12 @@ public class StatsDaoImpl implements StatsDao {
 	}
 
 	/* (non-Javadoc)
-	 * @see uk.org.vacuumtube.dao.StatsDao#mergeStats(uk.org.vacuumtube.dao.Stats)
+	 * @see uk.org.vacuumtube.dao.StatsDao#merge(uk.org.vacuumtube.dao.Stats)
 	 */
 	@Override
-	public Stats mergeStats(Stats stats) {
+	public Stats merge(Stats stats) {
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("mergeStats(stats=" + stats + ")");
+			LOGGER.trace("merge(stats=" + stats + ")");
 		}
 		return (Stats) sessionFactory.getCurrentSession().merge(stats);
 	}

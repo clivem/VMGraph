@@ -6,6 +6,7 @@ package uk.org.vacuumtube;
 import java.util.Scanner;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -15,6 +16,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class SnmpGetStats {
 
 	private final static Logger LOGGER = Logger.getLogger(SnmpGetStats.class);
+
+	public static ApplicationContext CONTEXT = null;
 	
 	public SnmpGetStats() {
 		Runtime.getRuntime().addShutdownHook(new SnmpGetStatsClose());
@@ -28,9 +31,11 @@ public class SnmpGetStats {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ClassPathXmlApplicationContext ctx  = 
+		final ClassPathXmlApplicationContext ctx = 
 				new ClassPathXmlApplicationContext("classpath:META-INF/spring/*-context.xml");
 		ctx.registerShutdownHook();
+		
+		CONTEXT = ctx;
 		
 		@SuppressWarnings("unused")
 		SnmpGetStats snmpGetStats = new SnmpGetStats();

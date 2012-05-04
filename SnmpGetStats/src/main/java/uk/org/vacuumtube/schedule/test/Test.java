@@ -29,7 +29,7 @@ public class Test {
 	 */
 	public static void main(String[] args) {
 		ClassPathXmlApplicationContext ctx  = 
-				new ClassPathXmlApplicationContext("classpath:META-INF/spring/*-context.xml");
+				new ClassPathXmlApplicationContext("classpath:META-INF/spring/test/*-context.xml");
 		ctx.registerShutdownHook();
 		
 		@SuppressWarnings("unused")
