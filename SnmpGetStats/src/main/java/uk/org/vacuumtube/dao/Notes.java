@@ -12,10 +12,7 @@ import uk.org.vacuumtube.util.Format;
  */
 public class Notes extends Persistable {
 
-	//protected Long id = null;
 	protected String note = null;
-	//protected Date created = null;
-	//protected Date updated = null;
 	protected Stats stats = null;
 	
 	/**
@@ -31,23 +28,8 @@ public class Notes extends Persistable {
 	 * 
 	 */
 	public Notes() {
+		super();
 	}
-
-	/**
-	 * @return the id
-	 *
-	public Long getId() {
-		return id;
-	}
-	*/
-
-	/**
-	 * @param id the id to set
-	 *
-	public void setId(Long id) {
-		this.id = id;
-	}
-	*/
 
 	/**
 	 * @return the note
@@ -62,38 +44,6 @@ public class Notes extends Persistable {
 	public void setNote(String note) {
 		this.note = note;
 	}
-
-	/**
-	 * @return the created
-	 *
-	public Date getCreated() {
-		return created;
-	}
-	*/
-
-	/**
-	 * @param created the created to set
-	 *
-	public void setCreated(Date created) {
-		this.created = created;
-	}
-	*/
-
-	/**
-	 * @return the updated
-	 *
-	public Date getUpdated() {
-		return updated;
-	}
-	*/
-
-	/**
-	 * @param updated the updated to set
-	 *
-	public void setUpdated(Date updated) {
-		this.updated = updated;
-	}
-	*/
 
 	/**
 	 * @return the stats

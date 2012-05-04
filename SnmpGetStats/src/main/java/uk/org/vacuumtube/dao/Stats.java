@@ -15,16 +15,11 @@ import uk.org.vacuumtube.util.Format;
  */
 public class Stats extends Persistable {
 
-    //protected final static DateFormat DF_FULL = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss,SSS z");
-
-	//protected Long id = null;
 	protected Long millis = null;
 	protected Long rxBytes = null;
 	protected Long txBytes = null;
-	//protected Date created = null;
-	//protected Date updated = null;
 	
-	protected Set<Notes> notes = new HashSet<Notes>();
+	protected Set<Notes> notes = null;
 
 	/**
 	 * @param millis
@@ -36,29 +31,15 @@ public class Stats extends Persistable {
 		this.millis = millis;
 		this.rxBytes = rxBytes;
 		this.txBytes = txBytes;
+		this.notes = new HashSet<Notes>();
 	}
 	
 	/**
 	 * 
 	 */
 	public Stats() {
+		super();
 	}
-
-	/**
-	 * @return the id
-	 *
-	public Long getId() {
-		return id;
-	}
-	*/
-
-	/**
-	 * @param id the id to set
-	 *
-	public void setId(Long id) {
-		this.id = id;
-	}
-	*/
 
 	/**
 	 * @return the millis
@@ -101,38 +82,6 @@ public class Stats extends Persistable {
 	public void setTxBytes(Long txBytes) {
 		this.txBytes = txBytes;
 	}
-
-	/**
-	 * @return the created
-	 *
-	public Date getCreated() {
-		return created;
-	}
-	*/
-
-	/**
-	 * @param created the created to set
-	 *
-	public void setCreated(Date created) {
-		this.created = created;
-	}
-	*/
-
-	/**
-	 * @return the updated
-	 *
-	public Date getUpdated() {
-		return updated;
-	}
-	*/
-
-	/**
-	 * @param updated the updated to set
-	 *
-	public void setUpdated(Date updated) {
-		this.updated = updated;
-	}
-	*/
 
 	/**
 	 * @return the notes
