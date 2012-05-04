@@ -36,8 +36,11 @@
 		<property name="password" value="${jdbc.password}"/>
 	</bean>
 	
+	<bean id="myInterceptor" class="uk.org.vacuumtube.hibernate.MySqlFixInterceptor"/>
+	
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"/>
+		<property name="entityInterceptor" ref="myInterceptor"/>
 		<property name="mappingResources">
 		  <list>
 		    <value>META-INF/stats.hbm.xml</value>

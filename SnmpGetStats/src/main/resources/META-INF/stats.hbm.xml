@@ -6,7 +6,7 @@
   <id column="STATSID" name="id" type="long">
    <generator class="identity"/>
   </id>
-  <timestamp column="UPDATED" generated="always" name="updated"
+  <timestamp column="UPDATED" source="vm" name="updated"
    unsaved-value="null"/>
   <property generated="never" lazy="false" name="millis" not-null="true" type="long">
    <column name="MILLIS" sql-type="BIGINT(20)"/>

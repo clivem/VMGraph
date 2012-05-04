@@ -60,55 +60,66 @@ public class StatsDatabaseServiceTest {
 
 	@Test
 	public void testCreateUpdateDeleteStats() throws Exception {
-		final ApplicationContext context = new ClassPathXmlApplicationContext(
-				"/META-INF/spring/db-context.xml", StatsDatabaseServiceTest.class);
-		
-		StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
-		
-		// Add
-		Stats stats = new Stats(System.currentTimeMillis(), 1L, 1L);
-		Long id = sds.add(stats);
-		LOGGER.info("After sds.add(): " + stats);
-		Assert.assertNotNull("Save Stats object to db failed!", id);
-		
-		// Update
-		stats.setRxBytes(1000L);
-		sds.update(stats);
-		LOGGER.info("After stats.setRxBytes(1000L) -> sds.update(): " + stats);
-		stats = sds.getStats(id);
-		LOGGER.info("sds.getStats(id=" + id + "): " + stats);
-		Assert.assertEquals("RxBytes value not updated!", new Long(1000L), stats.getRxBytes());
-		
-		// Delete
-		sds.delete(stats);
-		stats = sds.getStats(id);
-		LOGGER.info("After stats.delete() -> sds.getStats(id=" + id + "): " + stats);
-		Assert.assertNull("Delete stats object failed!", stats);
+		try {
+			final ApplicationContext context = new ClassPathXmlApplicationContext(
+					"/META-INF/spring/db-context.xml", StatsDatabaseServiceTest.class);
+			
+			StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
+			
+			// Add
+			Stats stats = new Stats(System.currentTimeMillis(), 1L, 1L);
+			Long id = sds.add(stats);
+			LOGGER.info("After sds.add(): " + stats);
+			Assert.assertNotNull("Save Stats object to db failed!", id);
+			
+			// Update
+			stats.setRxBytes(1000L);
+			sds.update(stats);
+			LOGGER.info("After stats.setRxBytes(1000L) -> sds.update(): " + stats);
+			stats = sds.getStats(id);
+			LOGGER.info("sds.getStats(id=" + id + "): " + stats);
+			Assert.assertEquals("RxBytes value not updated!", new Long(1000L), stats.getRxBytes());
+			
+			// Delete
+			sds.delete(stats);
+			stats = sds.getStats(id);
+			LOGGER.info("After stats.delete() -> sds.getStats(id=" + id + "): " + stats);
+			Assert.assertNull("Delete stats object failed!", stats);
+		} catch (Exception e) {
+			LOGGER.warn(null, e);
+			throw e;
+		}
 	}
 
 	@Test
 	public void testAddNoteToStats() throws Exception {
-		final ApplicationContext context = new ClassPathXmlApplicationContext(
-				"/META-INF/spring/db-context.xml", StatsDatabaseServiceTest.class);
-		
-		StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
-		
-		// Add
-		Stats stats = new Stats(System.currentTimeMillis(), 1L, 1L);
-		Long id = sds.add(stats);
-		LOGGER.info("After addting to db with sds.add(): " + stats);
-		Assert.assertNotNull("Save Stats object to db failed!", id);
-		
-		// Add note and merge
-		stats.getNotes().add(new Notes(stats, "test_1"));
-		stats = sds.merge(stats);
-		LOGGER.info("After adding note and sds.merge(stats): " + stats);
-		Assert.assertNotNull(stats);
-		
-		// Delete
-		sds.delete(stats);
-		stats = sds.getStats(id);
-		LOGGER.info("After stats.delete() -> sds.getStats(id=" + id + "): " + stats);
-		Assert.assertNull("Delete stats object failed!", stats);
+
+		try {
+			final ApplicationContext context = new ClassPathXmlApplicationContext(
+					"/META-INF/spring/db-context.xml", StatsDatabaseServiceTest.class);
+
+			StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
+			
+			// Add
+			Stats stats = new Stats(System.currentTimeMillis(), 1L, 1L);
+			Long id = sds.add(stats);
+			LOGGER.info("After addting to db with sds.add(): " + stats);
+			Assert.assertNotNull("Save Stats object to db failed!", id);
+			
+			// Add note and merge
+			stats.getNotes().add(new Notes(stats, "test_1"));
+			stats = sds.merge(stats);
+			LOGGER.info("After adding note and sds.merge(stats): " + stats);
+			Assert.assertNotNull(stats);
+			
+			// Delete
+			sds.delete(stats);
+			stats = sds.getStats(id);
+			LOGGER.info("After stats.delete() -> sds.getStats(id=" + id + "): " + stats);
+			Assert.assertNull("Delete stats object failed!", stats);
+		} catch (Exception e) {
+			LOGGER.warn(null, e);
+			throw e;
+		}
 	}
 }

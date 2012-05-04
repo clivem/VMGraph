@@ -3,26 +3,26 @@
  */
 package uk.org.vacuumtube.dao;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import uk.org.vacuumtube.hibernate.Persistable;
 import uk.org.vacuumtube.util.Format;
 
 /**
  * @author clivem
  *
  */
-public class Stats {
+public class Stats extends Persistable {
 
     //protected final static DateFormat DF_FULL = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss,SSS z");
 
-	protected Long id = null;
+	//protected Long id = null;
 	protected Long millis = null;
 	protected Long rxBytes = null;
 	protected Long txBytes = null;
-	protected Date created = null;
-	protected Date updated = null;
+	//protected Date created = null;
+	//protected Date updated = null;
 	
 	protected Set<Notes> notes = new HashSet<Notes>();
 
@@ -32,10 +32,10 @@ public class Stats {
 	 * @param txBytes
 	 */
 	public Stats(Long millis, Long rxBytes, Long txBytes) {
+		super(millis);
 		this.millis = millis;
 		this.rxBytes = rxBytes;
 		this.txBytes = txBytes;
-		this.created = new Date(millis);
 	}
 	
 	/**
@@ -46,17 +46,19 @@ public class Stats {
 
 	/**
 	 * @return the id
-	 */
+	 *
 	public Long getId() {
 		return id;
 	}
+	*/
 
 	/**
 	 * @param id the id to set
-	 */
+	 *
 	public void setId(Long id) {
 		this.id = id;
 	}
+	*/
 
 	/**
 	 * @return the millis
@@ -102,31 +104,35 @@ public class Stats {
 
 	/**
 	 * @return the created
-	 */
+	 *
 	public Date getCreated() {
 		return created;
 	}
+	*/
 
 	/**
 	 * @param created the created to set
-	 */
+	 *
 	public void setCreated(Date created) {
 		this.created = created;
 	}
+	*/
 
 	/**
 	 * @return the updated
-	 */
+	 *
 	public Date getUpdated() {
 		return updated;
 	}
+	*/
 
 	/**
 	 * @param updated the updated to set
-	 */
+	 *
 	public void setUpdated(Date updated) {
 		this.updated = updated;
 	}
+	*/
 
 	/**
 	 * @return the notes

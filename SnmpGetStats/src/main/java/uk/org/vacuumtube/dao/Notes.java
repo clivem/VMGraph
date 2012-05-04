@@ -3,29 +3,28 @@
  */
 package uk.org.vacuumtube.dao;
 
-import java.util.Date;
-
+import uk.org.vacuumtube.hibernate.Persistable;
 import uk.org.vacuumtube.util.Format;
 
 /**
  * @author clivem
  *
  */
-public class Notes {
+public class Notes extends Persistable {
 
-	protected Long id = null;
+	//protected Long id = null;
 	protected String note = null;
-	protected Date created = null;
-	protected Date updated = null;
+	//protected Date created = null;
+	//protected Date updated = null;
 	protected Stats stats = null;
 	
 	/**
 	 * @param note
 	 */
 	public Notes(Stats stats, String note) {
+		super(System.currentTimeMillis());
 		this.note = note;
 		this.stats = stats;
-		this.created = new Date(System.currentTimeMillis());
 	}
 
 	/**
@@ -36,17 +35,19 @@ public class Notes {
 
 	/**
 	 * @return the id
-	 */
+	 *
 	public Long getId() {
 		return id;
 	}
+	*/
 
 	/**
 	 * @param id the id to set
-	 */
+	 *
 	public void setId(Long id) {
 		this.id = id;
 	}
+	*/
 
 	/**
 	 * @return the note
@@ -64,31 +65,35 @@ public class Notes {
 
 	/**
 	 * @return the created
-	 */
+	 *
 	public Date getCreated() {
 		return created;
 	}
+	*/
 
 	/**
 	 * @param created the created to set
-	 */
+	 *
 	public void setCreated(Date created) {
 		this.created = created;
 	}
+	*/
 
 	/**
 	 * @return the updated
-	 */
+	 *
 	public Date getUpdated() {
 		return updated;
 	}
+	*/
 
 	/**
 	 * @param updated the updated to set
-	 */
+	 *
 	public void setUpdated(Date updated) {
 		this.updated = updated;
 	}
+	*/
 
 	/**
 	 * @return the stats
