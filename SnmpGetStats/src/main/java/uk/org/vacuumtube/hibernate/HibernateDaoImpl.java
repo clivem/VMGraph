@@ -16,13 +16,14 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+import uk.org.vacuumtube.dao.HibernateDao;
 import uk.org.vacuumtube.exception.InfrastructureException;
 
 /**
  * @author clivem
  *
  */
-public class HibernateDaoImpl {
+public class HibernateDaoImpl implements HibernateDao {
 
 	private SessionFactory sessionFactory;
 	
