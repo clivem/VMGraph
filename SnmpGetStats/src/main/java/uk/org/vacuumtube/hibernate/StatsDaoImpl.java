@@ -152,11 +152,17 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 		}
 
 		try {
-			return getSession()
-					.createQuery("from Stats stats order by stats.id")
+			List<Stats> statsList = getSession()
+					.createQuery("from Stats stats ORDER BY stats.id")
 					.list();
+			/*
+			for (Stats stat : statsList) {
+				stat.getNotes().size();
+			}
+			*/
+			return statsList;
 		} catch (HibernateException he) {
-			throw new HibernateException(he);
+			throw new InfrastructureException(he);
 		}
 	}
 	

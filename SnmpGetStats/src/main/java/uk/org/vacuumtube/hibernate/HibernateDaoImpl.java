@@ -28,15 +28,15 @@ public class HibernateDaoImpl implements HibernateDao {
 	private SessionFactory sessionFactory;
 	
     /**
-     * @throws InfrastructureException
+     * 
      */
-    public HibernateDaoImpl() throws InfrastructureException {
+    public HibernateDaoImpl(){
     }
 
 	/**
 	 * @return Returns the sessionFactory.
 	 */
-	public SessionFactory getSessionFactory() throws InfrastructureException {
+	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
 
@@ -50,7 +50,7 @@ public class HibernateDaoImpl implements HibernateDao {
 	/**
 	 * @return Returns the current session associated with the thread or transaction
 	 */
-	public Session getSession() throws InfrastructureException {
+	public Session getSession() {
 		return getSessionFactory().getCurrentSession();
 	}
 
@@ -122,30 +122,35 @@ public class HibernateDaoImpl implements HibernateDao {
      * @param lockMode
      * @return
      */
-    public List<?> findByNamedParam(String queryString, Map<String, Object> parameters, String alias, LockMode lockMode) {
-    	Query query = getSession().createQuery(queryString);
-    	
-    	for (Iterator<Entry<String, Object>> it = parameters.entrySet().iterator(); it.hasNext();) {
-			Entry<String, Object> entry = it.next();
-			String name = entry.getKey();
-			Object value = entry.getValue();
-			
-			if (value == null) {
-				query.setParameter(name, value);
-			} else if (value instanceof Collection) {
-				query.setParameterList(name, (Collection<?>)value);
-			} else if (value.getClass().isArray()) {
-				query.setParameterList(name, (Object[])value);
-			} else {
-				query.setParameter(name, value);
+    public List<?> findByNamedParam(String queryString, Map<String, Object> parameters, String alias, LockMode lockMode) 
+    		throws InfrastructureException {
+    	try {
+	    	Query query = getSession().createQuery(queryString);
+	    	
+	    	for (Iterator<Entry<String, Object>> it = parameters.entrySet().iterator(); it.hasNext();) {
+				Entry<String, Object> entry = it.next();
+				String name = entry.getKey();
+				Object value = entry.getValue();
+				
+				if (value == null) {
+					query.setParameter(name, value);
+				} else if (value instanceof Collection) {
+					query.setParameterList(name, (Collection<?>)value);
+				} else if (value.getClass().isArray()) {
+					query.setParameterList(name, (Object[])value);
+				} else {
+					query.setParameter(name, value);
+				}
 			}
-		}
-    	
-    	if (alias != null) {    	
-    		query.setLockMode(alias, lockMode);
+	    	
+	    	if (alias != null) {    	
+	    		query.setLockMode(alias, lockMode);
+	    	}
+	    	
+	    	return query.list();
+    	} catch (HibernateException he) {
+    		throw new InfrastructureException(he);
     	}
-    	
-    	return query.list();
     }
 
     /**
@@ -204,7 +209,7 @@ public class HibernateDaoImpl implements HibernateDao {
 		try {
             Query query = getSession().createQuery(hql);
             query.setParameter(paramName, paramValue);
-            query.setMaxResults(1);           
+            query.setMaxResults(1);   
             return query.uniqueResult();
         } catch (HibernateException e) {
             throw new InfrastructureException(e);

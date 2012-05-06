@@ -10,13 +10,6 @@
 		http://www.springframework.org/schema/tx
 		http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
-	<!-- 
-	  <property name="address" value="${snmp.address}" />
-	  <property name="bytesInOid" value="${snmp.bytesInOid}" />
-	  <property name="bytesOutOid" value="${snmp.bytesOutOid}" />
-	  <property name="rrdDbFileName" value="${snmp.rrdDbFileName}" />
-	-->
-
 	<bean id="snmpPropertyPlaceholderConfigurer"  
 	      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
 	  <property name="locations">  
@@ -28,31 +21,7 @@
 	    <value>true</value>
 	  </property>
 	</bean>  
-<!--
-	<bean name="snmpStatsJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
-	  <property name="jobClass" value="uk.org.vacuumtube.schedule.GetSnmpInterfaceStatisticsJob" />
-	  <property name="jobDataAsMap">
-	   <map>
-	     <entry>
-	       <key><value>address</value></key>
-	       <value>${snmp.address}</value>
-	     </entry>
-	     <entry>
-	       <key><value>bytesInOid</value></key>
-	       <value>${snmp.bytesInOid}</value>
-	     </entry>
-	     <entry>
-	       <key><value>bytesOutOid</value></key>
-	       <value>${snmp.bytesOutOid}</value>
-	     </entry>
-	     <entry>
-	       <key><value>rrdDbFileName</value></key>
-	       <value>${snmp.rrdDbFileName}</value>
-	     </entry>
-	   </map>
-	  </property>
-	</bean>
--->
+
 	<bean name="snmpStatsJobDetail" class="org.quartz.impl.JobDetailImpl">
 	  <property name="jobClass" value="uk.org.vacuumtube.schedule.GetSnmpInterfaceStatisticsJob" />
 	  <property name="name" value="GetSnmpInterfaceStatisticsJob" />
@@ -82,13 +51,13 @@
 	  <property name="jobDetail" ref="snmpStatsJobDetail" />
 	  <property name="cronExpression" value="0 0/1 * * * ?" />
 	</bean>
-<!--	
-	<bean id="snmpStatsJobSimpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+
+	<!-- bean id="snmpStatsJobSimpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
 	  <property name="jobDetail" ref="snmpStatsJobDetail"/>
 	  <property name="startDelay" value="10000"/>
 	  <property name="repeatInterval" value="60000"/>
-	</bean>
--->	
+	</bean -->
+
 	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 	  <property name="triggers">
 	    <list>

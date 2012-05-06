@@ -35,7 +35,7 @@ public class Notes extends AbstractTimestampEntity {
 	protected String note = null;
 	
 	@ManyToOne()
-	@JoinColumn(name = "STATSID", nullable = false)
+	@JoinColumn(name = "STATSID")
 	protected Stats stats = null;
 	
 	/**

@@ -18,6 +18,10 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import uk.org.vacuumtube.util.Format;
 
 /**
@@ -45,7 +49,9 @@ public class Stats extends AbstractTimestampEntity {
 	@Column(name = "TXBYTES", nullable = false)
 	protected Long txBytes = null;
 	
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "id")
+	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER, mappedBy = "id")
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@Fetch(FetchMode.JOIN)
 	protected Collection<Notes> notes = null;
 
 	/**
@@ -209,7 +215,12 @@ public class Stats extends AbstractTimestampEntity {
 		buf.append(", updated=");
 		buf.append(Format.formatDateFull(updated));
 		buf.append(", notes=");
-		buf.append(notes);
+		if (notes != null) {
+			//buf.append(notes);
+			buf.append("Notes[" + notes.size() + "]");
+		} else {
+			buf.append("null");
+		}
 		buf.append("]");
 		return buf.toString();
 	}	
