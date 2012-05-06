@@ -293,13 +293,26 @@
 	        </exclusions>
     	</dependency>
 -->
-		<!-- Hibernate -->
+		<!-- cglib -->
 		<dependency>
+		  <groupId>cglib</groupId>
+		  <artifactId>cglib</artifactId>
+		  <version>2.2</version>
+		</dependency>
+
+		<!-- Hibernate -->
+		<!-- dependency>
 		  <groupId>org.hibernate</groupId>
 		  <artifactId>hibernate-core</artifactId>
 		  <version>4.1.2.Final</version>
-		</dependency>
+		</dependency -->
 		
+		<dependency>
+		  <groupId>org.hibernate</groupId>
+		  <artifactId>hibernate-entitymanager</artifactId>
+		  <version>4.1.2.Final</version>
+		</dependency>
+				
 		<!-- MySQL -->
 		<dependency>
 		  <groupId>mysql</groupId>

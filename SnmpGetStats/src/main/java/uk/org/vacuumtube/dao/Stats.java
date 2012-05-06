@@ -3,8 +3,20 @@
  */
 package uk.org.vacuumtube.dao;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedHashSet;
+
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import uk.org.vacuumtube.util.Format;
 
@@ -12,13 +24,29 @@ import uk.org.vacuumtube.util.Format;
  * @author clivem
  *
  */
-public class Stats extends Persistable {
+@Entity
+@Table(name="STATS")
+public class Stats extends AbstractTimestampEntity {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "STATSID")
+	protected Long id = null;
+
+	@Basic
+	@Column(name = "MILLIS", nullable = false)
 	protected Long millis = null;
+	
+	@Basic
+	@Column(name = "RXBYTES", nullable = false)
 	protected Long rxBytes = null;
+	
+	@Basic
+	@Column(name = "TXBYTES", nullable = false)
 	protected Long txBytes = null;
 	
-	protected Set<Notes> notes = null;
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "id")
+	protected Collection<Notes> notes = null;
 
 	/**
 	 * @param millis
@@ -26,18 +54,32 @@ public class Stats extends Persistable {
 	 * @param txBytes
 	 */
 	public Stats(Long millis, Long rxBytes, Long txBytes) {
-		super(millis);
 		this.millis = millis;
 		this.rxBytes = rxBytes;
 		this.txBytes = txBytes;
-		this.notes = new HashSet<Notes>();
+		// MySQL "fix" (truncate the millis) which are not stored by their timestamp
+		this.created = new Date((millis / 1000L) * 1000L);
+		this.notes = new LinkedHashSet<Notes>();
 	}
 	
 	/**
 	 * 
 	 */
 	public Stats() {
-		super();
+	}
+
+	/**
+	 * @return the id
+	 */
+	public Long getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	/**
@@ -85,14 +127,14 @@ public class Stats extends Persistable {
 	/**
 	 * @return the notes
 	 */
-	public Set<Notes> getNotes() {
+	public Collection<Notes> getNotes() {
 		return notes;
 	}
 
 	/**
 	 * @param notes the notes to set
 	 */
-	public void setNotes(Set<Notes> notes) {
+	public void setNotes(Collection<Notes> notes) {
 		this.notes = notes;
 	}
 

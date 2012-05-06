@@ -107,10 +107,10 @@ public class StatsDatabaseServiceTest {
 			Assert.assertNotNull("Save Stats object to db failed!", id);
 			
 			// Add note and merge
-			//for (int i = 0; i < 100; i++) {
+			for (int i = 0; i < 10000; i++) {
 				//stats.getNotes().add(new Notes(stats, "test_1"));
-				sds.addNote(stats, new Notes(stats, "test_1"));
-			//}
+				sds.addNote(stats, new Notes(stats, "test_" + i));
+			}
 			stats = sds.merge(stats);
 			LOGGER.info("After adding note and sds.merge(stats): " + stats);
 			Assert.assertNotNull(stats);

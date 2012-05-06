@@ -8,7 +8,7 @@ import java.util.Iterator;
 
 import org.hibernate.EmptyInterceptor;
 
-import uk.org.vacuumtube.dao.Persistable;
+import uk.org.vacuumtube.dao.AbstractTimestampEntity;
 
 /**
  * @author clivem
@@ -22,13 +22,13 @@ public class MySqlFixInterceptor extends EmptyInterceptor {
 	public void postFlush(@SuppressWarnings("rawtypes") Iterator entities) {
 		while (entities.hasNext()) {
 			Object entity = entities.next();
-			if(entity instanceof Persistable && ((Persistable) entity).getUpdated() != null) { 
-				((Persistable) entity).setUpdated(
-						(new Date((((Persistable) entity).getUpdated().getTime() / 1000) * 1000))); 
+			if(entity instanceof AbstractTimestampEntity && ((AbstractTimestampEntity) entity).getUpdated() != null) { 
+				((AbstractTimestampEntity) entity).setUpdated(
+						(new Date((((AbstractTimestampEntity) entity).getUpdated().getTime() / 1000) * 1000))); 
 			}
-			if(entity instanceof Persistable && ((Persistable) entity).getCreated() != null) { 
-				((Persistable) entity).setCreated(
-						(new Date((((Persistable) entity).getCreated().getTime() / 1000) * 1000))); 
+			if(entity instanceof AbstractTimestampEntity && ((AbstractTimestampEntity) entity).getCreated() != null) { 
+				((AbstractTimestampEntity) entity).setCreated(
+						(new Date((((AbstractTimestampEntity) entity).getCreated().getTime() / 1000) * 1000))); 
 			}
 		}
 	}

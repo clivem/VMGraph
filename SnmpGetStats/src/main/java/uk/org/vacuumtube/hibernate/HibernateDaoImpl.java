@@ -31,7 +31,6 @@ public class HibernateDaoImpl implements HibernateDao {
      * @throws InfrastructureException
      */
     public HibernateDaoImpl() throws InfrastructureException {
-    	super();
     }
 
 	/**

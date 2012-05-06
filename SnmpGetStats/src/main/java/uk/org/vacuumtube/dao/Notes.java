@@ -3,31 +3,69 @@
  */
 package uk.org.vacuumtube.dao;
 
+import java.util.Date;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import uk.org.vacuumtube.util.Format;
 
 /**
  * @author clivem
  *
  */
-public class Notes extends Persistable {
+@Entity
+@Table(name="NOTES")
+public class Notes extends AbstractTimestampEntity {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="NOTESID")
+	protected Long id = null;
+
+	@Basic
+	@Column(name = "NOTE", nullable = false, length=255)
 	protected String note = null;
+	
+	@ManyToOne()
+	@JoinColumn(name = "STATSID", nullable = false)
 	protected Stats stats = null;
 	
 	/**
 	 * @param note
 	 */
 	public Notes(Stats stats, String note) {
-		super(System.currentTimeMillis());
 		this.note = note;
 		this.stats = stats;
+		// MySQL "fix" (truncate the millis) which are not stored by their timestamp
+		this.created = new Date((System.currentTimeMillis() / 1000L) * 1000L);
 	}
 
 	/**
 	 * 
 	 */
 	public Notes() {
-		super();
+	}
+
+	/**
+	 * @return the id
+	 */
+	public Long getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	/**

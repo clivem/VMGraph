@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Repository;
 
 import uk.org.vacuumtube.dao.Notes;
 import uk.org.vacuumtube.dao.Stats;
@@ -19,7 +18,6 @@ import uk.org.vacuumtube.exception.InfrastructureException;
  * @author clivem
  *
  */
-@Repository
 public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 
 	private final static Logger LOGGER = Logger.getLogger(StatsDaoImpl.class);
@@ -28,7 +26,6 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	 * 
 	 */
 	public StatsDaoImpl() throws InfrastructureException {
-		super();
 	}
 	
 	/* (non-Javadoc)
