@@ -224,14 +224,19 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 			if (!lazy) {
 				statsList = getSession().createCriteria(Stats.class)
 						.setFetchMode("notes", FetchMode.JOIN).list();
+				/*
+				statsList = getSession()
+						.createQuery("select DISTINCT stats from Stats stats left join fetch stats.notes ORDER BY stats.id")
+						.list();
+						*/
 			} else {
 				statsList = getSession().createCriteria(Stats.class).list();
+				/*
+				statsList = getSession()
+						.createQuery("select stats from Stats stats ORDER BY stats.id")
+						.list();
+						*/
 			}
-			/*
-			statsList = getSession()
-					.createQuery("select stats from Stats stats ORDER BY stats.id")
-					.list();
-					*/
 			/*
 			if (!lazy) {
 				for (Stats stat : statsList) {
