@@ -146,7 +146,7 @@ public class Notes extends AbstractTimestampEntity {
 	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
-		buf.append("Notes[id=");
+		buf.append("Notes[notesId=");
 		buf.append(id);
 		buf.append(", note=");
 		buf.append(note);
@@ -155,7 +155,7 @@ public class Notes extends AbstractTimestampEntity {
 		buf.append(", updated=");
 		buf.append(Format.formatDateFull(updated));
 		buf.append(", stats=");
-		buf.append(((stats != null) ? "Stats[id=" + stats.getId() + "]" : "null"));
+		buf.append(((stats != null) ? "Stats[statsId=" + stats.getId() + "]" : "null"));
 		buf.append("]");
 		return buf.toString();
 	}	

@@ -49,7 +49,7 @@ public class Stats extends AbstractTimestampEntity {
 	@Column(name = "TXBYTES", nullable = false)
 	protected Long txBytes = null;
 	
-	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER, mappedBy = "id")
+	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER, mappedBy = "stats")
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@Fetch(FetchMode.JOIN)
 	protected Collection<Notes> notes = null;
@@ -75,7 +75,7 @@ public class Stats extends AbstractTimestampEntity {
 	}
 
 	/**
-	 * @return the id
+	 * @return the statsId
 	 */
 	public Long getId() {
 		return id;
@@ -84,7 +84,7 @@ public class Stats extends AbstractTimestampEntity {
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(Long id) {
+	public void setId(Long statsId) {
 		this.id = id;
 	}
 
@@ -202,7 +202,7 @@ public class Stats extends AbstractTimestampEntity {
 	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
-		buf.append("Stats[id=");
+		buf.append("Stats[statsId=");
 		buf.append(id);
 		buf.append(", millis=");
 		buf.append(millis);

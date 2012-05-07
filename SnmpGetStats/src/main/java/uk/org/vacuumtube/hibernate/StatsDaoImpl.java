@@ -3,6 +3,8 @@
  */
 package uk.org.vacuumtube.hibernate;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -117,6 +119,7 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 		
 		try {
 			Stats stats = (Stats) getSession().get(Stats.class, id);
+			//loadNotes(stats);
 			return stats;
 		} catch (HibernateException he) {
 			throw new InfrastructureException(he);
@@ -154,15 +157,32 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 		try {
 			List<Stats> statsList = getSession()
 					.createQuery("from Stats stats ORDER BY stats.id")
+					//.createQuery("from Stats stats")
 					.list();
 			/*
 			for (Stats stat : statsList) {
-				stat.getNotes().size();
+				loadNotes(stat);
 			}
 			*/
 			return statsList;
 		} catch (HibernateException he) {
 			throw new InfrastructureException(he);
+		}
+	}
+
+	/**
+	 * @param stats
+	 */
+	@SuppressWarnings("unused")
+	private void loadNotes(Stats stats) {
+		if (stats != null) {
+			Collection<Notes> notesList = stats.getNotes();
+			if (notesList != null) {
+				Iterator<Notes> it = notesList.iterator();
+				while (it.hasNext()) {
+					LOGGER.debug(it.next());
+				}
+			}
 		}
 	}
 	
