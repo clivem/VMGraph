@@ -8,9 +8,9 @@ import java.util.List;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
-import uk.org.vacuumtube.dao.Notes;
 import uk.org.vacuumtube.dao.Stats;
 import uk.org.vacuumtube.dao.StatsDao;
+import uk.org.vacuumtube.exception.InfrastructureException;
 
 /**
  * @author clivem
@@ -50,22 +50,33 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	}
 
 	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.StatsDao#getStatsList(boolean)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<Stats> getStatsList(boolean lazy)
+			throws InfrastructureException {
+		return statsDao.getStatsList(lazy);
+	}
+
+	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.dao.StatsDao#addNote(uk.org.vacuumtube.dao.Stats, uk.org.vacuumtube.dao.Notes)
 	 */
 	@Override
 	@Transactional
-	public void addNote(Stats stats, Notes note) {
-		statsDao.addNote(stats, note);
+	public void addNoteToStat(Stats stats, String note) {
+		statsDao.addNoteToStat(stats, note);
 	}
 
 	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.dao.StatsDao#addNote(uk.org.vacuumtube.dao.Notes)
-	 */
+	 *
 	@Override
 	@Transactional
 	public void addNote(Notes note) {
 		statsDao.addNote(note);
 	}
+	*/
 
 	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.dao.StatsDao#add(uk.org.vacuumtube.dao.Stats)
@@ -108,8 +119,18 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Stats getStats(long id) {
-		return statsDao.getStats(id);
+	public Stats getStatsById(long id) {
+		return statsDao.getStatsById(id);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.StatsDao#getStatsById(long, boolean)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Stats getStatsById(long id, boolean lazy)
+			throws InfrastructureException {
+		return statsDao.getStatsById(id, lazy);
 	}
 
 	/* (non-Javadoc)

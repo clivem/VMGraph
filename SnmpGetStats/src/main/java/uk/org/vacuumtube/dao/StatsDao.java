@@ -34,8 +34,10 @@ public interface StatsDao {
 	 * @param id
 	 * @return
 	 */
-	public Stats getStats(long id) throws InfrastructureException;
+	public Stats getStatsById(long id) throws InfrastructureException;
 	
+	public Stats getStatsById(long id, boolean lazy) throws InfrastructureException;
+
 	/**
 	 * @return
 	 */
@@ -46,17 +48,19 @@ public interface StatsDao {
 	 */
 	public List<Stats> getStatsList() throws InfrastructureException;
 	
+	public List<Stats> getStatsList(boolean lazy) throws InfrastructureException;
+
 	/**
 	 * @param stats
 	 * @param note
 	 */
-	public void addNote(Stats stats, Notes note) throws InfrastructureException;
+	public void addNoteToStat(Stats stats, String note) throws InfrastructureException;
 
 
 	/**
 	 * @param note
 	 */
-	public void addNote(Notes note) throws InfrastructureException;
+	//public void addNote(Notes note) throws InfrastructureException;
 	
 	/**
 	 * @param stats

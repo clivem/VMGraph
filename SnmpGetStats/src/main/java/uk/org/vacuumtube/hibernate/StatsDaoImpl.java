@@ -32,7 +32,7 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	
 	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.dao.StatsDao#addNote(uk.org.vacuumtube.dao.Notes)
-	 */
+	 *
 	@Override
 	public void addNote(Notes note) throws InfrastructureException {
 		if (LOGGER.isTraceEnabled()) {
@@ -40,19 +40,19 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 		}
 		super.makePersistent(note);
 	}
+	*/
 
 	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.dao.StatsDao#addNote(uk.org.vacuumtube.dao.Stats, uk.org.vacuumtube.dao.Notes)
 	 */
 	@Override
-	public void addNote(Stats stats, Notes note) throws InfrastructureException {
+	public void addNoteToStat(Stats stats, String note) throws InfrastructureException {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("addNote(stats=" + stats + ", note=" + note + ")");
 		}
 
-		stats.getNotes().add(note);
-		super.makePersistent(note);
-		//super.makePersistent(stats);
+		Notes notes = stats.addNote(note);
+		makePersistent(notes);
 	}
 
 	/* (non-Javadoc)
@@ -112,14 +112,29 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	 * @see uk.org.vacuumtube.routeros.spring.dao.StatsDao#getStats(long)
 	 */
 	@Override
-	public Stats getStats(long id) throws InfrastructureException {
+	public Stats getStatsById(long id) throws InfrastructureException {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("getStats(id=" + id + ")");
 		}
 		
+		return getStatsById(id, false);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.StatsDao#getStatsById(long, boolean)
+	 */
+	@Override
+	public Stats getStatsById(long id, boolean lazy)
+			throws InfrastructureException {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("getStats(id=" + id + ", lazy=" + lazy + ")");
+		}
+
 		try {
 			Stats stats = (Stats) getSession().get(Stats.class, id);
-			//loadNotes(stats);
+			if (!lazy) {
+				eagerLoadNotesCollection(stats);
+			}
 			return stats;
 		} catch (HibernateException he) {
 			throw new InfrastructureException(he);
@@ -137,7 +152,8 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 		
 		try {
 			Long count = (Long) getSession()
-					.createQuery("select count(*) from Stats").uniqueResult();
+					.createQuery("select count(*) from Stats")
+					.uniqueResult();
 			return count.intValue();
 		} catch (HibernateException he) {
 			throw new InfrastructureException(he);
@@ -147,23 +163,36 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.routeros.spring.dao.StatsDao#getStatsList()
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Stats> getStatsList() throws InfrastructureException {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("getStatsList()");
 		}
 
+		return getStatsList(false);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.StatsDao#getStatsList(boolean)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Stats> getStatsList(boolean lazy)
+			throws InfrastructureException {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("getStatsList(lazy=" + lazy + ")");
+		}
+		
 		try {
 			List<Stats> statsList = getSession()
-					.createQuery("from Stats stats ORDER BY stats.id")
-					//.createQuery("from Stats stats")
+					.createQuery("select stats from Stats stats ORDER BY stats.id")
+					//.createQuery("select DISTINCT stats from Stats stats left join fetch stats.notes ORDER BY stats.id")
 					.list();
-			/*
-			for (Stats stat : statsList) {
-				loadNotes(stat);
+			if (!lazy) {
+				for (Stats stat : statsList) {
+					eagerLoadNotesCollection(stat);
+				}
 			}
-			*/
 			return statsList;
 		} catch (HibernateException he) {
 			throw new InfrastructureException(he);
@@ -173,14 +202,16 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	/**
 	 * @param stats
 	 */
-	@SuppressWarnings("unused")
-	private void loadNotes(Stats stats) {
+	private void eagerLoadNotesCollection(Stats stats) {
 		if (stats != null) {
 			Collection<Notes> notesList = stats.getNotes();
 			if (notesList != null) {
 				Iterator<Notes> it = notesList.iterator();
 				while (it.hasNext()) {
-					LOGGER.debug(it.next());
+					Notes notes = it.next();
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Eager load: " + notes);
+					}
 				}
 			}
 		}

@@ -59,25 +59,6 @@ public class AppConfiguration {
 		return statsDaoImpl;
 	}
 	
-	/*
-	 * Hibernate: select stats0_.STATSID as STATSID0_1_, stats0_.UPDATED as UPDATED0_1_, stats0_.MILLIS as MILLIS0_1_, 
-	 * stats0_.RXBYTES as RXBYTES0_1_, stats0_.TXBYTES as TXBYTES0_1_, stats0_.CREATED as CREATED0_1_, notes1_.STATSID 
-	 * as STATSID0_3_, notes1_.NOTESID as NOTESID3_, notes1_.NOTESID as NOTESID1_0_, notes1_.UPDATED as UPDATED1_0_, 
-	 * notes1_.CREATED as CREATED1_0_, notes1_.NOTE as NOTE1_0_, notes1_.STATSID as STATSID1_0_ from STATS stats0_ 
-	 * left outer join NOTES notes1_ on stats0_.STATSID=notes1_.STATSID where stats0_.STATSID=?
-	 */
-	
-	/*
-	 * Hibernate: select stats0_.STATSID as STATSID1_2_, stats0_.CREATED as CREATED1_2_, stats0_.UPDATED as UPDATED1_2_, 
-	 * stats0_.MILLIS as MILLIS1_2_, stats0_.RXBYTES as RXBYTES1_2_, stats0_.TXBYTES as TXBYTES1_2_, notes1_.NOTESID 
-	 * as NOTESID1_4_, notes1_.NOTESID as NOTESID4_, notes1_.NOTESID as NOTESID0_0_, notes1_.CREATED as CREATED0_0_, 
-	 * notes1_.UPDATED as UPDATED0_0_, notes1_.NOTE as NOTE0_0_, notes1_.STATSID as STATSID0_0_, stats2_.STATSID as 
-	 * STATSID1_1_, stats2_.CREATED as CREATED1_1_, stats2_.UPDATED as UPDATED1_1_, stats2_.MILLIS as MILLIS1_1_, 
-	 * stats2_.RXBYTES as RXBYTES1_1_, stats2_.TXBYTES as TXBYTES1_1_ from STATS stats0_ left outer join NOTES notes1_ 
-	 * on stats0_.STATSID=notes1_.NOTESID left outer join STATS stats2_ on notes1_.STATSID=stats2_.STATSID 
-	 * where stats0_.STATSID=?
-	 */
-
 	@Bean(name = "statsDatabaseService")
 	public StatsDatabaseService statsDatabaseService() {
 		StatsDatabaseServiceImpl impl = new StatsDatabaseServiceImpl();

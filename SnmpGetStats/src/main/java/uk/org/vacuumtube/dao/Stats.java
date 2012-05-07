@@ -19,8 +19,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import uk.org.vacuumtube.util.Format;
 
@@ -49,9 +47,9 @@ public class Stats extends AbstractTimestampEntity {
 	@Column(name = "TXBYTES", nullable = false)
 	protected Long txBytes = null;
 	
-	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER, mappedBy = "stats")
+	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.LAZY, mappedBy = "stats")
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@Fetch(FetchMode.JOIN)
+	//@Fetch(FetchMode.JOIN)
 	protected Collection<Notes> notes = null;
 
 	/**
@@ -65,7 +63,7 @@ public class Stats extends AbstractTimestampEntity {
 		this.txBytes = txBytes;
 		// MySQL "fix" (truncate the millis) which are not stored by their timestamp
 		this.created = new Date((millis / 1000L) * 1000L);
-		this.notes = new LinkedHashSet<Notes>();
+		//this.notes = new LinkedHashSet<Notes>();
 	}
 	
 	/**
@@ -224,4 +222,16 @@ public class Stats extends AbstractTimestampEntity {
 		buf.append("]");
 		return buf.toString();
 	}	
+	
+	/**
+	 * @param note
+	 */
+	public Notes addNote(String note) {
+		if (notes == null) {
+			notes = new LinkedHashSet<Notes>();
+		}
+		Notes n = new Notes(this, note);
+		notes.add(n);
+		return n;
+	}
 }

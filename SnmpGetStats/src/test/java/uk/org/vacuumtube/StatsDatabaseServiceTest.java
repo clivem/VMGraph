@@ -14,7 +14,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StopWatch.TaskInfo;
 
-import uk.org.vacuumtube.dao.Notes;
 import uk.org.vacuumtube.dao.Stats;
 import uk.org.vacuumtube.service.StatsDatabaseService;
 import uk.org.vacuumtube.service.StatsDatabaseServiceImpl;
@@ -29,68 +28,124 @@ public class StatsDatabaseServiceTest {
 
 	@Test
     public void testStartupOfSpringInegrationContext() throws Exception {
-        @SuppressWarnings("unused")
-		final ApplicationContext context = new ClassPathXmlApplicationContext(
-				new String[] {"/META-INF/spring/app-context.xml", "/META-INF/spring/db-context.xml"}, 
-				StatsDatabaseServiceTest.class);
-        
-        Thread.sleep(2000);
+		LOGGER.info("\n\ntestStartupOfSpringInegrationContext()");
+		try {
+			StopWatch watch = new StopWatch();
+			watch.start("Setup context");
+	        @SuppressWarnings("unused")
+			final ApplicationContext context = new ClassPathXmlApplicationContext(
+					new String[] {"/META-INF/spring/app-context.xml", "/META-INF/spring/db-context.xml"}, 
+					StatsDatabaseServiceTest.class);
+			logWatchStop(watch);
+			
+			Thread.sleep(2000);
+		} catch (Exception e) {
+			LOGGER.warn(null, e);
+			throw e;
+		}
     }
 	
 	@Test
 	public void testGetStatsEntityCount() throws Exception {
-		final ApplicationContext context = new ClassPathXmlApplicationContext(
-				new String[] {"/META-INF/spring/app-context.xml", "/META-INF/spring/db-context.xml"}, 
-				StatsDatabaseServiceTest.class);
-		
-		StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
-		int count = sds.getCount();
-		LOGGER.info("sds.getCount(): " + count);
-		Assert.assertTrue(count > -1);
+		LOGGER.info("\n\ntestGetStatsEntityCount()");
+		try {
+			StopWatch watch = new StopWatch();
+			watch.start("Setup context");
+			final ApplicationContext context = new ClassPathXmlApplicationContext(
+					new String[] {"/META-INF/spring/app-context.xml", "/META-INF/spring/db-context.xml"}, 
+					StatsDatabaseServiceTest.class);
+			logWatchStop(watch);
+			
+			StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
+			watch.start("sds.getCount()");
+			int count = sds.getCount();
+			logWatchStop(watch);
+			LOGGER.info("sds.getCount(): " + count);
+			Assert.assertTrue(count > -1);
+		} catch (Exception e) {
+			LOGGER.warn(null, e);
+			throw e;
+		}
 	}
 
 	@Test
 	public void testGetStatsList() throws Exception {
-		final ApplicationContext context = new ClassPathXmlApplicationContext(
-				new String[] {"/META-INF/spring/app-context.xml", "/META-INF/spring/db-context.xml"}, 
-				StatsDatabaseServiceTest.class);
-		
-		StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
-		List<Stats> statsList = sds.getStatsList();
-		Assert.assertNotNull(statsList);
-		for (Stats stats : statsList) {
-			LOGGER.info("sds.getStatsList(): " + stats);
+		LOGGER.info("\n\ntestGetStatsList()");
+		try {
+			StopWatch watch = new StopWatch();
+			watch.start("Loading context");
+			final ApplicationContext context = new ClassPathXmlApplicationContext(
+					new String[] {"/META-INF/spring/app-context.xml", "/META-INF/spring/db-context.xml"}, 
+					StatsDatabaseServiceTest.class);
+			logWatchStop(watch);
+			
+			StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
+			watch.start("Load stats list");
+			List<Stats> statsList = sds.getStatsList();
+			logWatchStop(watch);
+			Assert.assertNotNull(statsList);
+			for (Stats stats : statsList) {
+				LOGGER.debug("sds.getStatsList(): " + stats);
+				watch.start("getStats(" + stats.getId() + ", " + false + ")");
+				sds.getStatsById(stats.getId(), false); 
+				logWatchStop(watch);
+			}
+		} catch (Exception e) {
+			LOGGER.warn(null, e);
+			throw e;
 		}
 	}
 
 	@Test
 	public void testCreateUpdateDeleteStats() throws Exception {
+		LOGGER.info("\n\ntestCreateUpdateDeleteStats()");
 		try {
+			StopWatch watch = new StopWatch();
+			
+			watch.start("Setup context");
 			final ApplicationContext context = new ClassPathXmlApplicationContext(
 					new String[] {"/META-INF/spring/app-context.xml", "/META-INF/spring/db-context.xml"}, 
 					StatsDatabaseServiceTest.class);
+			logWatchStop(watch);
 			
 			StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
 			
-			// Add
+			// Create
 			Stats stats = new Stats(System.currentTimeMillis(), 1L, 1L);
+			watch.start("sds.add(" + stats + ")");
 			Long id = sds.add(stats);
+			logWatchStop(watch);
 			LOGGER.info("After sds.add(): " + stats);
 			Assert.assertNotNull("Save Stats object to db failed!", id);
 			
-			stats = sds.getStats(id);
+			// Get
+			watch.start("sds.getStatsById(" + id + ", " + false + ")");
+			stats = sds.getStatsById(id, false);
+			logWatchStop(watch);
 			
 			// Update
 			stats.setRxBytes(1000L);
+			watch.start("sds.update(" + stats + ")");
 			sds.update(stats);
+			logWatchStop(watch);
 			LOGGER.info("After stats.setRxBytes(1000L) -> sds.update(): " + stats);
-			stats = sds.getStats(id);
+			
+			// Get
+			watch.start("sds.getStatsById(" + id + ", " + false + ")");
+			stats = sds.getStatsById(id, false);
+			logWatchStop(watch);
 			LOGGER.info("sds.getStats(id=" + id + "): " + stats);
 			Assert.assertEquals("RxBytes value not updated!", new Long(1000L), stats.getRxBytes());
 			
 			// Delete
+			watch.start("sds.delete(" + stats + ")");
 			sds.delete(stats);
-			stats = sds.getStats(id);
+			logWatchStop(watch);
+			
+			// Get
+			watch.start("sds.getStatsById(" + id + ", " + false + ")");
+			stats = sds.getStatsById(id, false);
+			logWatchStop(watch);
 			LOGGER.info("After stats.delete() -> sds.getStats(id=" + id + "): " + stats);
 			Assert.assertNull("Delete stats object failed!", stats);
 		} catch (Exception e) {
@@ -101,58 +156,56 @@ public class StatsDatabaseServiceTest {
 
 	@Test
 	public void testAddNoteToStats() throws Exception {
-
+		LOGGER.info("\n\ntestAddNoteToStats()");
 		try {
 			StopWatch watch = new StopWatch();
 			watch.start("Setup Context");
 			final ApplicationContext context = new ClassPathXmlApplicationContext(
 					new String[] {"/META-INF/spring/app-context.xml", "/META-INF/spring/db-context.xml"}, 
 					StatsDatabaseServiceTest.class);
-			watch.stop();
-			TaskInfo ti = watch.getLastTaskInfo();
-			LOGGER.info("Task: " + ti.getTaskName() + ". Time: " + ti.getTimeMillis() +"ms");
+			logWatchStop(watch);
 
 			StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
 			
 			// Add
 			Stats stats = new Stats(System.currentTimeMillis(), 1L, 1L);
-			watch.start("Add Stats record");
+			watch.start("sds.add(" + stats + ")");
 			Long id = sds.add(stats);
-			watch.stop();
-			ti = watch.getLastTaskInfo();
-			LOGGER.info("Task: " + ti.getTaskName() + ". Time: " + ti.getTimeMillis() +"ms");
+			logWatchStop(watch);
 			LOGGER.info("After adding to db with sds.add(): " + stats);
 			Assert.assertNotNull("Save Stats object to db failed!", id);
 			
-			watch.start("Add 100 Notes to Stats");
+			int count = 10;
 			// Add note and merge
-			for (int i = 0; i < 100; i++) {
-				stats.getNotes().add(new Notes(stats, "test" + i));
-				//sds.addNote(stats, new Notes(stats, "test_" + i));
+			for (int i = 0; i < count; i++) {
+				//stats.getNotes().add(new Notes(stats, "test" + i));
+				sds.addNoteToStat(stats, "test_");
 			}
+			watch.start("Add " + count + " Notes to Stats and merge()");
 			stats = sds.merge(stats);
-			watch.stop();
-			ti = watch.getLastTaskInfo();
-			LOGGER.info("Task: " + ti.getTaskName() + ". Time: " + ti.getTimeMillis() +"ms");
+			logWatchStop(watch);
 			LOGGER.info("After adding note and sds.merge(stats): " + stats);
 			Assert.assertNotNull(stats);
-			
+
 			// Delete
-			watch.start("Delete Stats record");
+			watch.start("sds.delete(" + stats + ")");
 			sds.delete(stats);
-			watch.stop();
-			ti = watch.getLastTaskInfo();
-			LOGGER.info("Task: " + ti.getTaskName() + ". Time: " + ti.getTimeMillis() +"ms");
-			watch.start("Get Stats record by ID");
-			stats = sds.getStats(id);
-			watch.stop();
-			ti = watch.getLastTaskInfo();
-			LOGGER.info("Task: " + ti.getTaskName() + ". Time: " + ti.getTimeMillis() +"ms");
+			logWatchStop(watch);
+			
+			watch.start("sds.getStatsById(" + id + ", " + false + ")");
+			stats = sds.getStatsById(id, false);
+			logWatchStop(watch);
 			LOGGER.info("After stats.delete() -> sds.getStats(id=" + id + "): " + stats);
 			Assert.assertNull("Delete stats object failed!", stats);
 		} catch (Exception e) {
 			LOGGER.warn(null, e);
 			throw e;
 		}
+	}
+	
+	private void logWatchStop(StopWatch watch) {
+		watch.stop();
+		TaskInfo ti = watch.getLastTaskInfo();
+		LOGGER.info("Task: " + ti.getTaskName() + ". Time: " + ti.getTimeMillis() +"ms");
 	}
 }
