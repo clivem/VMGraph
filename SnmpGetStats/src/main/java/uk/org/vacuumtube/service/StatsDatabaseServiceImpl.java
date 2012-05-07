@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.org.vacuumtube.dao.Notes;
+import uk.org.vacuumtube.dao.Persistable;
 import uk.org.vacuumtube.dao.Stats;
 import uk.org.vacuumtube.dao.StatsDao;
 import uk.org.vacuumtube.exception.InfrastructureException;
@@ -41,6 +42,15 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 		this.statsDao = statsDao;
 	}
 	
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.StatsDao#statsToString(uk.org.vacuumtube.dao.Stats)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public String entityToString(Persistable persistable) throws InfrastructureException {
+		return statsDao.entityToString(persistable);
+	}
+
 	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.routeros.service.RouterStatsService#getStatsList()
 	 */

@@ -19,6 +19,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.FetchProfile;
 
 import uk.org.vacuumtube.util.Format;
 
@@ -28,6 +30,9 @@ import uk.org.vacuumtube.util.Format;
  */
 @Entity
 @Table(name="STATS")
+@FetchProfile(name = "stats-with-notes", fetchOverrides = {
+	@FetchProfile.FetchOverride(entity = Stats.class, association = "notes", mode = FetchMode.JOIN)
+})
 public class Stats extends AbstractTimestampEntity {
 
 	@Id
@@ -222,6 +227,13 @@ public class Stats extends AbstractTimestampEntity {
 		buf.append("]");
 		return buf.toString();
 	}	
+	
+	/**
+	 * @return
+	 */
+	public String shortDescription() {
+		return "Stats[id=" + id + "]";
+	}
 	
 	/**
 	 * @param note

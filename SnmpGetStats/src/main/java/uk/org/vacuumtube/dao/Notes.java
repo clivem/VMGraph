@@ -159,4 +159,11 @@ public class Notes extends AbstractTimestampEntity {
 		buf.append("]");
 		return buf.toString();
 	}	
+
+	/**
+	 * @return
+	 */
+	public String shortDescription() {
+		return "Notes[id=" + id + "]";
+	}
 }

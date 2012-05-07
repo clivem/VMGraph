@@ -3,15 +3,20 @@
  */
 package uk.org.vacuumtube.hibernate;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.hibernate.FetchMode;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
+import org.hibernate.Session.LockRequest;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.context.ApplicationContext;
 
 import uk.org.vacuumtube.dao.Notes;
+import uk.org.vacuumtube.dao.Persistable;
 import uk.org.vacuumtube.dao.Stats;
 import uk.org.vacuumtube.dao.StatsDao;
 import uk.org.vacuumtube.exception.InfrastructureException;
@@ -43,12 +48,29 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	*/
 
 	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.StatsDao#entityToString(uk.org.vacuumtube.dao.Persistable)
+	 */
+	@Override
+	public String entityToString(Persistable persistable) throws InfrastructureException {
+		try {
+			/*
+			 * Create a dummy non-locking lock request to re-attach object to the session
+			 */
+			LockRequest lockReq = getSession().buildLockRequest(new LockOptions(LockMode.NONE));
+			lockReq.lock(persistable);
+			return persistable.toString();
+		} catch (HibernateException he) {
+			throw new InfrastructureException(he);
+		}
+	}
+	
+	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.dao.StatsDao#addNote(uk.org.vacuumtube.dao.Stats, uk.org.vacuumtube.dao.Notes)
 	 */
 	@Override
 	public Notes addNoteToStat(Stats stats, String note) throws InfrastructureException {
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("addNote(stats=" + stats + ", note=" + note + ")");
+			LOGGER.trace("addNote(stats=" + stats.shortDescription() + ", note=" + note + ")");
 		}
 
 		Notes notes = stats.addNote(note);
@@ -62,7 +84,7 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	@Override
 	public Long add(Stats stats) throws InfrastructureException {
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("add(stats=" + stats + ")");
+			LOGGER.trace("add(stats=" + stats.shortDescription() + ")");
 		}
 		/*
 		try {
@@ -81,7 +103,7 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	@Override
 	public void delete(Stats stats) throws InfrastructureException {
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("delete(stats=" + stats + ")");
+			LOGGER.trace("delete(stats=" + stats.shortDescription() + ")");
 		}
 		
 		super.makeTransient(stats);
@@ -93,7 +115,7 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	@Override
 	public void update(Stats stats) throws InfrastructureException {
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("update(stats=" + stats + ")");
+			LOGGER.trace("update(stats=" + stats.shortDescription() + ")");
 		}
 		
 		super.update(stats);
@@ -105,7 +127,7 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	@Override
 	public Stats merge(Stats stats) throws InfrastructureException {
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("merge(stats=" + stats + ")");
+			LOGGER.trace("merge(stats=" + stats.shortDescription() + ")");
 		}
 		
 		return (Stats) super.merge(stats);
@@ -133,15 +155,26 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 			LOGGER.trace("getStats(id=" + id + ", lazy=" + lazy + ")");
 		}
 
+		Stats stats = null;
 		try {
-			Stats stats = (Stats) getSession().get(Stats.class, id);
+			/*
 			if (!lazy) {
-				eagerLoadNotesCollection(stats);
+				getSession().enableFetchProfile("stats-with-notes");
 			}
-			return stats;
+			stats = (Stats) getSession().get(Stats.class, id);
+			*/
+			if (!lazy) {
+				stats = (Stats) getSession().createCriteria(Stats.class)
+						.setFetchMode("notes", FetchMode.JOIN)
+						.add(Restrictions.idEq(id)).uniqueResult();
+			} else {
+				stats = (Stats) getSession().createCriteria(Stats.class)
+						.add(Restrictions.idEq(id)).uniqueResult();
+			}
 		} catch (HibernateException he) {
 			throw new InfrastructureException(he);
 		}
+		return stats;
 	}
 
 	/* (non-Javadoc)
@@ -186,37 +219,39 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 			LOGGER.trace("getStatsList(lazy=" + lazy + ")");
 		}
 		
+		List<Stats> statsList = null;
 		try {
-			List<Stats> statsList = getSession()
+			if (!lazy) {
+				statsList = getSession().createCriteria(Stats.class)
+						.setFetchMode("notes", FetchMode.JOIN).list();
+			} else {
+				statsList = getSession().createCriteria(Stats.class).list();
+			}
+			/*
+			statsList = getSession()
 					.createQuery("select stats from Stats stats ORDER BY stats.id")
-					//.createQuery("select DISTINCT stats from Stats stats left join fetch stats.notes ORDER BY stats.id")
 					.list();
+					*/
+			/*
 			if (!lazy) {
 				for (Stats stat : statsList) {
 					eagerLoadNotesCollection(stat);
 				}
 			}
-			return statsList;
+			*/
 		} catch (HibernateException he) {
 			throw new InfrastructureException(he);
 		}
+		return statsList;
 	}
 
 	/**
 	 * @param stats
 	 */
+	@SuppressWarnings("unused")
 	private void eagerLoadNotesCollection(Stats stats) {
 		if (stats != null) {
-			Collection<Notes> notesList = stats.getNotes();
-			if (notesList != null) {
-				Iterator<Notes> it = notesList.iterator();
-				while (it.hasNext()) {
-					Notes notes = it.next();
-					if (LOGGER.isTraceEnabled()) {
-						LOGGER.trace("Eager load: " + notes);
-					}
-				}
-			}
+			Hibernate.initialize(stats.getNotes());
 		}
 	}
 	

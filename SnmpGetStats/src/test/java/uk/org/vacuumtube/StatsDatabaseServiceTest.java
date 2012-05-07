@@ -80,15 +80,28 @@ public class StatsDatabaseServiceTest {
 			logWatchStop(watch);
 			
 			StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
-			watch.start("Load stats list");
-			List<Stats> statsList = sds.getStatsList();
+			
+			watch.start("sds.getStatsList(true)");
+			List<Stats> statsList = sds.getStatsList(true);
 			logWatchStop(watch);
+			
 			Assert.assertNotNull(statsList);
-			for (Stats stats : statsList) {
-				LOGGER.debug("sds.getStatsList(): " + stats);
-				watch.start("getStats(" + stats.getId() + ", " + false + ")");
-				sds.getStatsById(stats.getId(), false); 
+			
+			for (int i = 0; i < statsList.size(); i++) {
+			//for (Stats stats : statsList) {
+				Stats stats = statsList.get(i);
+			
+				watch.start("sds.entityToString(stats=" + stats.shortDescription() + ")");
+				String statsLog = sds.entityToString(stats);
 				logWatchStop(watch);
+				
+				LOGGER.info("StatsList[" + i + "]: " + statsLog);
+				/*
+				boolean lazy = true;
+				watch.start("getStats(" + stats.getId() + ", " + lazy + ")");
+				sds.getStatsById(stats.getId(), lazy); 
+				logWatchStop(watch);
+				*/
 			}
 		} catch (Exception e) {
 			LOGGER.warn(null, e);
@@ -112,28 +125,39 @@ public class StatsDatabaseServiceTest {
 			
 			// Create
 			Stats stats = new Stats(System.currentTimeMillis(), 1L, 1L);
-			watch.start("sds.add(" + stats + ")");
+			
+			watch.start("sds.add(" + stats.shortDescription() + ")");
 			Long id = sds.add(stats);
 			logWatchStop(watch);
-			LOGGER.info("After sds.add(): " + stats);
+			
+			//LOGGER.info("After sds.add(): " + stats);
 			Assert.assertNotNull("Save Stats object to db failed!", id);
 			
 			// Get
-			watch.start("sds.getStatsById(" + id + ", " + false + ")");
-			stats = sds.getStatsById(id, false);
+			boolean lazy = true;
+			watch.start("sds.getStatsById(" + id + ", " + lazy + ")");
+			stats = sds.getStatsById(id, lazy);
+			logWatchStop(watch);
+
+			lazy = false;
+			watch.start("sds.getStatsById(" + id + ", " + lazy + ")");
+			stats = sds.getStatsById(id, lazy);
 			logWatchStop(watch);
 			
 			// Update
 			stats.setRxBytes(1000L);
-			watch.start("sds.update(" + stats + ")");
+			
+			watch.start("sds.update(" + stats.shortDescription() + ")");
 			sds.update(stats);
 			logWatchStop(watch);
-			LOGGER.info("After stats.setRxBytes(1000L) -> sds.update(): " + stats);
+			
+			//LOGGER.info("After stats.setRxBytes(1000L) -> sds.update(): " + stats);
 			
 			// Get
-			watch.start("sds.getStatsById(" + id + ", " + false + ")");
-			stats = sds.getStatsById(id, false);
+			watch.start("sds.getStatsById(" + id + ", " + lazy + ")");
+			stats = sds.getStatsById(id, lazy);
 			logWatchStop(watch);
+			
 			LOGGER.info("sds.getStats(id=" + id + "): " + stats);
 			Assert.assertEquals("RxBytes value not updated!", new Long(1000L), stats.getRxBytes());
 			
@@ -143,9 +167,10 @@ public class StatsDatabaseServiceTest {
 			logWatchStop(watch);
 			
 			// Get
-			watch.start("sds.getStatsById(" + id + ", " + false + ")");
-			stats = sds.getStatsById(id, false);
+			watch.start("sds.getStatsById(" + id + ", " + lazy + ")");
+			stats = sds.getStatsById(id, lazy);
 			logWatchStop(watch);
+			
 			LOGGER.info("After stats.delete() -> sds.getStats(id=" + id + "): " + stats);
 			Assert.assertNull("Delete stats object failed!", stats);
 		} catch (Exception e) {
@@ -195,8 +220,9 @@ public class StatsDatabaseServiceTest {
 			sds.delete(stats);
 			logWatchStop(watch);
 			
-			watch.start("sds.getStatsById(" + id + ", " + true + ")");
-			stats = sds.getStatsById(id, true);
+			boolean lazy = true;
+			watch.start("sds.getStatsById(" + id + ", " + lazy + ")");
+			stats = sds.getStatsById(id, lazy);
 			logWatchStop(watch);
 			//LOGGER.info("After stats.delete() -> sds.getStats(id=" + id + "): " + stats);
 			Assert.assertNull("Delete stats object failed!", stats);
@@ -206,6 +232,28 @@ public class StatsDatabaseServiceTest {
 		}
 	}
 	
+	@Test
+	public void testFetchProfiles() throws Exception {
+		LOGGER.info("\n\ntestFetchProfiles()");
+		try {
+			StopWatch watch = new StopWatch();
+			watch.start("Setup Context");
+			final ApplicationContext context = new ClassPathXmlApplicationContext(
+					new String[] {"/META-INF/spring/app-context.xml", "/META-INF/spring/db-context.xml"}, 
+					StatsDatabaseServiceTest.class);
+			logWatchStop(watch);
+
+			StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
+			
+			sds.getStatsList(true);
+			
+			sds.getStatsList(false);
+		} catch (Exception e) {
+			LOGGER.warn(null, e);
+			throw e;
+		}
+	}
+
 	private void logWatchStop(StopWatch watch) {
 		watch.stop();
 		TaskInfo ti = watch.getLastTaskInfo();

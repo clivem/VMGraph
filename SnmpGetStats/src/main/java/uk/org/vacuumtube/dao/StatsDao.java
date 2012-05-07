@@ -13,6 +13,8 @@ import uk.org.vacuumtube.exception.InfrastructureException;
  */
 public interface StatsDao {
 
+	public String entityToString(Persistable persistable) throws InfrastructureException;
+	
 	/**
 	 * @param stats
 	 * @return
