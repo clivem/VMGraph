@@ -3,6 +3,8 @@
  */
 package uk.org.vacuumtube.dao;
 
+import java.io.Serializable;
+
 import uk.org.vacuumtube.exception.InfrastructureException;
 
 /**
@@ -15,7 +17,7 @@ public interface HibernateDao {
 	 * @param object
 	 * @throws InfrastructureException
 	 */
-	public void save(Object object) throws InfrastructureException;
+	public Serializable save(Object object) throws InfrastructureException;
 
 	/**
 	 * @param object

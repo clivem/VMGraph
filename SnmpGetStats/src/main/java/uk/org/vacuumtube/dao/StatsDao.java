@@ -54,7 +54,7 @@ public interface StatsDao {
 	 * @param stats
 	 * @param note
 	 */
-	public void addNoteToStat(Stats stats, String note) throws InfrastructureException;
+	public Notes addNoteToStat(Stats stats, String note) throws InfrastructureException;
 
 
 	/**

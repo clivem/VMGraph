@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.org.vacuumtube.dao.Notes;
 import uk.org.vacuumtube.dao.Stats;
 import uk.org.vacuumtube.dao.StatsDao;
 import uk.org.vacuumtube.exception.InfrastructureException;
@@ -64,8 +65,8 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	 */
 	@Override
 	@Transactional
-	public void addNoteToStat(Stats stats, String note) {
-		statsDao.addNoteToStat(stats, note);
+	public Notes addNoteToStat(Stats stats, String note) {
+		return statsDao.addNoteToStat(stats, note);
 	}
 
 	/* (non-Javadoc)

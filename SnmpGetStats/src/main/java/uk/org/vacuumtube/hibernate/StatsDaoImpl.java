@@ -46,13 +46,14 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	 * @see uk.org.vacuumtube.dao.StatsDao#addNote(uk.org.vacuumtube.dao.Stats, uk.org.vacuumtube.dao.Notes)
 	 */
 	@Override
-	public void addNoteToStat(Stats stats, String note) throws InfrastructureException {
+	public Notes addNoteToStat(Stats stats, String note) throws InfrastructureException {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("addNote(stats=" + stats + ", note=" + note + ")");
 		}
 
 		Notes notes = stats.addNote(note);
 		makePersistent(notes);
+		return notes;
 	}
 
 	/* (non-Javadoc)
@@ -63,13 +64,15 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("add(stats=" + stats + ")");
 		}
-		
+		/*
 		try {
 			Long id = (Long) getSession().save(stats);
 			return id;
 		} catch (HibernateException he) {
 			throw new InfrastructureException(he);
 		}
+		*/
+		return (Long) super.save(stats);
 	}
 
 	/* (non-Javadoc)
@@ -209,8 +212,8 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 				Iterator<Notes> it = notesList.iterator();
 				while (it.hasNext()) {
 					Notes notes = it.next();
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug("Eager load: " + notes);
+					if (LOGGER.isTraceEnabled()) {
+						LOGGER.trace("Eager load: " + notes);
 					}
 				}
 			}

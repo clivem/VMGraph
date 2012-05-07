@@ -3,6 +3,7 @@
  */
 package uk.org.vacuumtube.hibernate;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -54,13 +55,12 @@ public class HibernateDaoImpl implements HibernateDao {
 		return getSessionFactory().getCurrentSession();
 	}
 
-	/**
-	 * @param object
-	 * @throws InfrastructureException
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.HibernateDao#save(java.lang.Object)
 	 */
-	public void save(Object object) throws InfrastructureException {
+	public Serializable save(Object object) throws InfrastructureException {
         try {
-            getSession().save(object);
+            return getSession().save(object);
         } catch (HibernateException ex) {
             throw new InfrastructureException(ex);
         }

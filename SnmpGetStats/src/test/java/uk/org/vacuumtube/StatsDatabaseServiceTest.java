@@ -175,27 +175,30 @@ public class StatsDatabaseServiceTest {
 			LOGGER.info("After adding to db with sds.add(): " + stats);
 			Assert.assertNotNull("Save Stats object to db failed!", id);
 			
-			int count = 10;
-			// Add note and merge
-			for (int i = 0; i < count; i++) {
-				//stats.getNotes().add(new Notes(stats, "test" + i));
-				sds.addNoteToStat(stats, "test_");
-			}
+			int count = 5;
 			watch.start("Add " + count + " Notes to Stats and merge()");
+			// Add note(s) and merge
+			for (int i = 0; i < count; i++) {
+				//sds.addNoteToStat(stats, "test_" + i);
+				stats.addNote("test_" + i);
+			}
 			stats = sds.merge(stats);
+			//sds.update(stats);
 			logWatchStop(watch);
+			//stats = sds.getStatsById(stats.getId());
 			LOGGER.info("After adding note and sds.merge(stats): " + stats);
-			Assert.assertNotNull(stats);
+			Assert.assertEquals("Number of notes added != number of notes after merge()!", 
+					count, stats.getNotes().size());
 
 			// Delete
 			watch.start("sds.delete(" + stats + ")");
 			sds.delete(stats);
 			logWatchStop(watch);
 			
-			watch.start("sds.getStatsById(" + id + ", " + false + ")");
-			stats = sds.getStatsById(id, false);
+			watch.start("sds.getStatsById(" + id + ", " + true + ")");
+			stats = sds.getStatsById(id, true);
 			logWatchStop(watch);
-			LOGGER.info("After stats.delete() -> sds.getStats(id=" + id + "): " + stats);
+			//LOGGER.info("After stats.delete() -> sds.getStats(id=" + id + "): " + stats);
 			Assert.assertNull("Delete stats object failed!", stats);
 		} catch (Exception e) {
 			LOGGER.warn(null, e);
