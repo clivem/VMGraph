@@ -84,7 +84,7 @@ public class Stats extends AbstractTimestampEntity {
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(Long statsId) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
