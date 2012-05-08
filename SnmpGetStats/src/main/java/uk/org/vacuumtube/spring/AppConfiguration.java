@@ -33,7 +33,7 @@ public class AppConfiguration {
 	public LocalSessionFactoryBean sessionFactory() {
 		Properties props = new Properties();
 		// props.put("hibernate.dialect",
-		// org.hibernate.dialect.MySQLDialect.class.getName());
+		//		org.hibernate.dialect.MySQLDialect.class.getName());
 		props.put("hibernate.dialect",
 				org.hibernate.dialect.MySQL5InnoDBDialect.class.getName());
 		props.put("hibernate.show_sql", "true");

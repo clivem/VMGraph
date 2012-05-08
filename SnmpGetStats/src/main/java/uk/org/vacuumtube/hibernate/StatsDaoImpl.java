@@ -34,7 +34,7 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	/**
 	 * 
 	 */
-	public StatsDaoImpl() throws InfrastructureException {
+	public StatsDaoImpl() {
 	}
 	
 	/* (non-Javadoc)
@@ -57,6 +57,7 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 		try {
 			/*
 			 * Create a dummy non-locking lock request to re-attach object to the session
+			 * so that lazy collections can be fetched without error.
 			 */
 			LockRequest lockReq = getSession().buildLockRequest(new LockOptions(LockMode.NONE));
 			lockReq.lock(persistable);
