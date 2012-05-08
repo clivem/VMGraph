@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashSet;
 
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,27 +35,19 @@ import uk.org.vacuumtube.util.Format;
 })
 public class Stats extends AbstractTimestampEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "STATSID")
-	protected Long id = null;
+	private static final long serialVersionUID = 2247407172964283263L;
 
-	@Basic
-	@Column(name = "MILLIS", nullable = false)
+	protected Long statsId = null;
 	protected Long millis = null;
-	
-	@Basic
-	@Column(name = "RXBYTES", nullable = false)
 	protected Long rxBytes = null;
-	
-	@Basic
-	@Column(name = "TXBYTES", nullable = false)
 	protected Long txBytes = null;
-	
-	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.LAZY, mappedBy = "stats")
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	//@Fetch(FetchMode.JOIN)
 	protected Collection<Notes> notes = null;
+
+	/**
+	 * 
+	 */
+	public Stats() {
+	}
 
 	/**
 	 * @param millis
@@ -73,28 +64,26 @@ public class Stats extends AbstractTimestampEntity {
 	}
 	
 	/**
-	 * 
-	 */
-	public Stats() {
-	}
-
-	/**
 	 * @return the statsId
 	 */
-	public Long getId() {
-		return id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "STATSID", unique = true, nullable = false)
+	public Long getStatsId() {
+		return statsId;
 	}
 
 	/**
-	 * @param id the id to set
+	 * @param statsId the statsId to set
 	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setStatsId(Long statsId) {
+		this.statsId = statsId;
 	}
 
 	/**
 	 * @return the millis
 	 */
+	@Column(name = "MILLIS", nullable = false)
 	public Long getMillis() {
 		return millis;
 	}
@@ -109,6 +98,7 @@ public class Stats extends AbstractTimestampEntity {
 	/**
 	 * @return the rxBytes
 	 */
+	@Column(name = "RXBYTES", nullable = false)
 	public Long getRxBytes() {
 		return rxBytes;
 	}
@@ -123,6 +113,7 @@ public class Stats extends AbstractTimestampEntity {
 	/**
 	 * @return the txBytes
 	 */
+	@Column(name = "TXBYTES", nullable = false)
 	public Long getTxBytes() {
 		return txBytes;
 	}
@@ -137,6 +128,9 @@ public class Stats extends AbstractTimestampEntity {
 	/**
 	 * @return the notes
 	 */
+	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.LAZY, mappedBy = "stats")
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	//@Fetch(FetchMode.JOIN)
 	public Collection<Notes> getNotes() {
 		return notes;
 	}
@@ -158,6 +152,8 @@ public class Stats extends AbstractTimestampEntity {
 		result = prime * result + ((millis == null) ? 0 : millis.hashCode());
 		result = prime * result + ((rxBytes == null) ? 0 : rxBytes.hashCode());
 		result = prime * result + ((txBytes == null) ? 0 : txBytes.hashCode());
+		result = prime * result + ((created == null) ? 0 : created.hashCode());
+		result = prime * result + ((updated == null) ? 0 : updated.hashCode());
 		return result;
 	}
 
@@ -197,6 +193,20 @@ public class Stats extends AbstractTimestampEntity {
 		} else if (!txBytes.equals(other.txBytes)) {
 			return false;
 		}
+		if (created == null) {
+			if (other.created != null) {
+				return false;
+			}
+		} else if (!created.equals(other.created)) {
+			return false;
+		}
+		if (updated == null) {
+			if (other.updated != null) {
+				return false;
+			}
+		} else if (!updated.equals(other.updated)) {
+			return false;
+		}
 		return true;
 	}
 
@@ -207,7 +217,7 @@ public class Stats extends AbstractTimestampEntity {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("Stats[statsId=");
-		buf.append(id);
+		buf.append(statsId);
 		buf.append(", millis=");
 		buf.append(millis);
 		buf.append(", rxBytes=");
@@ -237,7 +247,7 @@ public class Stats extends AbstractTimestampEntity {
 	 * @return
 	 */
 	public String shortDescription() {
-		return "Stats[id=" + id + "]";
+		return "Stats[id=" + statsId + "]";
 	}
 	
 	/**

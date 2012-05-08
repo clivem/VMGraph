@@ -40,7 +40,7 @@ public class AppConfiguration {
 
 		LocalSessionFactoryBean bean = new LocalSessionFactoryBean();
 		bean.setPackagesToScan("uk.org.vacuumtube.dao");
-		//bean.setMappingResources(new String[] {"META-INF/stats.hbm.xml", "META-INF/notes.hbm.xml"});
+		//bean.setMappingResources(new String[] {"uk/org/vacuumtube/dao/Stats.hbm.xml", "uk/org/vacuumtube/dao/Notes.hbm.xml"});
 		bean.setHibernateProperties(props);
 		bean.setDataSource(this.dataSource);
 		bean.setEntityInterceptor(new MySqlFixInterceptor());

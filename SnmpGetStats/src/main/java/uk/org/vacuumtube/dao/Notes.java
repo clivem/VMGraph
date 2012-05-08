@@ -5,7 +5,6 @@ package uk.org.vacuumtube.dao;
 
 import java.util.Date;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,19 +24,18 @@ import uk.org.vacuumtube.util.Format;
 @Table(name="NOTES")
 public class Notes extends AbstractTimestampEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="NOTESID")
-	protected Long id = null;
-
-	@Basic
-	@Column(name = "NOTE", nullable = false, length=255)
-	protected String note = null;
+	private static final long serialVersionUID = 7877156363139225872L;
 	
-	@ManyToOne()
-	@JoinColumn(name = "STATSID")
+	protected Long notesId = null;
+	protected String note = null;	
 	protected Stats stats = null;
 	
+	/**
+	 * 
+	 */
+	public Notes() {
+	}
+
 	/**
 	 * @param note
 	 */
@@ -49,28 +47,26 @@ public class Notes extends AbstractTimestampEntity {
 	}
 
 	/**
-	 * 
+	 * @return the notesId
 	 */
-	public Notes() {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="NOTESID", unique = true, nullable = false)
+	public Long getNotesId() {
+		return notesId;
 	}
 
 	/**
-	 * @return the id
+	 * @param notesId the notesId to set
 	 */
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setNotesId(Long notesId) {
+		this.notesId = notesId;
 	}
 
 	/**
 	 * @return the note
 	 */
+	@Column(name = "NOTE", nullable = false)
 	public String getNote() {
 		return note;
 	}
@@ -85,6 +81,9 @@ public class Notes extends AbstractTimestampEntity {
 	/**
 	 * @return the stats
 	 */
+	@ManyToOne()
+	//@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "STATSID", nullable = false)
 	public Stats getStats() {
 		return stats;
 	}
@@ -103,8 +102,9 @@ public class Notes extends AbstractTimestampEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((created == null) ? 0 : created.hashCode());
 		result = prime * result + ((note == null) ? 0 : note.hashCode());
+		result = prime * result + ((created == null) ? 0 : created.hashCode());
+		result = prime * result + ((updated == null) ? 0 : updated.hashCode());
 		return result;
 	}
 
@@ -123,6 +123,13 @@ public class Notes extends AbstractTimestampEntity {
 			return false;
 		}
 		Notes other = (Notes) obj;
+		if (note == null) {
+			if (other.note != null) {
+				return false;
+			}
+		} else if (!note.equals(other.note)) {
+			return false;
+		}
 		if (created == null) {
 			if (other.created != null) {
 				return false;
@@ -130,11 +137,11 @@ public class Notes extends AbstractTimestampEntity {
 		} else if (!created.equals(other.created)) {
 			return false;
 		}
-		if (note == null) {
-			if (other.note != null) {
+		if (updated == null) {
+			if (other.updated != null) {
 				return false;
 			}
-		} else if (!note.equals(other.note)) {
+		} else if (!updated.equals(other.updated)) {
 			return false;
 		}
 		return true;
@@ -147,7 +154,7 @@ public class Notes extends AbstractTimestampEntity {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("Notes[notesId=");
-		buf.append(id);
+		buf.append(notesId);
 		buf.append(", note=");
 		buf.append(note);
 		buf.append(", created=");
@@ -155,7 +162,7 @@ public class Notes extends AbstractTimestampEntity {
 		buf.append(", updated=");
 		buf.append(Format.formatDateFull(updated));
 		buf.append(", stats=");
-		buf.append(((stats != null) ? "Stats[statsId=" + stats.getId() + "]" : "null"));
+		buf.append(((stats != null) ? ("Stats[statsId=" + stats.getStatsId() + "]") : "null"));
 		buf.append("]");
 		return buf.toString();
 	}	
@@ -164,6 +171,6 @@ public class Notes extends AbstractTimestampEntity {
 	 * @return
 	 */
 	public String shortDescription() {
-		return "Notes[id=" + id + "]";
+		return "Notes[id=" + notesId + "]";
 	}
 }

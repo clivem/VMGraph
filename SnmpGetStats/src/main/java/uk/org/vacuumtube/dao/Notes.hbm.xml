@@ -3,17 +3,16 @@
                                    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
  <class name="uk.org.vacuumtube.dao.Notes" table="NOTES">
-  <id column="NOTESID" name="id" type="long">
+  <id column="NOTESID" name="notesid" type="java.lang.Long">
    <generator class="identity"/>
   </id>
-  <timestamp column="UPDATED" source="vm" name="updated"
-   unsaved-value="null"/>
-  <property generated="never" lazy="false" name="created" not-null="true" type="timestamp">
-   <column name="CREATED" sql-type="TIMESTAMP"/>
-  </property>
+  <timestamp column="UPDATED" source="vm" name="updated" unsaved-value="null"/>
   <property generated="never" lazy="false" name="note" not-null="true" type="string">
    <column name="NOTE" sql-type="VARCHAR(255)"/>
   </property>  
+  <property generated="never" lazy="false" name="created" not-null="true" type="timestamp">
+   <column name="CREATED" sql-type="TIMESTAMP"/>
+  </property>
   <many-to-one name="stats" 
     class="uk.org.vacuumtube.dao.Stats" 
     column="STATSID" not-null="true"/>

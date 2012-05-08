@@ -3,7 +3,7 @@
                                    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
  <class name="uk.org.vacuumtube.dao.Stats" table="STATS">
-  <id column="STATSID" name="id" type="long">
+  <id column="STATSID" name="statsId" type="java.lang.Long">
    <generator class="identity"/>
   </id>
   <timestamp column="UPDATED" source="vm" name="updated"
@@ -20,11 +20,11 @@
   <property generated="never" lazy="false" name="created" not-null="true" type="timestamp">
    <column name="CREATED" sql-type="TIMESTAMP"/>
   </property>
-  
   <set name="notes" lazy="false" inverse="true" cascade="all,delete-orphan" fetch="join">
-    <key column="STATSID"/>
+	  <key>
+	      <column name="STATSID" not-null="true" />
+	  </key>
     <one-to-many class="uk.org.vacuumtube.dao.Notes"/>
   </set>
-
  </class>
 </hibernate-mapping>
