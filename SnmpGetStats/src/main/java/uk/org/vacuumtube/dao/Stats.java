@@ -18,6 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
@@ -220,7 +221,11 @@ public class Stats extends AbstractTimestampEntity {
 		buf.append(", notes=");
 		if (notes != null) {
 			//buf.append(notes);
-			buf.append("Notes[" + notes.size() + "]");
+			if (Hibernate.isInitialized(notes)) {
+				buf.append("Notes[" + notes.size() + "]");
+			} else {
+				buf.append("Notes[PROXY NOT INITIALISED]");
+			}
 		} else {
 			buf.append("null");
 		}

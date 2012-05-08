@@ -3,9 +3,11 @@
  */
 package uk.org.vacuumtube.hibernate;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
@@ -163,14 +165,14 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 			}
 			stats = (Stats) getSession().get(Stats.class, id);
 			*/
+			
+			Criteria criteria = getSession().createCriteria(Stats.class)
+					.add(Restrictions.idEq(id));
+			
 			if (!lazy) {
-				stats = (Stats) getSession().createCriteria(Stats.class)
-						.setFetchMode("notes", FetchMode.JOIN)
-						.add(Restrictions.idEq(id)).uniqueResult();
-			} else {
-				stats = (Stats) getSession().createCriteria(Stats.class)
-						.add(Restrictions.idEq(id)).uniqueResult();
+				criteria = criteria.setFetchMode("notes", FetchMode.JOIN);
 			}
+			stats = (Stats) criteria.uniqueResult();
 		} catch (HibernateException he) {
 			throw new InfrastructureException(he);
 		}
@@ -221,29 +223,24 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 		
 		List<Stats> statsList = null;
 		try {
-			if (!lazy) {
-				statsList = getSession().createCriteria(Stats.class)
-						.setFetchMode("notes", FetchMode.JOIN).list();
-				/*
-				statsList = getSession()
-						.createQuery("select DISTINCT stats from Stats stats left join fetch stats.notes ORDER BY stats.id")
-						.list();
-						*/
-			} else {
-				statsList = getSession().createCriteria(Stats.class).list();
-				/*
-				statsList = getSession()
-						.createQuery("select stats from Stats stats ORDER BY stats.id")
-						.list();
-						*/
-			}
 			/*
+			Criteria criteria = getSession().createCriteria(Stats.class)
+					.addOrder(Order.asc("id"));
+			
 			if (!lazy) {
-				for (Stats stat : statsList) {
-					eagerLoadNotesCollection(stat);
-				}
+				criteria = criteria.setFetchMode("notes", FetchMode.JOIN)
+						.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 			}
+
+			statsList = criteria.list();
 			*/
+			String hql = null;
+			if (!lazy) {
+				hql = "select DISTINCT stats from Stats stats left join fetch stats.notes ORDER BY stats.id";
+			} else {
+				hql = "from Stats stats ORDER BY stats.id";
+			}
+			statsList = getSession().createQuery(hql).list();
 		} catch (HibernateException he) {
 			throw new InfrastructureException(he);
 		}
@@ -253,10 +250,19 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	/**
 	 * @param stats
 	 */
-	@SuppressWarnings("unused")
 	private void eagerLoadNotesCollection(Stats stats) {
 		if (stats != null) {
 			Hibernate.initialize(stats.getNotes());
+		}
+	}
+	
+	/**
+	 * @param statsList
+	 */
+	@SuppressWarnings("unused")
+	private void eagerLoadNotesCollection(Collection<Stats> statsList) {
+		for (Stats stats : statsList) {
+			eagerLoadNotesCollection(stats);
 		}
 	}
 	
