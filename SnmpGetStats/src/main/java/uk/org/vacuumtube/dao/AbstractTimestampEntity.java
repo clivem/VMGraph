@@ -36,7 +36,7 @@ public abstract class AbstractTimestampEntity implements Entity {
 	 * @return the created date
 	 */
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "CREATED", nullable = false, length = 19)
+	@Column(name = "created", nullable = false, length = 19)
 	public Date getCreated() {
 		return created;
 	}
@@ -54,7 +54,7 @@ public abstract class AbstractTimestampEntity implements Entity {
 	@Version
 	@Source(SourceType.VM)
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "UPDATED", nullable = false, length = 19)
+	@Column(name = "updated", nullable = false, length = 19)
 	public Date getUpdated() {
 		return updated;
 	}
