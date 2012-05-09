@@ -14,6 +14,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StopWatch.TaskInfo;
 
+import uk.org.vacuumtube.dao.Notes;
 import uk.org.vacuumtube.dao.Stats;
 import uk.org.vacuumtube.exception.InfrastructureException;
 import uk.org.vacuumtube.service.StatsDatabaseService;
@@ -51,7 +52,7 @@ public class StatsDatabaseServiceTest {
 			
 			StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
 			watch.start("sds.getCount()");
-			int count = sds.getCount();
+			int count = sds.getStatsCount();
 			logWatchStop(watch);
 			LOGGER.info("sds.getCount() returns: " + count);
 			Assert.assertTrue(count > -1);
@@ -74,7 +75,7 @@ public class StatsDatabaseServiceTest {
 			Stats stats = new Stats(System.currentTimeMillis(), 1L, 1L);
 			
 			watch.start("sds.add(" + stats.shortDescription() + ")");
-			Long id = sds.add(stats);
+			Long id = sds.createStats(stats);
 			logWatchStop(watch);
 			
 			Assert.assertNotNull("Save Stats object to db failed!", id);
@@ -91,7 +92,7 @@ public class StatsDatabaseServiceTest {
 			stats.setRxBytes(updateBytes);
 			
 			watch.start("sds.update(" + stats.shortDescription() + ")");
-			sds.update(stats);
+			sds.updateStats(stats);
 			logWatchStop(watch);
 			
 			// Get
@@ -100,7 +101,7 @@ public class StatsDatabaseServiceTest {
 			
 			// Delete
 			watch.start("sds.delete(" + stats.shortDescription() + ")");
-			sds.delete(stats);
+			sds.deleteStats(stats);
 			logWatchStop(watch);
 			
 			// Get
@@ -124,35 +125,54 @@ public class StatsDatabaseServiceTest {
 			// Add
 			Stats stats = new Stats(System.currentTimeMillis(), 1L, 1L);
 			watch.start("sds.add(" + stats + ")");
-			Long id = sds.add(stats);
+			Long id = sds.createStats(stats);
 			logWatchStop(watch);
 			LOGGER.info("After adding to db with sds.add(): " + stats);
 			Assert.assertNotNull("Save Stats object to db failed!", id);
 			
 			int count = 5;
-			watch.start("Add " + count + " Notes to Stats and merge()");
+			watch.start("Add " + count + " Notes to: " + stats.shortDescription());
 			// Add note(s) and merge
 			for (int i = 0; i < count; i++) {
 				//sds.addNoteToStat(stats, "test_" + i);
 				stats.addNote("test_" + i);
 			}
-			stats = sds.merge(stats);
+			logWatchStop(watch);
+
+			watch.start("updateStats(" + stats.shortDescription() + ")");
+			sds.updateStats(stats);
 			//sds.update(stats);
 			logWatchStop(watch);
-			//stats = sds.getStatsById(stats.getId());
-			LOGGER.info("After adding note and sds.merge(stats): " + stats);
-			Assert.assertEquals("Number of notes added != number of notes after merge()!", 
+			
+			stats = getStatsById(watch, sds, id, false);
+			//LOGGER.info("After adding " + count + " note(s) and sds.update(stats): " + stats);
+			Assert.assertEquals("Number of notes added != number of notes after updateStats()!", 
 					count, stats.getNotes().size());
+			
+			// Delete Notes
+			boolean deleteNotes = false;
+			if (deleteNotes) {
+				Notes[] notes = stats.getNotes().toArray(new Notes[0]);
+				watch.start("Deleting " + notes.length + " notes");
+				for (Notes note : notes) {
+					sds.deleteNote(note);
+				}
+				logWatchStop(watch);
+
+				stats = getStatsById(watch, sds, id, false);
+				Assert.assertTrue("stats.notes.size() != 0 after delete all!", stats.getNotes().size() == 0);
+			}
 
 			// Delete
-			watch.start("sds.delete(" + stats + ")");
-			sds.delete(stats);
-			logWatchStop(watch);
-			
-			boolean lazy = true;
-			stats = getStatsById(watch, sds, id, lazy);
-			//LOGGER.info("After stats.delete() -> sds.getStats(id=" + id + "): " + stats);
-			Assert.assertNull("Delete stats object failed!", stats);
+			boolean deleteStats = true;
+			if (deleteStats) {
+				watch.start("sds.delete(" + stats.shortDescription() + ")");
+				sds.deleteStats(stats);
+				logWatchStop(watch);
+				
+				stats = getStatsById(watch, sds, id, true);
+				Assert.assertNull("Delete stats object failed!", stats);
+			}
 		} catch (Exception e) {
 			LOGGER.warn(null, e);
 			throw e;
@@ -168,17 +188,35 @@ public class StatsDatabaseServiceTest {
 
 			StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
 
+			int count = 11;
 			/*
 			 * Get without join
 			 */
 			boolean lazy = true;
-			getStatsList(watch, sds, lazy);
+			long totalMs = 0;
+			for (int i = 0; i < count; i++) {
+				getStatsList(watch, sds, lazy);
+				if (i > 0) {
+					totalMs += watch.getLastTaskInfo().getTimeMillis();
+				}
+			}
+			String logInfo = ("getStatsList(" + lazy + "): " + (count - 1) + " times. Avg time: " + (totalMs / (count - 1)) + "ms");
 			
 			/*
 			 * Get with join
 			 */
 			lazy = false;
-			getStatsList(watch, sds, lazy);
+			totalMs = 0;
+			for (int i = 0; i < count; i++) {
+				getStatsList(watch, sds, lazy);
+				if (i > 0) {
+					totalMs += watch.getLastTaskInfo().getTimeMillis();
+				}
+			}
+			
+			LOGGER.info(logInfo);
+			LOGGER.info("getStatsList(" + lazy + "): " + (count - 1) + " times. Avg time: " + (totalMs / (count - 1)) + "ms");
+			
 		} catch (Exception e) {
 			LOGGER.warn(null, e);
 			throw e;
@@ -235,9 +273,10 @@ public class StatsDatabaseServiceTest {
 	/**
 	 * @param watch
 	 */
-	private void logWatchStop(StopWatch watch) {
+	private TaskInfo logWatchStop(StopWatch watch) {
 		watch.stop();
 		TaskInfo ti = watch.getLastTaskInfo();
 		LOGGER.info("Task: " + ti.getTaskName() + ". Time: " + ti.getTimeMillis() +"ms");
+		return ti;
 	}
 }

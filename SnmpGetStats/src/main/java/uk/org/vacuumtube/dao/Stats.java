@@ -29,7 +29,7 @@ import uk.org.vacuumtube.util.Format;
  *
  */
 @Entity
-@Table(name="STATS")
+@Table(name="stats")
 @FetchProfile(name = "stats-with-notes", fetchOverrides = {
 	@FetchProfile.FetchOverride(entity = Stats.class, association = "notes", mode = FetchMode.JOIN)
 })
@@ -68,7 +68,7 @@ public class Stats extends AbstractTimestampEntity {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "STATSID", unique = true, nullable = false)
+	@Column(name = "stats_id", unique = true, nullable = false)
 	public Long getStatsId() {
 		return statsId;
 	}
@@ -83,7 +83,7 @@ public class Stats extends AbstractTimestampEntity {
 	/**
 	 * @return the millis
 	 */
-	@Column(name = "MILLIS", nullable = false)
+	@Column(name = "millis", nullable = false)
 	public Long getMillis() {
 		return millis;
 	}
@@ -98,7 +98,7 @@ public class Stats extends AbstractTimestampEntity {
 	/**
 	 * @return the rxBytes
 	 */
-	@Column(name = "RXBYTES", nullable = false)
+	@Column(name = "rx_bytes", nullable = false)
 	public Long getRxBytes() {
 		return rxBytes;
 	}
@@ -113,7 +113,7 @@ public class Stats extends AbstractTimestampEntity {
 	/**
 	 * @return the txBytes
 	 */
-	@Column(name = "TXBYTES", nullable = false)
+	@Column(name = "tx_bytes", nullable = false)
 	public Long getTxBytes() {
 		return txBytes;
 	}
@@ -128,6 +128,7 @@ public class Stats extends AbstractTimestampEntity {
 	/**
 	 * @return the notes
 	 */
+	//@OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "stats")
 	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.LAZY, mappedBy = "stats")
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	//@Fetch(FetchMode.JOIN)
@@ -260,5 +261,15 @@ public class Stats extends AbstractTimestampEntity {
 		Notes n = new Notes(this, note);
 		notes.add(n);
 		return n;
+	}
+	
+	/**
+	 * @param note
+	 */
+	public void removeNote(Notes note) {
+		if (notes != null) {
+			notes.remove(note);
+		}
+		note.setStats(null);
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.org.vacuumtube.hibernate;
+package uk.org.vacuumtube.dao.hibernate;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -14,7 +14,7 @@ import uk.org.vacuumtube.dao.AbstractTimestampEntity;
  * @author clivem
  *
  */
-public class MySqlFixInterceptor extends EmptyInterceptor {
+public class MySqlTimestampInterceptor extends EmptyInterceptor {
 
 	private static final long serialVersionUID = 6119618691845929405L;
 

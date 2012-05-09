@@ -19,7 +19,7 @@ import org.hibernate.annotations.SourceType;
  *
  */
 @MappedSuperclass
-public abstract class AbstractTimestampEntity implements Persistable {
+public abstract class AbstractTimestampEntity implements Entity {
 
 	private static final long serialVersionUID = 2663713623245906645L;
 	
@@ -29,7 +29,7 @@ public abstract class AbstractTimestampEntity implements Persistable {
 	/**
 	 * 
 	 */
-	public AbstractTimestampEntity() {
+	protected AbstractTimestampEntity() {
 	}
 	
 	/**

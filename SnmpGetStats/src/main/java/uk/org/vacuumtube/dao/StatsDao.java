@@ -5,68 +5,79 @@ package uk.org.vacuumtube.dao;
 
 import java.util.List;
 
-import uk.org.vacuumtube.exception.InfrastructureException;
-
 /**
  * @author clivem
  *
  */
 public interface StatsDao {
 
-	public String entityToString(Persistable persistable) throws InfrastructureException;
+	/**
+	 * @param entity
+	 * @return a string representation of the entity
+	 */
+	public String statsToString(Stats stats);
 	
 	/**
 	 * @param stats
-	 * @return
+	 * @return the id of the Stats entity
 	 */
-	public Long add(Stats stats) throws InfrastructureException;
+	public Long createStats(Stats stats);
 	
 	/**
 	 * @param stats
-	 * @return
 	 */
-	public void delete(Stats stats) throws InfrastructureException;
+	public void deleteStats(Stats stats);
 
 	/**
 	 * @param stats
 	 */
-	public void update(Stats stats) throws InfrastructureException;
+	public void updateStats(Stats stats);
+	
+	/**
+	 * @param stats
+	 * @return the Stats object with the current DB record
+	 */
+	public Stats mergeStats(Stats stats);
+
+	/**
+	 * @param id
+	 * @return the Stats object identified by the id
+	 */
+	public Stats getStatsById(long id);
 	
 	/**
 	 * @param id
-	 * @return
+	 * @param lazy
+	 * @return the Stats object identified by the id
 	 */
-	public Stats getStatsById(long id) throws InfrastructureException;
+	public Stats getStatsById(long id, boolean lazy);
+
+	/**
+	 * @return a Collection of the Stats entities
+	 */
+	public List<Stats> getStatsList();
 	
-	public Stats getStatsById(long id, boolean lazy) throws InfrastructureException;
+	/**
+	 * @param lazy
+	 * @return a Collection of the Stats entities
+	 */
+	public List<Stats> getStatsList(boolean lazy);
 
 	/**
-	 * @return
+	 * @return the number of persistent Stats entities
 	 */
-	public int getCount() throws InfrastructureException;
-	
-	/**
-	 * @return
-	 */
-	public List<Stats> getStatsList() throws InfrastructureException;
-	
-	public List<Stats> getStatsList(boolean lazy) throws InfrastructureException;
-
-	/**
-	 * @param stats
-	 * @param note
-	 */
-	public Notes addNoteToStat(Stats stats, String note) throws InfrastructureException;
-
-
-	/**
-	 * @param note
-	 */
-	//public void addNote(Notes note) throws InfrastructureException;
+	public int getStatsCount();
 	
 	/**
 	 * @param stats
-	 * @return
+	 * @param note
+	 * @return the created Notes object
 	 */
-	public Stats merge(Stats stats) throws InfrastructureException;
+	public Notes createNote(Stats stats, String note);
+
+	/**
+	 * @param note
+	 */
+	public void deleteNote(Notes note);
+	
 }

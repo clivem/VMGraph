@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uk.org.vacuumtube.hibernate;
+package uk.org.vacuumtube.dao.hibernate;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,23 +11,19 @@ import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
-import org.hibernate.LockMode;
-import org.hibernate.LockOptions;
-import org.hibernate.Session.LockRequest;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.context.ApplicationContext;
 
 import uk.org.vacuumtube.dao.Notes;
-import uk.org.vacuumtube.dao.Persistable;
 import uk.org.vacuumtube.dao.Stats;
 import uk.org.vacuumtube.dao.StatsDao;
-import uk.org.vacuumtube.exception.InfrastructureException;
+import uk.org.vacuumtube.exception.DaoRuntimeException;
 
 /**
  * @author clivem
  *
  */
-public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
+public class StatsDaoImpl extends AbstractHibernateDaoImpl implements StatsDao {
 
 	private final static Logger LOGGER = Logger.getLogger(StatsDaoImpl.class);
 	
@@ -38,65 +34,53 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	}
 	
 	/* (non-Javadoc)
-	 * @see uk.org.vacuumtube.dao.StatsDao#addNote(uk.org.vacuumtube.dao.Notes)
-	 *
-	@Override
-	public void addNote(Notes note) throws InfrastructureException {
-		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("addNote(note=" + note + ")");
-		}
-		super.makePersistent(note);
-	}
-	*/
-
-	/* (non-Javadoc)
-	 * @see uk.org.vacuumtube.dao.StatsDao#entityToString(uk.org.vacuumtube.dao.Persistable)
+	 * @see uk.org.vacuumtube.dao.StatsDao#statsToString(uk.org.vacuumtube.dao.Stats)
 	 */
 	@Override
-	public String entityToString(Persistable persistable) throws InfrastructureException {
-		try {
-			/*
-			 * Create a dummy non-locking lock request to re-attach object to the session
-			 * so that lazy collections can be fetched without error.
-			 */
-			LockRequest lockReq = getSession().buildLockRequest(new LockOptions(LockMode.NONE));
-			lockReq.lock(persistable);
-			return persistable.toString();
-		} catch (HibernateException he) {
-			throw new InfrastructureException(he);
-		}
+	public String statsToString(Stats stats) {
+		return super.entityToString(stats);
 	}
 	
 	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.dao.StatsDao#addNote(uk.org.vacuumtube.dao.Stats, uk.org.vacuumtube.dao.Notes)
 	 */
 	@Override
-	public Notes addNoteToStat(Stats stats, String note) throws InfrastructureException {
+	public Notes createNote(Stats stats, String note) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("addNote(stats=" + stats.shortDescription() + ", note=" + note + ")");
 		}
 
 		Notes notes = stats.addNote(note);
-		makePersistent(notes);
+		super.save(notes);
 		return notes;
 	}
 
 	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.StatsDao#deleteNote(uk.org.vacuumtube.dao.Notes)
+	 */
+	@Override
+	public void deleteNote(Notes note) {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("deleteNote(note=" + note + ")");
+		}
+		
+		Stats stats = note.getStats();
+		if (stats != null) {
+			stats.removeNote(note);
+		}
+		
+		super.delete(note);
+	}
+	
+	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.routeros.spring.dao.StatsDao#add(uk.org.vacuumtube.routeros.spring.dao.Stats)
 	 */
 	@Override
-	public Long add(Stats stats) throws InfrastructureException {
+	public Long createStats(Stats stats) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("add(stats=" + stats.shortDescription() + ")");
 		}
-		/*
-		try {
-			Long id = (Long) getSession().save(stats);
-			return id;
-		} catch (HibernateException he) {
-			throw new InfrastructureException(he);
-		}
-		*/
+
 		return (Long) super.save(stats);
 	}
 
@@ -104,19 +88,19 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	 * @see uk.org.vacuumtube.routeros.spring.dao.StatsDao#delete(uk.org.vacuumtube.routeros.Stats)
 	 */
 	@Override
-	public void delete(Stats stats) throws InfrastructureException {
+	public void deleteStats(Stats stats) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("delete(stats=" + stats.shortDescription() + ")");
 		}
 		
-		super.makeTransient(stats);
+		super.delete(stats);
 	}
 
 	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.routeros.spring.dao.StatsDao#update(uk.org.vacuumtube.routeros.Stats)
 	 */
 	@Override
-	public void update(Stats stats) throws InfrastructureException {
+	public void updateStats(Stats stats) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("update(stats=" + stats.shortDescription() + ")");
 		}
@@ -128,7 +112,7 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	 * @see uk.org.vacuumtube.dao.StatsDao#merge(uk.org.vacuumtube.dao.Stats)
 	 */
 	@Override
-	public Stats merge(Stats stats) throws InfrastructureException {
+	public Stats mergeStats(Stats stats) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("merge(stats=" + stats.shortDescription() + ")");
 		}
@@ -140,7 +124,7 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	 * @see uk.org.vacuumtube.routeros.spring.dao.StatsDao#getStats(long)
 	 */
 	@Override
-	public Stats getStatsById(long id) throws InfrastructureException {
+	public Stats getStatsById(long id) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("getStats(id=" + id + ")");
 		}
@@ -152,8 +136,7 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	 * @see uk.org.vacuumtube.dao.StatsDao#getStatsById(long, boolean)
 	 */
 	@Override
-	public Stats getStatsById(long id, boolean lazy)
-			throws InfrastructureException {
+	public Stats getStatsById(long id, boolean lazy) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("getStats(id=" + id + ", lazy=" + lazy + ")");
 		}
@@ -174,8 +157,8 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 				criteria = criteria.setFetchMode("notes", FetchMode.JOIN);
 			}
 			stats = (Stats) criteria.uniqueResult();
-		} catch (HibernateException he) {
-			throw new InfrastructureException(he);
+		} catch (HibernateException ex) {
+			throw new DaoRuntimeException(ex.getMessage(), ex);
 		}
 		return stats;
 	}
@@ -184,7 +167,7 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	 * @see uk.org.vacuumtube.routeros.spring.dao.StatsDao#getCount()
 	 */
 	@Override
-	public int getCount() throws InfrastructureException {
+	public int getStatsCount() {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("getCount()");
 		}
@@ -194,8 +177,8 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 					.createQuery("select count(*) from Stats")
 					.uniqueResult();
 			return count.intValue();
-		} catch (HibernateException he) {
-			throw new InfrastructureException(he);
+		} catch (HibernateException ex) {
+			throw new DaoRuntimeException(ex.getMessage(), ex);
 		}
 	}
 
@@ -203,7 +186,7 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	 * @see uk.org.vacuumtube.routeros.spring.dao.StatsDao#getStatsList()
 	 */
 	@Override
-	public List<Stats> getStatsList() throws InfrastructureException {
+	public List<Stats> getStatsList() {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("getStatsList()");
 		}
@@ -216,8 +199,7 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Stats> getStatsList(boolean lazy)
-			throws InfrastructureException {
+	public List<Stats> getStatsList(boolean lazy) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("getStatsList(lazy=" + lazy + ")");
 		}
@@ -239,11 +221,11 @@ public class StatsDaoImpl extends HibernateDaoImpl implements StatsDao {
 			if (!lazy) {
 				hql = "select DISTINCT stats from Stats stats left join fetch stats.notes ORDER BY stats.id";
 			} else {
-				hql = "from Stats stats ORDER BY stats.id";
+				hql = "select stats from Stats stats ORDER BY stats.id";
 			}
 			statsList = getSession().createQuery(hql).list();
-		} catch (HibernateException he) {
-			throw new InfrastructureException(he);
+		} catch (HibernateException ex) {
+			throw new DaoRuntimeException(ex.getMessage(), ex);
 		}
 		return statsList;
 	}

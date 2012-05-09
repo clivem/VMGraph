@@ -2,19 +2,19 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
                                    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
- <class name="uk.org.vacuumtube.dao.Notes" table="NOTES">
-  <id column="NOTESID" name="notesid" type="java.lang.Long">
+ <class name="uk.org.vacuumtube.dao.Notes" table="notes">
+  <id column="notes_id" name="notesid" type="java.lang.Long">
    <generator class="identity"/>
   </id>
-  <timestamp column="UPDATED" source="vm" name="updated" unsaved-value="null"/>
+  <timestamp column="updated" source="vm" name="updated" unsaved-value="null"/>
   <property generated="never" lazy="false" name="note" not-null="true" type="string">
-   <column name="NOTE" sql-type="VARCHAR(255)"/>
+   <column name="note" sql-type="VARCHAR(255)"/>
   </property>  
   <property generated="never" lazy="false" name="created" not-null="true" type="timestamp">
-   <column name="CREATED" sql-type="TIMESTAMP"/>
+   <column name="created" sql-type="TIMESTAMP"/>
   </property>
   <many-to-one name="stats" 
     class="uk.org.vacuumtube.dao.Stats" 
-    column="STATSID" not-null="true"/>
+    column="stats_id" not-null="true"/>
  </class>
 </hibernate-mapping>

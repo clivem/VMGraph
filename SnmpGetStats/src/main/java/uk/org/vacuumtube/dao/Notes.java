@@ -21,7 +21,7 @@ import uk.org.vacuumtube.util.Format;
  *
  */
 @Entity
-@Table(name="NOTES")
+@Table(name="notes")
 public class Notes extends AbstractTimestampEntity {
 
 	private static final long serialVersionUID = 7877156363139225872L;
@@ -51,7 +51,7 @@ public class Notes extends AbstractTimestampEntity {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="NOTESID", unique = true, nullable = false)
+	@Column(name="notes_id", unique = true, nullable = false)
 	public Long getNotesId() {
 		return notesId;
 	}
@@ -66,7 +66,7 @@ public class Notes extends AbstractTimestampEntity {
 	/**
 	 * @return the note
 	 */
-	@Column(name = "NOTE", nullable = false)
+	@Column(name = "note", nullable = false)
 	public String getNote() {
 		return note;
 	}
@@ -83,7 +83,7 @@ public class Notes extends AbstractTimestampEntity {
 	 */
 	@ManyToOne()
 	//@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "STATSID", nullable = false)
+	@JoinColumn(name = "stats_id", nullable = false)
 	public Stats getStats() {
 		return stats;
 	}

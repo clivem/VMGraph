@@ -9,10 +9,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.org.vacuumtube.dao.Notes;
-import uk.org.vacuumtube.dao.Persistable;
 import uk.org.vacuumtube.dao.Stats;
 import uk.org.vacuumtube.dao.StatsDao;
-import uk.org.vacuumtube.exception.InfrastructureException;
 
 /**
  * @author clivem
@@ -47,8 +45,8 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public String entityToString(Persistable persistable) throws InfrastructureException {
-		return statsDao.entityToString(persistable);
+	public String statsToString(Stats stats) {
+		return statsDao.statsToString(stats);
 	}
 
 	/* (non-Javadoc)
@@ -65,8 +63,7 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<Stats> getStatsList(boolean lazy)
-			throws InfrastructureException {
+	public List<Stats> getStatsList(boolean lazy) {
 		return statsDao.getStatsList(lazy);
 	}
 
@@ -75,27 +72,26 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	 */
 	@Override
 	@Transactional
-	public Notes addNoteToStat(Stats stats, String note) {
-		return statsDao.addNoteToStat(stats, note);
+	public Notes createNote(Stats stats, String note) {
+		return statsDao.createNote(stats, note);
 	}
-
-	/* (non-Javadoc)
-	 * @see uk.org.vacuumtube.dao.StatsDao#addNote(uk.org.vacuumtube.dao.Notes)
-	 *
-	@Override
-	@Transactional
-	public void addNote(Notes note) {
-		statsDao.addNote(note);
-	}
-	*/
 
 	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.dao.StatsDao#add(uk.org.vacuumtube.dao.Stats)
 	 */
 	@Override
 	@Transactional
-	public Long add(Stats stats) {
-		return statsDao.add(stats);
+	public Long createStats(Stats stats) {
+		return statsDao.createStats(stats);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.StatsDao#deleteNote(uk.org.vacuumtube.dao.Notes)
+	 */
+	@Override
+	@Transactional
+	public void deleteNote(Notes note) {
+		statsDao.deleteNote(note);
 	}
 
 	/* (non-Javadoc)
@@ -103,8 +99,8 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	 */
 	@Override
 	@Transactional
-	public void delete(Stats stats) {
-		statsDao.delete(stats);
+	public void deleteStats(Stats stats) {
+		statsDao.deleteStats(stats);
 	}
 
 	/* (non-Javadoc)
@@ -112,8 +108,8 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	 */
 	@Override
 	@Transactional
-	public void update(Stats stats) {
-		statsDao.update(stats);
+	public void updateStats(Stats stats) {
+		statsDao.updateStats(stats);
 	}
 
 	/* (non-Javadoc)
@@ -121,8 +117,8 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	 */
 	@Override
 	@Transactional
-	public Stats merge(Stats stats) {
-		return statsDao.merge(stats);
+	public Stats mergeStats(Stats stats) {
+		return statsDao.mergeStats(stats);
 	}
 
 	/* (non-Javadoc)
@@ -139,8 +135,7 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Stats getStatsById(long id, boolean lazy)
-			throws InfrastructureException {
+	public Stats getStatsById(long id, boolean lazy) {
 		return statsDao.getStatsById(id, lazy);
 	}
 
@@ -149,8 +144,8 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public int getCount() {
-		return statsDao.getCount();
+	public int getStatsCount() {
+		return statsDao.getStatsCount();
 	}
 
 	/**

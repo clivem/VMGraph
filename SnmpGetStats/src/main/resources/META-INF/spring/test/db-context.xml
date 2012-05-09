@@ -59,7 +59,7 @@
 	
     <tx:annotation-driven/>
     
-	<bean id="hibernateStatsDao" class="uk.org.vacuumtube.hibernate.StatsDaoImpl">
+	<bean id="hibernateStatsDao" class="uk.org.vacuumtube.dao.hibernate.StatsDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 	

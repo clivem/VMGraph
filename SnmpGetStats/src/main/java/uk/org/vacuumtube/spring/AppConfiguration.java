@@ -14,8 +14,8 @@ import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 
 import uk.org.vacuumtube.dao.StatsDao;
-import uk.org.vacuumtube.hibernate.MySqlFixInterceptor;
-import uk.org.vacuumtube.hibernate.StatsDaoImpl;
+import uk.org.vacuumtube.dao.hibernate.MySqlTimestampInterceptor;
+import uk.org.vacuumtube.dao.hibernate.StatsDaoImpl;
 import uk.org.vacuumtube.service.StatsDatabaseService;
 import uk.org.vacuumtube.service.StatsDatabaseServiceImpl;
 
@@ -43,7 +43,7 @@ public class AppConfiguration {
 		//bean.setMappingResources(new String[] {"uk/org/vacuumtube/dao/Stats.hbm.xml", "uk/org/vacuumtube/dao/Notes.hbm.xml"});
 		bean.setHibernateProperties(props);
 		bean.setDataSource(this.dataSource);
-		bean.setEntityInterceptor(new MySqlFixInterceptor());
+		bean.setEntityInterceptor(new MySqlTimestampInterceptor());
 		return bean;
 	}
 

@@ -182,7 +182,7 @@ public class GetSnmpInterfaceStatistics {
 									if (logger.isDebugEnabled()) {
 										logger.debug("Updating MySQL: " + stats);
 									}
-									sds.add(stats);
+									sds.createStats(stats);
 									logger.info("Updated MySQL: " + stats);
 								} catch (Exception e) {
 									logger.warn("Error updating MySQL: " + stats, e);
