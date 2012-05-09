@@ -43,15 +43,13 @@ public abstract class AbstractHibernateDaoImpl implements Dao {
 
     /**
      * @return
-     * @throws DaoRuntimeException
      */
-    protected final SessionFactory getSessionFactory() {
+    public SessionFactory getSessionFactory() {
     	return sessionFactory;
     }
 
     /**
      * @return
-     * @throws DaoRuntimeException
      */
     protected final Session getSession() {
         return getSessionFactory().getCurrentSession();
