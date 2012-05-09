@@ -19,10 +19,8 @@ import org.hibernate.annotations.SourceType;
  *
  */
 @MappedSuperclass
-public abstract class AbstractTimestampEntity implements Entity {
+public abstract class AbstractTimestampEntity {
 
-	private static final long serialVersionUID = 2663713623245906645L;
-	
 	protected Date created = null;
 	protected Date updated = null;
 	

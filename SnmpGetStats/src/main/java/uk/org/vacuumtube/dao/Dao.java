@@ -13,39 +13,39 @@ import java.io.Serializable;
 public interface Dao {
     
 	/**
-	 * @param entity
+	 * @param persistableEntity
 	 * @return a string representation of the entity
 	 */
-	public String entityToString(Entity entity);
+	public String entityToString(PersistableEntity persistableEntity);
 
 	/**
      * @param entityObject
      * @return
      */
-    public Object save(Entity entityObject);
+    public Object save(PersistableEntity entityObject);
     
     /**
      * @param entityObject
      */
-    public void update(Entity entityObject);
+    public void update(PersistableEntity entityObject);
 
     /**
      * @param entityObject
      * @return
      */
-    public Entity merge(Entity entityObject);
+    public PersistableEntity merge(PersistableEntity entityObject);
     
     /**
      * @param entityObject
      */
-    public void delete(Entity entityObject);
+    public void delete(PersistableEntity entityObject);
     
     /**
      * @param entityClass
      * @param primaryKey
      * @return
      */
-    public Entity get(Class<?> entityClass, Serializable primaryKey);
+    public PersistableEntity get(Class<?> entityClass, Serializable primaryKey);
     
     /**
      * @param entityClass
@@ -53,6 +53,6 @@ public interface Dao {
      * @param lockRequired
      * @return
      */
-    public Entity get(Class<?> entityClass, Serializable primaryKey, boolean lockRequired);
+    public PersistableEntity get(Class<?> entityClass, Serializable primaryKey, boolean lockRequired);
 }
 

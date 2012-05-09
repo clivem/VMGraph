@@ -3,6 +3,7 @@
  */
 package uk.org.vacuumtube.dao;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -33,7 +34,7 @@ import uk.org.vacuumtube.util.Format;
 @FetchProfile(name = "stats-with-notes", fetchOverrides = {
 	@FetchProfile.FetchOverride(entity = Stats.class, association = "notes", mode = FetchMode.JOIN)
 })
-public class Stats extends AbstractTimestampEntity {
+public class Stats extends AbstractTimestampEntity implements uk.org.vacuumtube.dao.PersistableEntity, Serializable {
 
 	private static final long serialVersionUID = 2247407172964283263L;
 

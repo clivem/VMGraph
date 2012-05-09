@@ -150,13 +150,14 @@ public class StatsDaoImpl extends AbstractHibernateDaoImpl implements StatsDao {
 			stats = (Stats) getSession().get(Stats.class, id);
 			*/
 			
-			Criteria criteria = getSession().createCriteria(Stats.class)
-					.add(Restrictions.idEq(id));
-			
 			if (!lazy) {
+				Criteria criteria = getSession().createCriteria(Stats.class)
+						.add(Restrictions.idEq(id));				
 				criteria = criteria.setFetchMode("notes", FetchMode.JOIN);
+				stats = (Stats) criteria.uniqueResult();
+			} else {
+				stats = (Stats) super.get(Stats.class, id);
 			}
-			stats = (Stats) criteria.uniqueResult();
 		} catch (HibernateException ex) {
 			throw new DaoRuntimeException(ex.getMessage(), ex);
 		}
@@ -172,6 +173,7 @@ public class StatsDaoImpl extends AbstractHibernateDaoImpl implements StatsDao {
 			LOGGER.trace("getCount()");
 		}
 		
+		/*
 		try {
 			Long count = (Long) getSession()
 					.createQuery("select count(*) from Stats")
@@ -180,6 +182,9 @@ public class StatsDaoImpl extends AbstractHibernateDaoImpl implements StatsDao {
 		} catch (HibernateException ex) {
 			throw new DaoRuntimeException(ex.getMessage(), ex);
 		}
+		*/
+		
+		return ((Long) super.getSingle("select count(*) from Stats")).intValue();
 	}
 
 	/* (non-Javadoc)
@@ -205,8 +210,8 @@ public class StatsDaoImpl extends AbstractHibernateDaoImpl implements StatsDao {
 		}
 		
 		List<Stats> statsList = null;
+		/*
 		try {
-			/*
 			Criteria criteria = getSession().createCriteria(Stats.class)
 					.addOrder(Order.asc("id"));
 			
@@ -216,17 +221,18 @@ public class StatsDaoImpl extends AbstractHibernateDaoImpl implements StatsDao {
 			}
 
 			statsList = criteria.list();
-			*/
-			String hql = null;
-			if (!lazy) {
-				hql = "select DISTINCT stats from Stats stats left join fetch stats.notes ORDER BY stats.id";
-			} else {
-				hql = "select stats from Stats stats ORDER BY stats.id";
-			}
-			statsList = getSession().createQuery(hql).list();
 		} catch (HibernateException ex) {
 			throw new DaoRuntimeException(ex.getMessage(), ex);
 		}
+		*/
+		String hql = null;
+		if (!lazy) {
+			hql = "select DISTINCT stats from Stats stats left join fetch stats.notes ORDER BY stats.id";
+		} else {
+			hql = "select stats from Stats stats ORDER BY stats.id";
+		}
+		statsList = (List<Stats>) super.getList(hql);		
+
 		return statsList;
 	}
 

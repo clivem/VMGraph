@@ -3,6 +3,7 @@
  */
 package uk.org.vacuumtube.dao;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -22,7 +23,7 @@ import uk.org.vacuumtube.util.Format;
  */
 @Entity
 @Table(name="notes")
-public class Notes extends AbstractTimestampEntity {
+public class Notes extends AbstractTimestampEntity implements uk.org.vacuumtube.dao.PersistableEntity, Serializable {
 
 	private static final long serialVersionUID = 7877156363139225872L;
 	

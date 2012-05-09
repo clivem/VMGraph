@@ -17,7 +17,7 @@ import org.hibernate.Session.LockRequest;
 import org.hibernate.SessionFactory;
 
 import uk.org.vacuumtube.dao.Dao;
-import uk.org.vacuumtube.dao.Entity;
+import uk.org.vacuumtube.dao.PersistableEntity;
 import uk.org.vacuumtube.exception.DaoRuntimeException;
 
 /**
@@ -56,26 +56,26 @@ public abstract class AbstractHibernateDaoImpl implements Dao {
     }
 
 	/* (non-Javadoc)
-	 * @see uk.org.vacuumtube.dao.Dao#entityToString(uk.org.vacuumtube.dao.Entity)
+	 * @see uk.org.vacuumtube.dao.Dao#entityToString(uk.org.vacuumtube.dao.PersistableEntity)
 	 */
-	public String entityToString(Entity entity) {
+	public String entityToString(PersistableEntity persistableEntity) {
 		try {
 			/*
 			 * Create a dummy non-locking lock request to re-attach object to the session
 			 * so that lazy collections can be fetched without error.
 			 */
 			LockRequest lockReq = getSession().buildLockRequest(new LockOptions(LockMode.NONE));
-			lockReq.lock(entity);
-			return entity.toString();
+			lockReq.lock(persistableEntity);
+			return persistableEntity.toString();
 		} catch (HibernateException ex) {
 			throw new DaoRuntimeException(ex.getMessage(), ex);
 		}
 	}
 	
     /* (non-Javadoc)
-     * @see uk.org.vacuumtube.dao.Dao#save(uk.org.vacuumtube.dao.Entity)
+     * @see uk.org.vacuumtube.dao.Dao#save(uk.org.vacuumtube.dao.PersistableEntity)
      */
-    public final Object save(Entity entityObject) {
+    public final Object save(PersistableEntity entityObject) {
         try {
             return getSession().save(entityObject);
         } catch (HibernateException ex) {
@@ -84,9 +84,9 @@ public abstract class AbstractHibernateDaoImpl implements Dao {
     }
 
     /* (non-Javadoc)
-     * @see uk.org.vacuumtube.dao.Dao#update(uk.org.vacuumtube.dao.Entity)
+     * @see uk.org.vacuumtube.dao.Dao#update(uk.org.vacuumtube.dao.PersistableEntity)
      */
-    public final void update(Entity entityObject) {
+    public final void update(PersistableEntity entityObject) {
         try {
             getSession().saveOrUpdate(entityObject);
         } catch (HibernateException ex) {
@@ -95,20 +95,20 @@ public abstract class AbstractHibernateDaoImpl implements Dao {
     }
 
     /* (non-Javadoc)
-     * @see uk.org.vacuumtube.dao.Dao#merge(uk.org.vacuumtube.dao.Entity)
+     * @see uk.org.vacuumtube.dao.Dao#merge(uk.org.vacuumtube.dao.PersistableEntity)
      */
-    public final Entity merge(Entity entityObject) {
+    public final PersistableEntity merge(PersistableEntity entityObject) {
         try {
-            return (Entity) getSession().merge(entityObject);
+            return (PersistableEntity) getSession().merge(entityObject);
         } catch (HibernateException ex) {
             throw new DaoRuntimeException(ex.getMessage(), ex);
         }
     }
 
     /* (non-Javadoc)
-	 * @see uk.org.vacuumtube.dao.Dao#delete(uk.org.vacuumtube.dao.Entity)
+	 * @see uk.org.vacuumtube.dao.Dao#delete(uk.org.vacuumtube.dao.PersistableEntity)
 	 */
-	public void delete(Entity entityObject) {
+	public void delete(PersistableEntity entityObject) {
 		try {
 			getSession().delete(entityObject);
 		} catch (HibernateException ex) {
@@ -119,16 +119,16 @@ public abstract class AbstractHibernateDaoImpl implements Dao {
     /* (non-Javadoc)
      * @see uk.org.vacuumtube.dao.Dao#get(java.lang.Class, java.io.Serializable)
      */
-    public Entity get(Class<?> entityClass, Serializable primaryKey) {
+    public PersistableEntity get(Class<?> entityClass, Serializable primaryKey) {
         return get(entityClass, primaryKey, false);
     }
 
     /* (non-Javadoc)
      * @see uk.org.vacuumtube.dao.Dao#get(java.lang.Class, java.io.Serializable, boolean)
      */
-    public Entity get(Class<?> entityClass, Serializable primaryKey, boolean lockRequired) {
+    public PersistableEntity get(Class<?> entityClass, Serializable primaryKey, boolean lockRequired) {
         try {
-            return (Entity) getSession().get(entityClass, primaryKey, 
+            return (PersistableEntity) getSession().get(entityClass, primaryKey, 
             		new LockOptions((lockRequired) ? LockMode.PESSIMISTIC_WRITE : LockMode.NONE));
         } catch (HibernateException ex) {
             throw new DaoRuntimeException(ex.getMessage(), ex);
@@ -191,7 +191,7 @@ public abstract class AbstractHibernateDaoImpl implements Dao {
      * @param hql
      * @return
      */
-    protected final List<?> getList(String hql) {
+	protected final List<?> getList(String hql) {
         try {
             Query query = getSession().createQuery(hql);
             return query.list();
@@ -206,7 +206,7 @@ public abstract class AbstractHibernateDaoImpl implements Dao {
      * @param paramValue
      * @return
      */
-    protected final List<?> getList(String hql, String paramName, Object paramValue) {
+	protected final List<?> getList(String hql, String paramName, Object paramValue) {
         try {
             Query query = getSession().createQuery(hql);
             query.setParameter(paramName, paramValue);
@@ -221,7 +221,8 @@ public abstract class AbstractHibernateDaoImpl implements Dao {
      * @param parameters
      * @return
      */
-    protected final List<?> getList(String hql, Map<String, Object> parameters) {
+    @SuppressWarnings("rawtypes")
+	protected final List getList(String hql, Map<String, Object> parameters) {
         try {
             Query query = getSession().createQuery(hql);
 
