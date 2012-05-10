@@ -10,7 +10,7 @@ import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StopWatch.TaskInfo;
 
@@ -19,6 +19,7 @@ import uk.org.vacuumtube.dao.Stats;
 import uk.org.vacuumtube.exception.InfrastructureException;
 import uk.org.vacuumtube.service.StatsDatabaseService;
 import uk.org.vacuumtube.service.StatsDatabaseServiceImpl;
+import uk.org.vacuumtube.spring.DatabaseConfiguration;
 
 /**
  * @author clivem
@@ -263,9 +264,13 @@ public class StatsDatabaseServiceTest {
 	 */
 	private final ApplicationContext createApplicationContext(StopWatch watch) {
 		watch.start("Setup context");
+		/*
 		final ApplicationContext context = new ClassPathXmlApplicationContext(
 				new String[] {"/META-INF/spring/app-context.xml", "/META-INF/spring/db-context.xml"}, 
 				StatsDatabaseServiceTest.class);
+				*/
+		final AnnotationConfigApplicationContext context = 
+				new AnnotationConfigApplicationContext(DatabaseConfiguration.class);
 		logWatchStop(watch);
 		return context;
 	}

@@ -29,10 +29,10 @@ public class GetSnmpInterfaceStatisticsJob extends QuartzJobBean {
 	private final static String PREV_RX_BYTES = "prevRxBytes";
 	private final static String PREV_TX_BYTES = "prevTxBytes";
 	
-	private final static String SNMP_ADDRESS = "address";
-	private final static String SNMP_BYTES_IN_OID = "bytesInOid";
-	private final static String SNMP_BYTES_OUT_OID = "bytesOutOid";
-	private final static String SNMP_RRDDB_FILENAME = "rrdDbFileName";
+	private final static String SNMP_ADDRESS = "snmp.address";
+	private final static String SNMP_BYTES_IN_OID = "snmp.bytesInOid";
+	private final static String SNMP_BYTES_OUT_OID = "snmp.bytesOutOid";
+	private final static String SNMP_RRDDB_FILENAME = "snmp.rrdDbFileName";
 	
 	/**
 	 * 

@@ -7,7 +7,10 @@ import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import uk.org.vacuumtube.spring.DatabaseConfiguration;
+import uk.org.vacuumtube.spring.ScheduleConfiguration;
 
 /**
  * @author clivem
@@ -31,8 +34,11 @@ public class SnmpGetStats {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		final ClassPathXmlApplicationContext ctx = 
-				new ClassPathXmlApplicationContext("classpath:META-INF/spring/*-context.xml");
+		//final ClassPathXmlApplicationContext ctx = 
+		//		new ClassPathXmlApplicationContext("classpath:META-INF/spring/*-context.xml");
+		
+		final AnnotationConfigApplicationContext ctx = 
+				new AnnotationConfigApplicationContext(DatabaseConfiguration.class, ScheduleConfiguration.class);
 		ctx.registerShutdownHook();
 		
 		CONTEXT = ctx;

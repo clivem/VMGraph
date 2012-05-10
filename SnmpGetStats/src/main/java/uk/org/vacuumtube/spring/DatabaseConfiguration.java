@@ -7,9 +7,12 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.dbcp.BasicDataSource;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 
@@ -24,25 +27,22 @@ import uk.org.vacuumtube.service.StatsDatabaseServiceImpl;
  *
  */
 @Configuration
-public class AppConfiguration {
+@ImportResource("classpath:/META-INF/spring/db-context.xml")
+public class DatabaseConfiguration {
 
-	@Value("#{dataSource}")
-	private DataSource dataSource;
+	@Value("#{hibernateProperties}")
+	private Properties hibernateProperties;
 
+	@Value("#{jdbcProperties}")
+	private Properties jdbcProperties;
+	
 	@Bean(name = "sessionFactory")
 	public LocalSessionFactoryBean sessionFactory() {
-		Properties props = new Properties();
-		// props.put("hibernate.dialect",
-		//		org.hibernate.dialect.MySQLDialect.class.getName());
-		props.put("hibernate.dialect",
-				org.hibernate.dialect.MySQL5InnoDBDialect.class.getName());
-		props.put("hibernate.show_sql", "true");
-
 		LocalSessionFactoryBean bean = new LocalSessionFactoryBean();
 		bean.setPackagesToScan("uk.org.vacuumtube.dao");
 		//bean.setMappingResources(new String[] {"uk/org/vacuumtube/dao/Stats.hbm.xml", "uk/org/vacuumtube/dao/Notes.hbm.xml"});
-		bean.setHibernateProperties(props);
-		bean.setDataSource(this.dataSource);
+		bean.setHibernateProperties(hibernateProperties);
+		bean.setDataSource(dataSource());
 		bean.setEntityInterceptor(new MySqlTimestampInterceptor());
 		return bean;
 	}
@@ -64,5 +64,33 @@ public class AppConfiguration {
 		StatsDatabaseServiceImpl impl = new StatsDatabaseServiceImpl();
 		impl.setStatsDao(statsDao());
 		return impl;
+	}
+
+	@Bean(name = "dataSource", destroyMethod = "close")
+	public DataSource dataSource() {
+		String driverClassName = getProperty("jdbc.driverClassName", jdbcProperties);
+		String url = getProperty("jdbc.url", jdbcProperties);
+		String username = getProperty("jdbc.username", jdbcProperties);
+		String password = getProperty("jdbc.password", jdbcProperties);
+		
+		BasicDataSource ds = new BasicDataSource();
+		ds.setDriverClassName(driverClassName);
+		ds.setUrl(url);
+		ds.setUsername(username);
+		ds.setPassword(password);
+		return ds;
+	}
+	
+	/**
+	 * @param name
+	 * @param properties
+	 * @return the property value of the name
+	 */
+	private final static String getProperty(final String name, final Properties properties) {
+		String value = properties.getProperty(name);
+		if (value == null) {
+			throw new BeanCreationException(name + " not set!");
+		}
+		return value;
 	}
 }
