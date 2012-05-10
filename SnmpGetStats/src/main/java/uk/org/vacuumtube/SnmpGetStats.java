@@ -6,11 +6,10 @@ package uk.org.vacuumtube;
 import java.util.Scanner;
 
 import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import uk.org.vacuumtube.spring.DatabaseConfiguration;
 import uk.org.vacuumtube.spring.ScheduleConfiguration;
+import uk.org.vacuumtube.spring.ServiceLocator;
 
 /**
  * @author clivem
@@ -20,7 +19,7 @@ public class SnmpGetStats {
 
 	private final static Logger LOGGER = Logger.getLogger(SnmpGetStats.class);
 
-	public static ApplicationContext CONTEXT = null;
+	public static ServiceLocator SERVICE_LOCATOR = null;
 	
 	public SnmpGetStats() {
 		Runtime.getRuntime().addShutdownHook(new SnmpGetStatsClose());
@@ -38,10 +37,10 @@ public class SnmpGetStats {
 		//		new ClassPathXmlApplicationContext("classpath:META-INF/spring/*-context.xml");
 		
 		final AnnotationConfigApplicationContext ctx = 
-				new AnnotationConfigApplicationContext(DatabaseConfiguration.class, ScheduleConfiguration.class);
+				new AnnotationConfigApplicationContext(ScheduleConfiguration.class);
 		ctx.registerShutdownHook();
-		
-		CONTEXT = ctx;
+
+		SERVICE_LOCATOR = new ServiceLocator(ctx);
 		
 		@SuppressWarnings("unused")
 		SnmpGetStats snmpGetStats = new SnmpGetStats();

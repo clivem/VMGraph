@@ -11,6 +11,8 @@ import org.quartz.impl.JobDetailImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -23,12 +25,14 @@ import uk.org.vacuumtube.schedule.GetSnmpInterfaceStatisticsJob;
  */
 @Configuration
 @ImportResource("classpath:/META-INF/spring/schedule-context.xml")
+@Import(ApplicationConfiguration.class)
 public class ScheduleConfiguration {
 
 	@Value("#{snmpProperties}")
 	private Properties snmpProperties;
-
+	
 	@Bean(name = "snmpStatsJobDetail")
+	@DependsOn(value = "statsDatabaseService")
 	public JobDetailImpl snmpStatsJobDetail() {
 		JobDetailImpl jobDetailImpl = new JobDetailImpl();
 		jobDetailImpl.setName("GetSnmpInterfaceStatisticsJob");

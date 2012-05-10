@@ -19,10 +19,8 @@ import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.Variable;
 
-import uk.org.vacuumtube.SnmpGetStats;
 import uk.org.vacuumtube.dao.Stats;
 import uk.org.vacuumtube.service.StatsDatabaseService;
-import uk.org.vacuumtube.service.StatsDatabaseServiceImpl;
 import uk.org.vacuumtube.util.ByteFormat;
 
 /**
@@ -50,6 +48,8 @@ public class GetSnmpInterfaceStatistics {
 	
     protected String archiveInName;
     protected String archiveOutName;
+    
+    protected StatsDatabaseService statsDatabaseService;
 	
 	
 	/**
@@ -58,11 +58,12 @@ public class GetSnmpInterfaceStatistics {
 	 * @param bytes_out_oid
 	 */
 	public GetSnmpInterfaceStatistics(String address, String bytes_in_oid, String bytes_out_oid, String rrdDbFileName, 
-			String archiveInName, String archiveOutName) {
+			String archiveInName, String archiveOutName, StatsDatabaseService statsDatabaseService) {
 		if (logger.isTraceEnabled()) {
 			logger.trace("GetSnmpInterfaceStatistics(address=" + address + ", bytes_in_oid=" + bytes_in_oid + 
 					", bytes_out_oid=" + bytes_out_oid + ", rrdDbFileName=" + rrdDbFileName + 
-					", archiveInName=" + archiveInName + ", archiveOutName=" + archiveOutName + ")");
+					", archiveInName=" + archiveInName + ", archiveOutName=" + archiveOutName + 
+					", statsDatabaseService" + statsDatabaseService + ")");
 		}
 		this.rrdDbFileName = rrdDbFileName;
 		this.address = address;
@@ -70,6 +71,7 @@ public class GetSnmpInterfaceStatistics {
 		this.bytes_out_oid = new OID(bytes_out_oid);
 		this.archiveInName = archiveInName;
 		this.archiveOutName = archiveOutName;
+		this.statsDatabaseService = statsDatabaseService;
 	}
 	
 	/**
@@ -78,8 +80,9 @@ public class GetSnmpInterfaceStatistics {
 	 * @param bytes_out_oid
 	 * @param rrdDbFileName
 	 */
-	public GetSnmpInterfaceStatistics(String address, String bytes_in_oid, String bytes_out_oid, String rrdDbFileName) {
-		this(address, bytes_in_oid, bytes_out_oid, rrdDbFileName, DEFAULT_ARCHIVE_IN_NAME, DEFAULT_ARCHIVE_OUT_NAME);
+	public GetSnmpInterfaceStatistics(String address, String bytes_in_oid, String bytes_out_oid, String rrdDbFileName, 
+			StatsDatabaseService statsDatabaseService) {
+		this(address, bytes_in_oid, bytes_out_oid, rrdDbFileName, DEFAULT_ARCHIVE_IN_NAME, DEFAULT_ARCHIVE_OUT_NAME, statsDatabaseService);
 	}
 	
 	/**
@@ -174,15 +177,13 @@ public class GetSnmpInterfaceStatistics {
 								}
 							}
 							
-							if (true) {
+							if (statsDatabaseService != null) {
 								Stats stats = new Stats(timestamp, rxBytes, txBytes);
 								try {
-									StatsDatabaseService sds = 
-											StatsDatabaseServiceImpl.getStatsDatabaseService(SnmpGetStats.CONTEXT);
 									if (logger.isDebugEnabled()) {
 										logger.debug("Updating MySQL: " + stats);
 									}
-									sds.createStats(stats);
+									statsDatabaseService.createStats(stats);
 									logger.info("Updated MySQL: " + stats);
 								} catch (Exception e) {
 									logger.warn("Error updating MySQL: " + stats, e);

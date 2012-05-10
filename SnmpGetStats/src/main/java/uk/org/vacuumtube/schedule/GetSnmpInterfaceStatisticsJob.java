@@ -10,9 +10,9 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-//import org.quartz.StatefulJob;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
+import uk.org.vacuumtube.SnmpGetStats;
 import uk.org.vacuumtube.snmp.GetSnmpInterfaceStatistics;
 
 /**
@@ -62,7 +62,8 @@ public class GetSnmpInterfaceStatisticsJob extends QuartzJobBean {
 		
 		GetSnmpInterfaceStatistics getStats = new GetSnmpInterfaceStatistics(
 				jdm.getString(SNMP_ADDRESS), jdm.getString(SNMP_BYTES_IN_OID), 
-				jdm.getString(SNMP_BYTES_OUT_OID), jdm.getString(SNMP_RRDDB_FILENAME));
+				jdm.getString(SNMP_BYTES_OUT_OID), jdm.getString(SNMP_RRDDB_FILENAME), 
+				SnmpGetStats.SERVICE_LOCATOR.getStatsDatabaseService());
 		
 		if (jdm.containsKey(PREV_TS)) {
 			try {

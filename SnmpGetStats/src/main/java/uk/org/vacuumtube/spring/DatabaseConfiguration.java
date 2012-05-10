@@ -19,8 +19,6 @@ import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import uk.org.vacuumtube.dao.StatsDao;
 import uk.org.vacuumtube.dao.hibernate.MySqlTimestampInterceptor;
 import uk.org.vacuumtube.dao.hibernate.StatsDaoImpl;
-import uk.org.vacuumtube.service.StatsDatabaseService;
-import uk.org.vacuumtube.service.StatsDatabaseServiceImpl;
 
 /**
  * @author clivem
@@ -40,7 +38,11 @@ public class DatabaseConfiguration {
 	public LocalSessionFactoryBean sessionFactory() {
 		LocalSessionFactoryBean bean = new LocalSessionFactoryBean();
 		bean.setPackagesToScan("uk.org.vacuumtube.dao");
-		//bean.setMappingResources(new String[] {"uk/org/vacuumtube/dao/Stats.hbm.xml", "uk/org/vacuumtube/dao/Notes.hbm.xml"});
+		/*
+		bean.setMappingResources(new String[] {
+			"uk/org/vacuumtube/dao/Stats.hbm.xml", 
+			"uk/org/vacuumtube/dao/Notes.hbm.xml"});
+		*/
 		bean.setHibernateProperties(hibernateProperties);
 		bean.setDataSource(dataSource());
 		bean.setEntityInterceptor(new MySqlTimestampInterceptor());
@@ -59,13 +61,6 @@ public class DatabaseConfiguration {
 		return statsDaoImpl;
 	}
 	
-	@Bean(name = "statsDatabaseService")
-	public StatsDatabaseService statsDatabaseService() {
-		StatsDatabaseServiceImpl impl = new StatsDatabaseServiceImpl();
-		impl.setStatsDao(statsDao());
-		return impl;
-	}
-
 	@Bean(name = "dataSource", destroyMethod = "close")
 	public DataSource dataSource() {
 		String driverClassName = getProperty("jdbc.driverClassName", jdbcProperties);

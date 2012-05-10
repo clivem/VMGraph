@@ -9,8 +9,13 @@ import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StopWatch.TaskInfo;
 
@@ -18,17 +23,33 @@ import uk.org.vacuumtube.dao.Notes;
 import uk.org.vacuumtube.dao.Stats;
 import uk.org.vacuumtube.exception.InfrastructureException;
 import uk.org.vacuumtube.service.StatsDatabaseService;
-import uk.org.vacuumtube.service.StatsDatabaseServiceImpl;
-import uk.org.vacuumtube.spring.DatabaseConfiguration;
+import uk.org.vacuumtube.spring.ApplicationConfiguration;
+import uk.org.vacuumtube.spring.ServiceLocator;
 
 /**
  * @author clivem
  *
  */
-public class StatsDatabaseServiceTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(
+  classes = ApplicationConfiguration.class, 
+  loader = AnnotationConfigContextLoader.class)
+public class StatsDatabaseServiceTest implements ApplicationContextAware {
 
+	private ServiceLocator serviceLocator = null;
+	
 	private static final Logger LOGGER = Logger.getLogger(StatsDatabaseServiceTest.class);
+	
+	/* (non-Javadoc)
+	 * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+	 */
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		serviceLocator = new ServiceLocator(applicationContext);
+	}
 
+	/*
 	@Test
     public void testStartupOfSpringInegrationContext() throws Exception {
 		LOGGER.info("\n\ntestStartupOfSpringInegrationContext()");
@@ -43,15 +64,15 @@ public class StatsDatabaseServiceTest {
 			throw e;
 		}
     }
+    */
 	
 	@Test
 	public void testGetStatsEntityCount() throws Exception {
 		LOGGER.info("\n\ntestGetStatsEntityCount()");
 		try {
-			StopWatch watch = new StopWatch();
-			final ApplicationContext context = createApplicationContext(watch);
-			
-			StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
+			StopWatch watch = new StopWatch();			
+			StatsDatabaseService sds = serviceLocator.getStatsDatabaseService();
+
 			watch.start("sds.getCount()");
 			int count = sds.getStatsCount();
 			logWatchStop(watch);
@@ -68,9 +89,7 @@ public class StatsDatabaseServiceTest {
 		LOGGER.info("\n\ntestCreateUpdateDeleteStats()");
 		try {
 			StopWatch watch = new StopWatch();
-			final ApplicationContext context = createApplicationContext(watch);
-			
-			StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
+			StatsDatabaseService sds = serviceLocator.getStatsDatabaseService();
 			
 			// Create
 			Stats stats = new Stats(System.currentTimeMillis(), 1L, 1L);
@@ -119,9 +138,7 @@ public class StatsDatabaseServiceTest {
 		LOGGER.info("\n\ntestAddNoteToStats()");
 		try {
 			StopWatch watch = new StopWatch();
-			final ApplicationContext context = createApplicationContext(watch);
-
-			StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
+			StatsDatabaseService sds = serviceLocator.getStatsDatabaseService();
 			
 			// Add
 			Stats stats = new Stats(System.currentTimeMillis(), 1L, 1L);
@@ -185,9 +202,7 @@ public class StatsDatabaseServiceTest {
 		LOGGER.info("\n\ntestGetStatsList()");
 		try {
 			StopWatch watch = new StopWatch();
-			final ApplicationContext context = createApplicationContext(watch);
-
-			StatsDatabaseService sds = StatsDatabaseServiceImpl.getStatsDatabaseService(context);
+			StatsDatabaseService sds = serviceLocator.getStatsDatabaseService();
 
 			int count = 11;
 			/*
@@ -261,19 +276,16 @@ public class StatsDatabaseServiceTest {
 	/**
 	 * @param watch
 	 * @return
-	 */
-	private final ApplicationContext createApplicationContext(StopWatch watch) {
+	 *
+	@SuppressWarnings("unused")
+	private final ApplicationContext createApplicationContext_(StopWatch watch) {
 		watch.start("Setup context");
-		/*
-		final ApplicationContext context = new ClassPathXmlApplicationContext(
-				new String[] {"/META-INF/spring/app-context.xml", "/META-INF/spring/db-context.xml"}, 
-				StatsDatabaseServiceTest.class);
-				*/
 		final AnnotationConfigApplicationContext context = 
-				new AnnotationConfigApplicationContext(DatabaseConfiguration.class);
+				new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
 		logWatchStop(watch);
 		return context;
 	}
+	*/
 
 	/**
 	 * @param watch

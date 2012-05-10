@@ -5,7 +5,8 @@ package uk.org.vacuumtube.service;
 
 import java.util.List;
 
-import org.springframework.context.ApplicationContext;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.org.vacuumtube.dao.Notes;
@@ -16,8 +17,10 @@ import uk.org.vacuumtube.dao.StatsDao;
  * @author clivem
  *
  */
-public class StatsDatabaseServiceImpl implements StatsDatabaseService {
+public class StatsDatabaseServiceImpl implements StatsDatabaseService, InitializingBean {
 
+	private static final Logger LOGGER = Logger.getLogger(StatsDatabaseServiceImpl.class);
+	
 	private StatsDao statsDao;
 	
 	/**
@@ -40,6 +43,16 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 		this.statsDao = statsDao;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("afterPropertiesSet()");
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.dao.StatsDao#statsToString(uk.org.vacuumtube.dao.Stats)
 	 */
@@ -146,13 +159,5 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	@Transactional(readOnly = true)
 	public int getStatsCount() {
 		return statsDao.getStatsCount();
-	}
-
-	/**
-	 * @param ctx
-	 * @return
-	 */
-	public final static StatsDatabaseService getStatsDatabaseService(ApplicationContext ctx) {
-		return ctx.getBean("statsDatabaseService", StatsDatabaseService.class);
 	}
 }
