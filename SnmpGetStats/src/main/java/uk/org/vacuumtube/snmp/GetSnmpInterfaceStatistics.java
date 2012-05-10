@@ -31,7 +31,7 @@ public class GetSnmpInterfaceStatistics {
 
     private static final DateFormat DF_FULL = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS z");
 
-    private final Logger logger = Logger.getLogger(GetSnmpInterfaceStatistics.class);
+    private final Logger LOGGER = Logger.getLogger(GetSnmpInterfaceStatistics.class);
     
     public final static String DEFAULT_ARCHIVE_IN_NAME = "traffic_in";
     public final static String DEFAULT_ARCHIVE_OUT_NAME = "traffic_out";
@@ -51,7 +51,14 @@ public class GetSnmpInterfaceStatistics {
     
     protected StatsDatabaseService statsDatabaseService;
 	
-	
+    /**
+     * 
+     */
+    public GetSnmpInterfaceStatistics() {
+    	super();
+    	LOGGER.info("Created: GetSnmpInterfaceStatistics()");
+    }
+    
 	/**
 	 * @param address
 	 * @param bytes_in_oid
@@ -59,12 +66,7 @@ public class GetSnmpInterfaceStatistics {
 	 */
 	public GetSnmpInterfaceStatistics(String address, String bytes_in_oid, String bytes_out_oid, String rrdDbFileName, 
 			String archiveInName, String archiveOutName, StatsDatabaseService statsDatabaseService) {
-		if (logger.isTraceEnabled()) {
-			logger.trace("GetSnmpInterfaceStatistics(address=" + address + ", bytes_in_oid=" + bytes_in_oid + 
-					", bytes_out_oid=" + bytes_out_oid + ", rrdDbFileName=" + rrdDbFileName + 
-					", archiveInName=" + archiveInName + ", archiveOutName=" + archiveOutName + 
-					", statsDatabaseService" + statsDatabaseService + ")");
-		}
+		this();
 		this.rrdDbFileName = rrdDbFileName;
 		this.address = address;
 		this.bytes_in_oid = new OID(bytes_in_oid);
@@ -72,6 +74,12 @@ public class GetSnmpInterfaceStatistics {
 		this.archiveInName = archiveInName;
 		this.archiveOutName = archiveOutName;
 		this.statsDatabaseService = statsDatabaseService;
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("GetSnmpInterfaceStatistics(address=" + address + ", bytes_in_oid=" + bytes_in_oid + 
+					", bytes_out_oid=" + bytes_out_oid + ", rrdDbFileName=" + rrdDbFileName + 
+					", archiveInName=" + archiveInName + ", archiveOutName=" + archiveOutName + 
+					", statsDatabaseService" + statsDatabaseService + ")");
+		}
 	}
 	
 	/**
@@ -90,13 +98,13 @@ public class GetSnmpInterfaceStatistics {
 	 * @throws IOException
 	 */
 	private void openRrdDb() throws IOException {
-		if (logger.isTraceEnabled()) {
-			logger.trace("GetSnmpInterfaceStatistics.openRrdDb()");
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("GetSnmpInterfaceStatistics.openRrdDb()");
 		}
 		
 		File f = new File(rrdDbFileName);
 		if (!f.exists()) {
-			logger.info("Creating new RRD: " + rrdDbFileName);
+			LOGGER.info("Creating new RRD: " + rrdDbFileName);
 
 			RrdDef rrdDef = new RrdDef(rrdDbFileName);
 			rrdDef.setStep(300 / 5);
@@ -112,7 +120,7 @@ public class GetSnmpInterfaceStatistics {
 			rrdDef.addArchive(ConsolFun.MAX, 0.5, 288 * 5, 797);
 			rrdDb = new RrdDb(rrdDef);
 		} else {
-			logger.info("Opening existing RRD: " + rrdDbFileName);
+			LOGGER.info("Opening existing RRD: " + rrdDbFileName);
 
 			rrdDb = new RrdDb(rrdDbFileName);
 		}
@@ -122,8 +130,8 @@ public class GetSnmpInterfaceStatistics {
 	 * 
 	 */
 	public void execute() throws IOException {
-		if (logger.isTraceEnabled()) {
-			logger.trace("GetSnmpInterfaceStatistics.execute(): START");
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("GetSnmpInterfaceStatistics.execute(): START");
 		}
 		
 		if (rrdDb == null) {
@@ -137,7 +145,7 @@ public class GetSnmpInterfaceStatistics {
 		
 		try {
 			snmpClient = new SnmpClient(address);
-			logger.info("Sending SNMP request...");
+			LOGGER.info("Sending SNMP request...");
 			ResponseEvent event = snmpClient.get(new OID[] {bytes_in_oid, bytes_out_oid});
 			if (event != null) {
 				PDU response = event.getResponse();
@@ -156,48 +164,48 @@ public class GetSnmpInterfaceStatistics {
 								txBytes = var.toLong();
 								logOut += ", Bytes Out: " + txBytes;
 							} else {
-								logger.debug(oid + " " + var);
+								LOGGER.debug(oid + " " + var);
 								logOut += ", oid: " + oid + " var: " + var;
 							}
 						}
 						
-						logger.info(logOut + "]");
+						LOGGER.info(logOut + "]");
 						
 						if (txBytes > -1 && rxBytes > -1) {
 							if (rrdDb != null) {
 								try {
 									String update = Math.round(timestamp / 1000.0) + ":" + rxBytes + ":" + txBytes;
-									if (logger.isDebugEnabled()) {
-										logger.debug("Updating RRD: " + update);
+									if (LOGGER.isDebugEnabled()) {
+										LOGGER.debug("Updating RRD: " + update);
 									}
 									rrdDb.createSample().setAndUpdate(update);
-									logger.info("Updated RRD: " + update);
+									LOGGER.info("Updated RRD: " + update);
 								} catch (Exception ioe) {
-									logger.warn("Error updating RRD!", ioe);
+									LOGGER.warn("Error updating RRD!", ioe);
 								}
 							}
 							
 							if (statsDatabaseService != null) {
 								Stats stats = new Stats(timestamp, rxBytes, txBytes);
 								try {
-									if (logger.isDebugEnabled()) {
-										logger.debug("Updating MySQL: " + stats);
+									if (LOGGER.isDebugEnabled()) {
+										LOGGER.debug("Updating MySQL: " + stats);
 									}
 									statsDatabaseService.createStats(stats);
-									logger.info("Updated MySQL: " + stats);
+									LOGGER.info("Updated MySQL: " + stats);
 								} catch (Exception e) {
-									logger.warn("Error updating MySQL: " + stats, e);
+									LOGGER.warn("Error updating MySQL: " + stats, e);
 								}
 							}
 							
-							if (logger.isTraceEnabled()) {
+							if (LOGGER.isTraceEnabled()) {
 								long updateTs = rrdDb.getLastUpdateTime();
-								logger.trace("RRD Last Update Time: (" + updateTs + ") " + 
+								LOGGER.trace("RRD Last Update Time: (" + updateTs + ") " + 
 										DF_FULL.format(updateTs * 1000L));
 							}
 							
-							if (logger.isTraceEnabled()) {
-								logger.trace("Rx: " + ByteFormat.humanReadableByteCount(rxBytes, true) +
+							if (LOGGER.isTraceEnabled()) {
+								LOGGER.trace("Rx: " + ByteFormat.humanReadableByteCount(rxBytes, true) +
 										" (" + ByteFormat.humanReadableByteCount(rxBytes, false) + ")" +
 										", Tx: " + ByteFormat.humanReadableByteCount(txBytes, true) +
 										" (" + ByteFormat.humanReadableByteCount(txBytes, false) + ")");
@@ -210,8 +218,8 @@ public class GetSnmpInterfaceStatistics {
 									long rxbps = ((rxBytes - rxBytesPrev) * 8) / seconds;
 									long txbps = ((txBytes - txBytesPrev) * 8) / seconds;
 
-									if (logger.isDebugEnabled()) {
-										logger.debug("Delta: " + time + "ms (" + seconds + "s)" + 
+									if (LOGGER.isDebugEnabled()) {
+										LOGGER.debug("Delta: " + time + "ms (" + seconds + "s)" + 
 												", Rx: " + ByteFormat.humanReadableByteCount(rxBytes - rxBytesPrev, true) +
 												" (" + ByteFormat.humanReadableByteCount(rxBytes - rxBytesPrev, false) + ") " +
 												ByteFormat.humanReadableBitCount(rxbps) +
@@ -229,10 +237,10 @@ public class GetSnmpInterfaceStatistics {
 					}
 				}
 			} else {
-				logger.warn("Received null ResponseEvent!");
+				LOGGER.warn("Received null ResponseEvent!");
 			}
 		} catch (IOException ioe) {
-			logger.warn("Error getting SNMP interface stats!", ioe);
+			LOGGER.warn("Error getting SNMP interface stats!", ioe);
 		} finally {
 			if (snmpClient != null) {
 				try {
@@ -240,8 +248,8 @@ public class GetSnmpInterfaceStatistics {
 				} catch (Exception ioe) {}
 			}
 		}
-		if (logger.isTraceEnabled()) {
-			logger.trace("GetSnmpInterfaceStatistics.execute(): END");
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("GetSnmpInterfaceStatistics.execute(): END");
 		}
 	}
 	
@@ -250,11 +258,11 @@ public class GetSnmpInterfaceStatistics {
 	 */
 	public void close() {
 		if (rrdDb != null) {
-			logger.info("Closing RRD: " + rrdDbFileName);
+			LOGGER.info("Closing RRD: " + rrdDbFileName);
 			try {
 				rrdDb.close();
 			} catch (IOException ioe) {
-				logger.warn("Error closing RRD: " + rrdDbFileName, ioe);
+				LOGGER.warn("Error closing RRD: " + rrdDbFileName, ioe);
 			}
 		}
 	}

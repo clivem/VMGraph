@@ -40,6 +40,11 @@ public interface StatsDao {
 	public Stats mergeStats(Stats stats);
 
 	/**
+	 * @return
+	 */
+	public Stats loadStatsById(long id);
+	
+	/**
 	 * @param id
 	 * @return the Stats object identified by the id
 	 */

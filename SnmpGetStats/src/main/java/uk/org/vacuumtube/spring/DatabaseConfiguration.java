@@ -57,7 +57,7 @@ public class DatabaseConfiguration {
 	@Bean(name = "hibernateStatsDao")
 	public StatsDao statsDao() {
 		StatsDaoImpl statsDaoImpl = new StatsDaoImpl();
-		statsDaoImpl.setSessionFactory(sessionFactory().getObject());
+		//statsDaoImpl.setSessionFactory(sessionFactory().getObject());
 		return statsDaoImpl;
 	}
 	

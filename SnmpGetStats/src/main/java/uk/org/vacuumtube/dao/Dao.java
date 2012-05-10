@@ -54,5 +54,12 @@ public interface Dao {
      * @return
      */
     public PersistableEntity get(Class<?> entityClass, Serializable primaryKey, boolean lockRequired);
+    
+    /**
+     * @param name
+     * @param id
+     * @return
+     */
+    public PersistableEntity load(Class<?> name, Serializable id);
 }
 

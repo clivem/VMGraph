@@ -3,6 +3,7 @@
  */
 package uk.org.vacuumtube.dao;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -19,7 +20,9 @@ import org.hibernate.annotations.SourceType;
  *
  */
 @MappedSuperclass
-public abstract class AbstractTimestampEntity {
+public abstract class AbstractTimestampEntity implements Serializable {
+
+	private static final long serialVersionUID = -4375702600461553419L;
 
 	protected Date created = null;
 	protected Date updated = null;

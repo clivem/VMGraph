@@ -38,7 +38,8 @@ public class GetSnmpInterfaceStatisticsJob extends QuartzJobBean {
 	 * 
 	 */
 	public GetSnmpInterfaceStatisticsJob() {
-		LOGGER.info("GetSnmpInterfaceStatisticsJob()");
+		super();
+		LOGGER.info("Created: GetSnmpInterfaceStatisticsJob()");
 	}
 
 	/* (non-Javadoc)

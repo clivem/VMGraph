@@ -10,19 +10,18 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Hibernate;
-import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Repository;
 
 import uk.org.vacuumtube.dao.Notes;
 import uk.org.vacuumtube.dao.Stats;
 import uk.org.vacuumtube.dao.StatsDao;
-import uk.org.vacuumtube.exception.DaoRuntimeException;
 
 /**
  * @author clivem
  *
  */
+@Repository
 public class StatsDaoImpl extends AbstractHibernateDaoImpl implements StatsDao {
 
 	private final static Logger LOGGER = Logger.getLogger(StatsDaoImpl.class);
@@ -31,6 +30,8 @@ public class StatsDaoImpl extends AbstractHibernateDaoImpl implements StatsDao {
 	 * 
 	 */
 	public StatsDaoImpl() {
+		super();
+		LOGGER.info("Created: StatsDaoImpl()");
 	}
 	
 	/* (non-Javadoc)
@@ -121,6 +122,24 @@ public class StatsDaoImpl extends AbstractHibernateDaoImpl implements StatsDao {
 	}
 
 	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.StatsDao#loadStatsById()
+	 */
+	@Override
+	public Stats loadStatsById(long id) {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("loadStatsById(id=" + id + ")");
+		}
+		
+		Stats stats = (Stats) super.load(Stats.class, id); 
+		if (stats != null) {
+			if (!Hibernate.isInitialized(stats)) {
+				Hibernate.initialize(stats);
+			}
+		}
+		return stats;
+	}
+
+	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.routeros.spring.dao.StatsDao#getStats(long)
 	 */
 	@Override
@@ -142,24 +161,20 @@ public class StatsDaoImpl extends AbstractHibernateDaoImpl implements StatsDao {
 		}
 
 		Stats stats = null;
-		try {
-			/*
-			if (!lazy) {
-				getSession().enableFetchProfile("stats-with-notes");
-			}
-			stats = (Stats) getSession().get(Stats.class, id);
-			*/
-			
-			if (!lazy) {
-				Criteria criteria = getSession().createCriteria(Stats.class)
-						.add(Restrictions.idEq(id));				
-				criteria = criteria.setFetchMode("notes", FetchMode.JOIN);
-				stats = (Stats) criteria.uniqueResult();
-			} else {
-				stats = (Stats) super.get(Stats.class, id);
-			}
-		} catch (HibernateException ex) {
-			throw new DaoRuntimeException(ex.getMessage(), ex);
+		/*
+		if (!lazy) {
+			getSession().enableFetchProfile("stats-with-notes");
+		}
+		stats = (Stats) getSession().get(Stats.class, id);
+		*/
+		
+		if (!lazy) {
+			Criteria criteria = getSession().createCriteria(Stats.class)
+					.add(Restrictions.idEq(id));				
+			criteria = criteria.setFetchMode("notes", FetchMode.JOIN);
+			stats = (Stats) criteria.uniqueResult();
+		} else {
+			stats = (Stats) super.get(Stats.class, id);
 		}
 		return stats;
 	}
@@ -174,14 +189,10 @@ public class StatsDaoImpl extends AbstractHibernateDaoImpl implements StatsDao {
 		}
 		
 		/*
-		try {
-			Long count = (Long) getSession()
-					.createQuery("select count(*) from Stats")
-					.uniqueResult();
-			return count.intValue();
-		} catch (HibernateException ex) {
-			throw new DaoRuntimeException(ex.getMessage(), ex);
-		}
+		Long count = (Long) getSession()
+				.createQuery("select count(*) from Stats")
+				.uniqueResult();
+		return count.intValue();
 		*/
 		
 		return ((Long) super.getSingle("select count(*) from Stats")).intValue();
@@ -211,19 +222,15 @@ public class StatsDaoImpl extends AbstractHibernateDaoImpl implements StatsDao {
 		
 		List<Stats> statsList = null;
 		/*
-		try {
-			Criteria criteria = getSession().createCriteria(Stats.class)
-					.addOrder(Order.asc("id"));
-			
-			if (!lazy) {
-				criteria = criteria.setFetchMode("notes", FetchMode.JOIN)
-						.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-			}
-
-			statsList = criteria.list();
-		} catch (HibernateException ex) {
-			throw new DaoRuntimeException(ex.getMessage(), ex);
+		Criteria criteria = getSession().createCriteria(Stats.class)
+				.addOrder(Order.asc("id"));
+		
+		if (!lazy) {
+			criteria = criteria.setFetchMode("notes", FetchMode.JOIN)
+					.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		}
+
+		statsList = criteria.list();
 		*/
 		String hql = null;
 		if (!lazy) {
@@ -253,13 +260,5 @@ public class StatsDaoImpl extends AbstractHibernateDaoImpl implements StatsDao {
 		for (Stats stats : statsList) {
 			eagerLoadNotesCollection(stats);
 		}
-	}
-	
-	/**
-	 * @param ctx
-	 * @return
-	 */
-	public final static StatsDao getStatsDao(ApplicationContext ctx) {
-		return ctx.getBean("hibernateStatsDao", StatsDaoImpl.class);
 	}
 }

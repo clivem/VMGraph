@@ -19,6 +19,9 @@
 	<!-- Scans within the base package of the application for @Components to configure as beans -->
 	<!-- context:component-scan base-package="uk.org.vacuumtube.spring" / -->
 	
+	<!-- Exception translation bean post processor -->
+	<bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
+  
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
 </beans>

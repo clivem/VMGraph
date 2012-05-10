@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
@@ -21,7 +22,6 @@ import org.springframework.util.StopWatch.TaskInfo;
 
 import uk.org.vacuumtube.dao.Notes;
 import uk.org.vacuumtube.dao.Stats;
-import uk.org.vacuumtube.exception.InfrastructureException;
 import uk.org.vacuumtube.service.StatsDatabaseService;
 import uk.org.vacuumtube.spring.ApplicationConfiguration;
 import uk.org.vacuumtube.spring.ServiceLocator;
@@ -65,6 +65,34 @@ public class StatsDatabaseServiceTest implements ApplicationContextAware {
 		}
     }
     */
+	
+	@Test
+	public void testLoadStatsById() throws Exception {
+		LOGGER.info("\n\ntestLoadStatsById()");
+		try {
+			StopWatch watch = new StopWatch();
+
+			StatsDatabaseService sds = serviceLocator.getStatsDatabaseService();
+			
+			watch.start("sds.loadStatsById(-1)");
+			Stats stats = null;
+			try {
+				stats = sds.loadStatsById(-1);
+			} catch (DataAccessException dae) {
+				LOGGER.info("DataAccessException Expected! Message: " + 
+						dae.getMessage());
+			}
+
+			logWatchStop(watch);
+			if (stats != null) {
+				LOGGER.info("sds.loadStatsById(-1) returns: " + stats);
+			}
+			Assert.assertNull("Stats object with id == -1 should not exist in db!", stats);
+		} catch (Exception e) {
+			LOGGER.warn(null, e);
+			throw e;
+		}
+	}
 	
 	@Test
 	public void testGetStatsEntityCount() throws Exception {
@@ -182,7 +210,7 @@ public class StatsDatabaseServiceTest implements ApplicationContextAware {
 			}
 
 			// Delete
-			boolean deleteStats = true;
+			boolean deleteStats = false;
 			if (deleteStats) {
 				watch.start("sds.delete(" + stats.shortDescription() + ")");
 				sds.deleteStats(stats);
@@ -204,7 +232,7 @@ public class StatsDatabaseServiceTest implements ApplicationContextAware {
 			StopWatch watch = new StopWatch();
 			StatsDatabaseService sds = serviceLocator.getStatsDatabaseService();
 
-			int count = 11;
+			int count = 2;
 			/*
 			 * Get without join
 			 */
@@ -246,8 +274,7 @@ public class StatsDatabaseServiceTest implements ApplicationContextAware {
 	 * @param lazy
 	 * @return
 	 */
-	private Stats getStatsById(StopWatch watch, StatsDatabaseService sds, Long id, boolean lazy) 
-			throws InfrastructureException {
+	private Stats getStatsById(StopWatch watch, StatsDatabaseService sds, Long id, boolean lazy) {
 		watch.start("sds.getStatsById(" + id + ", " + lazy + ")");
 		Stats stats = sds.getStatsById(id, lazy);
 		logWatchStop(watch);
@@ -261,8 +288,7 @@ public class StatsDatabaseServiceTest implements ApplicationContextAware {
 	 * @param lazy
 	 * @return
 	 */
-	private List<Stats> getStatsList(StopWatch watch, StatsDatabaseService sds, boolean lazy) 
-			throws InfrastructureException {
+	private List<Stats> getStatsList(StopWatch watch, StatsDatabaseService sds, boolean lazy) {
 		watch.start("getStatsList(" + lazy + ")");
 		List<Stats> statsList = sds.getStatsList(lazy);
 		logWatchStop(watch);

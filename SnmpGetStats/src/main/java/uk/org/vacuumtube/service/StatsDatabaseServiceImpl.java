@@ -6,7 +6,6 @@ package uk.org.vacuumtube.service;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.org.vacuumtube.dao.Notes;
@@ -17,9 +16,9 @@ import uk.org.vacuumtube.dao.StatsDao;
  * @author clivem
  *
  */
-public class StatsDatabaseServiceImpl implements StatsDatabaseService, InitializingBean {
+public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 
-	private static final Logger LOGGER = Logger.getLogger(StatsDatabaseServiceImpl.class);
+	protected static final Logger LOGGER = Logger.getLogger(StatsDatabaseServiceImpl.class);
 	
 	private StatsDao statsDao;
 	
@@ -27,6 +26,8 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService, Initializ
 	 * 
 	 */
 	public StatsDatabaseServiceImpl() {
+		super();
+		LOGGER.info("Created: StatsDatabaseServiceImpl()");
 	}
 
 	/**
@@ -43,16 +44,6 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService, Initializ
 		this.statsDao = statsDao;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("afterPropertiesSet()");
-		}
-	}
-
 	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.dao.StatsDao#statsToString(uk.org.vacuumtube.dao.Stats)
 	 */
@@ -132,6 +123,15 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService, Initializ
 	@Transactional
 	public Stats mergeStats(Stats stats) {
 		return statsDao.mergeStats(stats);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.StatsDao#loadStatsById(long)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Stats loadStatsById(long id) {
+		return statsDao.loadStatsById(id);
 	}
 
 	/* (non-Javadoc)

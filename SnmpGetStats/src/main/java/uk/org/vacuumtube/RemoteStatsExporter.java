@@ -26,8 +26,6 @@ public class RemoteStatsExporter {
 				new AnnotationConfigApplicationContext(RemoteServerConfiguration.class);
 		ctx.registerShutdownHook();
 		
-		@SuppressWarnings("unused")
-		SnmpGetStats snmpGetStats = new SnmpGetStats();
 		Scanner scanner = new Scanner(System.in);
 		while (true) {
 			String cmd = scanner.nextLine();
