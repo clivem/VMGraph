@@ -42,9 +42,9 @@ public class GetSnmpInterfaceStatistics {
     protected OID bytes_in_oid;
     protected OID bytes_out_oid;
 
-	protected long rxBytesPrev = -1;
-	protected long txBytesPrev = -1;
-	protected long timestampPrev = -1;
+	protected long prevRxBytes = -1;
+	protected long prevTxBytes = -1;
+	protected long prevTimestamp = -1;
 	
     protected String archiveInName;
     protected String archiveOutName;
@@ -197,42 +197,27 @@ public class GetSnmpInterfaceStatistics {
 									LOGGER.warn("Error updating MySQL: " + stats, e);
 								}
 							}
-							
-							if (LOGGER.isTraceEnabled()) {
-								long updateTs = rrdDb.getLastUpdateTime();
-								LOGGER.trace("RRD Last Update Time: (" + updateTs + ") " + 
-										DF_FULL.format(updateTs * 1000L));
-							}
-							
-							if (LOGGER.isTraceEnabled()) {
-								LOGGER.trace("Rx: " + ByteFormat.humanReadableByteCount(rxBytes, true) +
-										" (" + ByteFormat.humanReadableByteCount(rxBytes, false) + ")" +
-										", Tx: " + ByteFormat.humanReadableByteCount(txBytes, true) +
-										" (" + ByteFormat.humanReadableByteCount(txBytes, false) + ")");
-							}
-							
-							if (rxBytesPrev > -1 && txBytesPrev > -1) {
-								long time = timestamp - timestampPrev;
+														
+							if (prevRxBytes > -1 && prevTxBytes > -1) {
+								long time = timestamp - prevTimestamp;
 								long seconds = Math.round((time / 1000.0));
 								if (seconds > 0) {
-									long rxbps = ((rxBytes - rxBytesPrev) * 8) / seconds;
-									long txbps = ((txBytes - txBytesPrev) * 8) / seconds;
+									long rxbps = ((rxBytes - prevRxBytes) * 8) / seconds;
+									long txbps = ((txBytes - prevTxBytes) * 8) / seconds;
 
-									if (LOGGER.isDebugEnabled()) {
-										LOGGER.debug("Delta: " + time + "ms (" + seconds + "s)" + 
-												", Rx: " + ByteFormat.humanReadableByteCount(rxBytes - rxBytesPrev, true) +
-												" (" + ByteFormat.humanReadableByteCount(rxBytes - rxBytesPrev, false) + ") " +
-												ByteFormat.humanReadableBitCount(rxbps) +
-												", Tx: " + ByteFormat.humanReadableByteCount(txBytes - txBytesPrev, true) +
-												" (" + ByteFormat.humanReadableByteCount(txBytes - txBytesPrev, false) + ") " +
-												ByteFormat.humanReadableBitCount(txbps));
-									}
+									LOGGER.info("Update Delta: " + time + "ms (" + seconds + "s)" + 
+											", Rx: " + ByteFormat.humanReadableByteCount(rxBytes - prevRxBytes, true) +
+											" (" + ByteFormat.humanReadableByteCount(rxBytes - prevRxBytes, false) + ") " +
+											ByteFormat.humanReadableBitCount(rxbps) +
+											", Tx: " + ByteFormat.humanReadableByteCount(txBytes - prevTxBytes, true) +
+											" (" + ByteFormat.humanReadableByteCount(txBytes - prevTxBytes, false) + ") " +
+											ByteFormat.humanReadableBitCount(txbps));
 								}
 							}
 
-							rxBytesPrev = rxBytes;
-							txBytesPrev = txBytes;
-							timestampPrev = timestamp;
+							prevRxBytes = rxBytes;
+							prevTxBytes = txBytes;
+							prevTimestamp = timestamp;
 						}
 					}
 				}
@@ -268,45 +253,45 @@ public class GetSnmpInterfaceStatistics {
 	}
 
 	/**
-	 * @return the rxBytesPrev
+	 * @return the prevRxBytes
 	 */
 	public long getRxBytesPrev() {
-		return rxBytesPrev;
+		return prevRxBytes;
 	}
 
 	/**
-	 * @param rxBytesPrev the rxBytesPrev to set
+	 * @param prevRxBytes the prevRxBytes to set
 	 */
 	public void setRxBytesPrev(long rxBytesPrev) {
-		this.rxBytesPrev = rxBytesPrev;
+		this.prevRxBytes = rxBytesPrev;
 	}
 
 	/**
-	 * @return the txBytesPrev
+	 * @return the prevTxBytes
 	 */
 	public long getTxBytesPrev() {
-		return txBytesPrev;
+		return prevTxBytes;
 	}
 
 	/**
-	 * @param txBytesPrev the txBytesPrev to set
+	 * @param prevTxBytes the prevTxBytes to set
 	 */
 	public void setTxBytesPrev(long txBytesPrev) {
-		this.txBytesPrev = txBytesPrev;
+		this.prevTxBytes = txBytesPrev;
 	}
 
 	/**
-	 * @return the timestampPrev
+	 * @return the prevTimestamp
 	 */
 	public long getTimestampPrev() {
-		return timestampPrev;
+		return prevTimestamp;
 	}
 
 	/**
-	 * @param timestampPrev the timestampPrev to set
+	 * @param prevTimestamp the prevTimestamp to set
 	 */
 	public void setTimestampPrev(long timestampPrev) {
-		this.timestampPrev = timestampPrev;
+		this.prevTimestamp = timestampPrev;
 	}
 
 	/**

@@ -26,8 +26,8 @@ public class ApplicationConfiguration {
 	
 	@Bean(name = "statsDatabaseService")
 	public StatsDatabaseService statsDatabaseService() {
-		StatsDatabaseServiceImpl impl = new StatsDatabaseServiceImpl();
-		impl.setStatsDao(databaseConfiguration.statsDao());
-		return impl;
+		StatsDatabaseServiceImpl statsImpl = new StatsDatabaseServiceImpl();
+		statsImpl.setStatsDao(databaseConfiguration.statsDao());
+		return statsImpl;
 	}
 }

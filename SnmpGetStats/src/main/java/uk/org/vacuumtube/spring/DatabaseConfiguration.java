@@ -68,7 +68,7 @@ public class DatabaseConfiguration {
 		return new HibernateTransactionManager(sessionFactory().getObject());
 	}
 
-	@Bean(name = "hibernateStatsDao")
+	@Bean(name = "statsDao")
 	public StatsDao statsDao() {
 		StatsDaoImpl statsDaoImpl = new StatsDaoImpl();
 		//statsDaoImpl.setSessionFactory(sessionFactory().getObject());

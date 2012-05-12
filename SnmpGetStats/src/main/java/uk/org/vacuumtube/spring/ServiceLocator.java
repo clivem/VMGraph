@@ -74,6 +74,6 @@ public class ServiceLocator implements ApplicationContextAware {
 	 * @return an instance of a RemoteStatsDatabaseService 
 	 */
 	public static final RemoteStatsDatabaseService getRemoteStatsDatabaseService(ApplicationContext context) { 
-		return context.getBean("statsDatabaseService", RemoteStatsDatabaseService.class);
+		return context.getBean("remoteStatsDatabaseService", RemoteStatsDatabaseService.class);
 	}
 }

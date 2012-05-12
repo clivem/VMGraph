@@ -7,25 +7,27 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.quartz.PersistJobDataAfterExecution;
 
-import uk.org.vacuumtube.SnmpGetStats;
+import uk.org.vacuumtube.service.StatsDatabaseService;
 import uk.org.vacuumtube.snmp.GetSnmpInterfaceStatistics;
 
 /**
  * @author clivem
  *
  */
-//public class GetSnmpInterfaceStatisticsJob extends QuartzJobBean implements StatefulJob {
+//public class GetSnmpInterfaceStatisticsQuartzJob extends QuartzJobBean implements StatefulJob {
 @DisallowConcurrentExecution
-public class GetSnmpInterfaceStatisticsJob extends QuartzJobBean {
+@PersistJobDataAfterExecution
+public class GetSnmpInterfaceStatisticsQuartzJob implements Job {
 	
-	private static final Logger LOGGER = Logger.getLogger(GetSnmpInterfaceStatisticsJob.class);
+	private static final Logger LOGGER = Logger.getLogger(GetSnmpInterfaceStatisticsQuartzJob.class);
 
-	private final static String PREV_TS = "prevTs";
+	private final static String PREV_TS = "prevTimestamp";
 	private final static String PREV_RX_BYTES = "prevRxBytes";
 	private final static String PREV_TX_BYTES = "prevTxBytes";
 	
@@ -34,19 +36,53 @@ public class GetSnmpInterfaceStatisticsJob extends QuartzJobBean {
 	private final static String SNMP_BYTES_OUT_OID = "snmp.bytesOutOid";
 	private final static String SNMP_RRDDB_FILENAME = "snmp.rrdDbFileName";
 	
+	private StatsDatabaseService statsDatabaseService = null;
+	
+	private long prevTimestamp = -1;
+	private long prevRxBytes = -1;
+	private long prevTxBytes = -1;
+	
 	/**
 	 * 
 	 */
-	public GetSnmpInterfaceStatisticsJob() {
+	public GetSnmpInterfaceStatisticsQuartzJob() {
 		super();
-		LOGGER.info("Created: GetSnmpInterfaceStatisticsJob()");
+		LOGGER.info("Created: GetSnmpInterfaceStatisticsQuartzJob()");
+	}
+	
+	/**
+	 * @param statsDatabaseService
+	 */
+	public void setStatsDatabaseService(StatsDatabaseService statsDatabaseService) {
+		this.statsDatabaseService = statsDatabaseService;
+	}
+	
+	/**
+	 * @param prevTimestamp the prevTimestamp to set
+	 */
+	public void setPrevTimestamp(long prevTimestamp) {
+		this.prevTimestamp = prevTimestamp;
+	}
+
+	/**
+	 * @param prevRxBytes the prevRxBytes to set
+	 */
+	public void setPrevRxBytes(long prevRxBytes) {
+		this.prevRxBytes = prevRxBytes;
+	}
+
+	/**
+	 * @param prevTxBytes the prevTxBytes to set
+	 */
+	public void setPrevTxBytes(long prevTxBytes) {
+		this.prevTxBytes = prevTxBytes;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.springframework.scheduling.quartz.QuartzJobBean#executeInternal(org.quartz.JobExecutionContext)
+	 * @see org.quartz.Job#execute(org.quartz.JobExecutionContext)
 	 */
 	@Override
-	protected void executeInternal(JobExecutionContext context)
+	public void execute(JobExecutionContext context)
 			throws JobExecutionException {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("executeInternal(context=" + context + "): START");
@@ -64,25 +100,11 @@ public class GetSnmpInterfaceStatisticsJob extends QuartzJobBean {
 		GetSnmpInterfaceStatistics getStats = new GetSnmpInterfaceStatistics(
 				jdm.getString(SNMP_ADDRESS), jdm.getString(SNMP_BYTES_IN_OID), 
 				jdm.getString(SNMP_BYTES_OUT_OID), jdm.getString(SNMP_RRDDB_FILENAME), 
-				SnmpGetStats.SERVICE_LOCATOR.getStatsDatabaseService());
+				statsDatabaseService);
 		
-		if (jdm.containsKey(PREV_TS)) {
-			try {
-				getStats.setTimestampPrev(jdm.getLong(PREV_TS));
-			} catch (Exception e) {}
-		}
-		
-		if (jdm.containsKey(PREV_RX_BYTES)) {
-			try {
-				getStats.setRxBytesPrev(jdm.getLong(PREV_RX_BYTES));
-			} catch (Exception e) {}
-		}
-		
-		if (jdm.containsKey(PREV_TX_BYTES)) {
-			try {
-				getStats.setTxBytesPrev(jdm.getLong(PREV_TX_BYTES));
-			} catch (Exception e) {}
-		}
+		getStats.setTimestampPrev(prevTimestamp);
+		getStats.setRxBytesPrev(prevRxBytes);
+		getStats.setTxBytesPrev(prevTxBytes);
 		
 		try {
 			getStats.execute();

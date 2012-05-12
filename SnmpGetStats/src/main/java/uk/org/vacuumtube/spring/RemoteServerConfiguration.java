@@ -25,9 +25,10 @@ public class RemoteServerConfiguration {
 	
 	@Bean(name = "remoteStatsDatabaseService")
 	public RemoteStatsDatabaseService remoteStatsDatabaseService() {
-		RemoteStatsDatabaseServiceImpl remoteStatsDatabaseServiceImpl = new RemoteStatsDatabaseServiceImpl();
-		remoteStatsDatabaseServiceImpl.setStatsDao(databaseConfiguration.statsDao());
-		return remoteStatsDatabaseServiceImpl;
+		RemoteStatsDatabaseServiceImpl remoteStatsImpl = 
+				new RemoteStatsDatabaseServiceImpl();
+		remoteStatsImpl.setStatsDao(databaseConfiguration.statsDao());
+		return remoteStatsImpl;
 	}
 	
 	@Bean(name = "statsRmiServiceExporter")

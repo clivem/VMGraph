@@ -14,14 +14,9 @@
 		http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 		
 	<util:properties id="hibernateProperties" location="classpath:META-INF/hibernate.properties"/>    
+
     <context:property-placeholder location="classpath:META-INF/jdbc.properties"/>
 	
-	<!-- Scans within the base package of the application for @Components to configure as beans -->
-	<!-- context:component-scan base-package="uk.org.vacuumtube.spring" / -->
-	
-	<!-- Exception translation bean post processor -->
-	<!-- bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/ -->
-  
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
 </beans>

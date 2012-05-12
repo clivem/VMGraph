@@ -22,7 +22,10 @@ public class TestJob extends QuartzJobBean {
 	@Override
 	protected void executeInternal(JobExecutionContext context)
 			throws JobExecutionException {
-		LOGGER.info("PING!");
 	}
 
+	//@Scheduled(fixedDelay=5000)
+	public void ping() {
+		LOGGER.info("PING!");
+	}
 }
