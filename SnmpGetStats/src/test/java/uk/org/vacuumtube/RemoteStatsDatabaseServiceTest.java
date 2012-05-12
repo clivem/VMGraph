@@ -24,8 +24,8 @@ import org.springframework.util.StopWatch.TaskInfo;
 import uk.org.vacuumtube.dao.Notes;
 import uk.org.vacuumtube.dao.Stats;
 import uk.org.vacuumtube.service.RemoteStatsDatabaseService;
+import uk.org.vacuumtube.service.ServiceLocator;
 import uk.org.vacuumtube.spring.RemoteClientConfiguration;
-import uk.org.vacuumtube.spring.ServiceLocator;
 
 /**
  * @author clivem

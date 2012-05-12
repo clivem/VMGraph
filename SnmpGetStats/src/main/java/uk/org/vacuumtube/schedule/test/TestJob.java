@@ -6,6 +6,7 @@ package uk.org.vacuumtube.schedule.test;
 import org.apache.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
@@ -24,7 +25,7 @@ public class TestJob extends QuartzJobBean {
 			throws JobExecutionException {
 	}
 
-	//@Scheduled(fixedDelay=5000)
+	@Scheduled(fixedRate = 100)
 	public void ping() {
 		LOGGER.info("PING!");
 	}

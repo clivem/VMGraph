@@ -89,7 +89,7 @@ public class ScheduleConfiguration {
 		
 		return schedulerFactoryBean;
 	}
-	
+
 	/*
 	@Bean(name = "testJob") 
 	public TestJob testJob() {
