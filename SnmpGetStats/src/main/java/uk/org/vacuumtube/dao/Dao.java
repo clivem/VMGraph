@@ -33,7 +33,7 @@ public interface Dao {
      * @param entityObject
      * @return
      */
-    public PersistableEntity merge(PersistableEntity entityObject);
+    public Object merge(PersistableEntity entityObject);
     
     /**
      * @param entityObject
@@ -45,7 +45,7 @@ public interface Dao {
      * @param primaryKey
      * @return
      */
-    public PersistableEntity get(Class<?> entityClass, Serializable primaryKey);
+    public Object get(Class<?> entityClass, Serializable primaryKey);
     
     /**
      * @param entityClass
@@ -53,13 +53,13 @@ public interface Dao {
      * @param lockRequired
      * @return
      */
-    public PersistableEntity get(Class<?> entityClass, Serializable primaryKey, boolean lockRequired);
+    public Object get(Class<?> entityClass, Serializable primaryKey, boolean lockRequired);
     
     /**
      * @param name
      * @param id
      * @return
      */
-    public PersistableEntity load(Class<?> name, Serializable id);
+    public Object load(Class<?> name, Serializable id);
 }
 

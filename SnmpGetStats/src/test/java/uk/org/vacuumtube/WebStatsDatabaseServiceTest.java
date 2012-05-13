@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import uk.org.vacuumtube.service.StatsDatabaseService;
-import uk.org.vacuumtube.spring.ApplicationConfiguration;
+import uk.org.vacuumtube.spring.WebClientConfiguration;
 
 /**
  * @author clivem
@@ -17,16 +17,19 @@ import uk.org.vacuumtube.spring.ApplicationConfiguration;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(
-  classes = ApplicationConfiguration.class, 
+  classes = WebClientConfiguration.class, 
   loader = AnnotationConfigContextLoader.class)
-public class StatsDatabaseServiceTest extends AbstractStatsDatabaseServiceTest {
+public class WebStatsDatabaseServiceTest extends AbstractStatsDatabaseServiceTest {
 
-	//private static final Logger LOGGER = Logger.getLogger(StatsDatabaseServiceTest.class);
+	//private final static Logger LOGGER = Logger.getLogger(WebStatsDatabaseServiceTest.class);
+	
+	public WebStatsDatabaseServiceTest() {
+	}
 	
 	/* (non-Javadoc)
 	 * @see uk.org.vacuumtube.AbstractStatsDatabaseServiceTest#getStatsDatabaseService()
 	 */
 	public StatsDatabaseService getStatsDatabaseService() {
-		return serviceLocator.getStatsDatabaseService();
+		return serviceLocator.getHttpStatsDatabaseService();
 	}
 }

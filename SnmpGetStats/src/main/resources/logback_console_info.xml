@@ -15,6 +15,13 @@
     </encoder>
   </appender>
 
+  <logger name="org.hibernate" level="INFO"/>
+
+  <logger name="org.springframework" level="INFO"/>
+  
+  <logger name="org.apache.commons.httpclient" level="INFO"/>
+  <logger name="httpclient" level="INFO"/>
+
   <root level="${LOG_LVL:-INFO}">
     <appender-ref ref="stdout"/>
   </root>

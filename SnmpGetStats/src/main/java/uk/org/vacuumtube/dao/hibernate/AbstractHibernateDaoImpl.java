@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Session.LockRequest;
@@ -87,8 +88,8 @@ public abstract class AbstractHibernateDaoImpl implements Dao {
     /* (non-Javadoc)
      * @see uk.org.vacuumtube.dao.Dao#merge(uk.org.vacuumtube.dao.PersistableEntity)
      */
-    public final PersistableEntity merge(PersistableEntity entityObject) {
-    	return (PersistableEntity) getSession().merge(entityObject);
+    public final Object merge(PersistableEntity entityObject) {
+    	return getSession().merge(entityObject);
     }
 
     /* (non-Javadoc)
@@ -101,23 +102,27 @@ public abstract class AbstractHibernateDaoImpl implements Dao {
     /* (non-Javadoc)
      * @see uk.org.vacuumtube.dao.Dao#get(java.lang.Class, java.io.Serializable)
      */
-    public PersistableEntity get(Class<?> entityClass, Serializable primaryKey) {
+    public Object get(Class<?> entityClass, Serializable primaryKey) {
         return get(entityClass, primaryKey, false);
     }
 
     /* (non-Javadoc)
      * @see uk.org.vacuumtube.dao.Dao#get(java.lang.Class, java.io.Serializable, boolean)
      */
-    public PersistableEntity get(Class<?> entityClass, Serializable primaryKey, boolean lockRequired) {
-    	return (PersistableEntity) getSession().get(entityClass, primaryKey, 
+    public Object get(Class<?> entityClass, Serializable primaryKey, boolean lockRequired) {
+    	return getSession().get(entityClass, primaryKey, 
             		new LockOptions((lockRequired) ? LockMode.PESSIMISTIC_WRITE : LockMode.NONE));
     }
 
     /* (non-Javadoc)
      * @see uk.org.vacuumtube.dao.Dao#load(java.lang.Class, java.io.Serializable)
      */
-    public PersistableEntity load(Class<?> name, Serializable id) {
-    	return (PersistableEntity) getSession().load(name, id);
+    public Object load(Class<?> name, Serializable id) {
+    	try {
+    		return getSession().load(name, id);
+    	} catch (ObjectNotFoundException ex) {
+    		return null;
+    	}
     }
     
     /**
@@ -186,8 +191,7 @@ public abstract class AbstractHibernateDaoImpl implements Dao {
      * @param parameters
      * @return
      */
-    @SuppressWarnings("rawtypes")
-	protected final List getList(String hql, Map<String, Object> parameters) {
+	protected final List<?> getList(String hql, Map<String, Object> parameters) {
         Query query = getSession().createQuery(hql);
 
         for (Iterator<Map.Entry<String, Object>> it = parameters.entrySet().iterator(); it.hasNext(); ) {

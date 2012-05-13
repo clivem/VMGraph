@@ -52,11 +52,34 @@ public class ServiceLocator {
 	}
 	
 	/**
-	 * @return an instance of a RemoteStatsDatabaseService
+	 * @return an instance of a RMI proxied RemoteStatsDatabaseService
 	 */
 	public final RemoteStatsDatabaseService getRemoteStatsDatabaseService() {
 		return getRemoteStatsDatabaseService(applicationContext);
 	}
+	
+	/**
+	 * @return an instance of a http proxied StatsDatabaseService
+	 */
+	public final StatsDatabaseService getHttpStatsDatabaseService() {
+		return getHttpStatsDatabaseService(applicationContext);
+	}
+	
+	/**
+	 * @return an instance of a burlap proxied StatsDatabaseService
+	 *
+	public final StatsDatabaseService getBurlapStatsDatabaseService() {
+		return getBurlapStatsDatabaseService(applicationContext);
+	}
+	*/
+	
+	/**
+	 * @return an instance of a hessian proxied StatsDatabaseService
+	 *
+	public final StatsDatabaseService getHessianStatsDatabaseService() {
+		return getHessianStatsDatabaseService(applicationContext);
+	}
+	*/
 	
 	/**
 	 * @param context
@@ -68,9 +91,35 @@ public class ServiceLocator {
 	
 	/**
 	 * @param context
-	 * @return an instance of a RemoteStatsDatabaseService 
+	 * @return an instance of a RMI proxied RemoteStatsDatabaseService 
 	 */
 	public static final RemoteStatsDatabaseService getRemoteStatsDatabaseService(ApplicationContext context) { 
-		return context.getBean("remoteStatsDatabaseService", RemoteStatsDatabaseService.class);
+		return context.getBean("statsRmiProxyFactory", RemoteStatsDatabaseService.class);
 	}
+
+	/**
+	 * @param context
+	 * @return an instance of a http proxied StatsDatabaseService 
+	 */
+	public static final StatsDatabaseService getHttpStatsDatabaseService(ApplicationContext context) { 
+		return context.getBean("statsHttpProxyFactory", StatsDatabaseService.class);
+	}
+	
+	/**
+	 * @param context
+	 * @return an instance of a burlap proxied StatsDatabaseService 
+	 *
+	public static final StatsDatabaseService getBurlapStatsDatabaseService(ApplicationContext context) { 
+		return context.getBean("statsBurlapProxyFactory", StatsDatabaseService.class);
+	}
+	*/
+
+	/**
+	 * @param context
+	 * @return an instance of a hessian proxied StatsDatabaseService 
+	 *
+	public static final StatsDatabaseService getHessianStatsDatabaseService(ApplicationContext context) { 
+		return context.getBean("statsHessianProxyFactory", StatsDatabaseService.class);
+	}
+	*/
 }

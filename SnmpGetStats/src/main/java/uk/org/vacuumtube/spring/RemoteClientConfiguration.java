@@ -23,9 +23,4 @@ public class RemoteClientConfiguration {
 		rmiProxyFactoryBean.setServiceInterface(RemoteStatsDatabaseService.class);
 		return rmiProxyFactoryBean;
 	}
-	
-	@Bean(name = "remoteStatsDatabaseService")
-	public RemoteStatsDatabaseService statsDatabaseService() {
-		return (RemoteStatsDatabaseService) statsRmiProxyFactory().getObject();
-	}
 }

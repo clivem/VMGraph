@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Hibernate;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -133,7 +134,11 @@ public class StatsDaoImpl extends AbstractHibernateDaoImpl implements StatsDao {
 		Stats stats = (Stats) super.load(Stats.class, id); 
 		if (stats != null) {
 			if (!Hibernate.isInitialized(stats)) {
-				Hibernate.initialize(stats);
+				try {
+					Hibernate.initialize(stats);
+				} catch (ObjectNotFoundException ex) {
+					return null;
+				}
 			}
 		}
 		return stats;

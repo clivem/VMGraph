@@ -14,9 +14,9 @@ import uk.org.vacuumtube.spring.RemoteServerConfiguration;
  * @author clivem
  *
  */
-public class RemoteStatsExporter {
+public class RemoteStatsService {
 
-	private final static Logger LOGGER = Logger.getLogger(RemoteStatsExporter.class);
+	private final static Logger LOGGER = Logger.getLogger(RemoteStatsService.class);
 	
 	/**
 	 * @param args
