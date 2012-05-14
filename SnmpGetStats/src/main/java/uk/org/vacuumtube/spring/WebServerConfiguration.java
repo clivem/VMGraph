@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter;
 import org.springframework.remoting.support.SimpleHttpServerFactoryBean;
 
+import uk.org.vacuumtube.http.CustomHttpInvokerServiceExporter;
 import uk.org.vacuumtube.service.StatsDatabaseService;
 
 import com.sun.net.httpserver.HttpHandler;
@@ -30,7 +31,7 @@ public class WebServerConfiguration {
 	
 	@Bean(name = "statsDatabaseServiceHttpExporter")
 	public SimpleHttpInvokerServiceExporter statsDatabaseServiceHttpExporter() {
-		SimpleHttpInvokerServiceExporter exporter = new SimpleHttpInvokerServiceExporter();
+		SimpleHttpInvokerServiceExporter exporter = new CustomHttpInvokerServiceExporter();
 		exporter.setService(applicationConfiguration.statsDatabaseService());
 		exporter.setServiceInterface(StatsDatabaseService.class);
 		return exporter;

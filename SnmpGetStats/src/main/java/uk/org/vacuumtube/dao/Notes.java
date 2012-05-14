@@ -15,7 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import uk.org.vacuumtube.util.Format;
+import uk.org.vacuumtube.util.DateFormatFactory;
 
 /**
  * @author clivem
@@ -159,9 +159,9 @@ public class Notes extends AbstractTimestampEntity implements uk.org.vacuumtube.
 		buf.append(", note=");
 		buf.append(note);
 		buf.append(", created=");
-		buf.append(Format.formatDateFull(created));
+		buf.append(DateFormatFactory.format(DateFormatFactory.DF_FULL, created));
 		buf.append(", updated=");
-		buf.append(Format.formatDateFull(updated));
+		buf.append(DateFormatFactory.format(DateFormatFactory.DF_FULL, updated));
 		buf.append(", stats=");
 		buf.append(((stats != null) ? ("Stats[statsId=" + stats.getStatsId() + "]") : "null"));
 		buf.append("]");

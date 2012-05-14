@@ -23,7 +23,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 
-import uk.org.vacuumtube.util.Format;
+import uk.org.vacuumtube.util.DateFormatFactory;
 
 /**
  * @author clivem
@@ -227,9 +227,9 @@ public class Stats extends AbstractTimestampEntity implements uk.org.vacuumtube.
 		buf.append(", txBytes=");
 		buf.append(txBytes);
 		buf.append(", created=");
-		buf.append(Format.formatDateFull(created));
+		buf.append(DateFormatFactory.format(DateFormatFactory.DF_FULL, created));
 		buf.append(", updated=");
-		buf.append(Format.formatDateFull(updated));
+		buf.append(DateFormatFactory.format(DateFormatFactory.DF_FULL, updated));
 		buf.append(", notes=");
 		if (notes != null) {
 			//buf.append(notes);
