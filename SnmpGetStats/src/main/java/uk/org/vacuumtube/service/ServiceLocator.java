@@ -61,8 +61,22 @@ public class ServiceLocator {
 	/**
 	 * @return an instance of a http proxied StatsDatabaseService
 	 */
-	public final StatsDatabaseService getHttpStatsDatabaseService() {
-		return getHttpStatsDatabaseService(applicationContext);
+	public final StatsDatabaseService getSimpleStatsDatabaseService() {
+		return getSimpleStatsDatabaseService(applicationContext);
+	}
+	
+	/**
+	 * @return an instance of a http proxied StatsDatabaseService
+	 */
+	public final StatsDatabaseService getCustomStatsDatabaseService() {
+		return getCustomStatsDatabaseService(applicationContext);
+	}
+	
+	/**
+	 * @return an instance of a http proxied StatsDatabaseService
+	 */
+	public final StatsDatabaseService getJBossStatsDatabaseService() {
+		return getJBossStatsDatabaseService(applicationContext);
 	}
 	
 	/**
@@ -101,8 +115,24 @@ public class ServiceLocator {
 	 * @param context
 	 * @return an instance of a http proxied StatsDatabaseService 
 	 */
-	public static final StatsDatabaseService getHttpStatsDatabaseService(ApplicationContext context) { 
-		return context.getBean("statsHttpProxyFactory", StatsDatabaseService.class);
+	public static final StatsDatabaseService getSimpleStatsDatabaseService(ApplicationContext context) { 
+		return context.getBean("statsDatabaseServiceProxyFactory", StatsDatabaseService.class);
+	}
+	
+	/**
+	 * @param context
+	 * @return an instance of a http proxied StatsDatabaseService 
+	 */
+	public static final StatsDatabaseService getCustomStatsDatabaseService(ApplicationContext context) { 
+		return context.getBean("customStatsDatabaseServiceProxyFactory", StatsDatabaseService.class);
+	}
+	
+	/**
+	 * @param context
+	 * @return an instance of a http proxied StatsDatabaseService 
+	 */
+	public static final StatsDatabaseService getJBossStatsDatabaseService(ApplicationContext context) { 
+		return context.getBean("jbossStatsDatabaseServiceProxyFactory", StatsDatabaseService.class);
 	}
 	
 	/**

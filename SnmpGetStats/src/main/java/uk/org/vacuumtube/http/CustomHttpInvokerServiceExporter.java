@@ -3,10 +3,10 @@
  */
 package uk.org.vacuumtube.http;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -32,60 +32,85 @@ public class CustomHttpInvokerServiceExporter extends SimpleHttpInvokerServiceEx
 	@Override
 	protected InputStream decorateInputStream(HttpExchange exchange,
 			InputStream is) throws IOException {
+		
 		Headers headers = exchange.getRequestHeaders();
-		List<String> encodingList = headers.get("Content-encoding");
-		for (String encoding : encodingList) {
-			if ("gzip".equals(encoding)) {
-				LOGGER.info("Request is gzip encoded. Wrapping with GZIPInputStream.");
-				return new GZIPInputStream(is);
+		List<String> encodingList = headers.get("Content-Encoding");
+		if (encodingList != null) {
+			for (String encoding : encodingList) {
+				if ("gzip".equals(encoding)) {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("HTTP request is gzip encoded. Decoding with GZIPInputStream.");
+					}
+					return new GZIPInputStream(is);
+				}
 			}
 		}
 
-		return super.decorateInputStream(exchange, is);
+		return is;
 	}
 
 	/**
-	 * Write the given RemoteInvocationResult to the given HTTP response.
-	 * @param exchange current HTTP request/response
-	 * @param result the RemoteInvocationResult object
-	 * @throws java.io.IOException in case of I/O failure
+	 * @param exchange
+	 * @return
 	 */
-	protected void writeRemoteInvocationResult(HttpExchange exchange, RemoteInvocationResult result)
-			throws IOException {
-
-		boolean gzip = false;
+	protected boolean replyWithGzipEncoding(HttpExchange exchange) {
+		
 		Headers headers = exchange.getRequestHeaders();
-		List<String> encodingList = headers.get("Accept-encoding");
-		for (String encoding : encodingList) {
-			if ("gzip".equals(encoding)) {
-				LOGGER.info("Client requests gzip encoding for response. Wrapping with GZIPOutputStream.");
-				gzip = true;
-				break;
-			}
+		List<String> encodingList = headers.get("Accept-Encoding");
+		if (encodingList != null) {
+			for (String encoding : encodingList) {
+				if ("gzip".equals(encoding)) {
+					return true;
+				}
+			}		
 		}
-
-		if (gzip) {
-			exchange.getResponseHeaders().set("Content-Encoding", "gzip");
-		}
-		exchange.getResponseHeaders().set("Content-Type", getContentType());
-		exchange.sendResponseHeaders(200, 0);
-		write(exchange, result, gzip);
+		
+		return false;
 	}
 	
-	protected void write(HttpExchange exchange, RemoteInvocationResult result, boolean gzip) 
-			throws IOException {
-		ObjectOutputStream oos = null;
-		GZIPOutputStream gos = null;
-		if(gzip) {
-			gos = new GZIPOutputStream(exchange.getResponseBody());
-			oos = new ObjectOutputStream(new BufferedOutputStream(gos));
-		} else {
-			oos = new ObjectOutputStream(exchange.getResponseBody());
+	/* (non-Javadoc)
+	 * @see org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter#writeRemoteInvocationResult(com.sun.net.httpserver.HttpExchange, org.springframework.remoting.support.RemoteInvocationResult)
+	 */
+	@Override
+	protected void writeRemoteInvocationResult(HttpExchange exchange,
+			RemoteInvocationResult result) throws IOException {
+
+		if (replyWithGzipEncoding(exchange)) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Client accepts gzip encoding for HTTP response. Encoding with GZIPOutputStream.");
+			}
+			exchange.getResponseHeaders().set("Content-Encoding", "gzip");
 		}
-		oos.writeObject(result);
+		super.writeRemoteInvocationResult(exchange, result);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter#writeRemoteInvocationResult(com.sun.net.httpserver.HttpExchange, org.springframework.remoting.support.RemoteInvocationResult, java.io.OutputStream)
+	 */
+	@Override
+	protected void writeRemoteInvocationResult(HttpExchange exchange,
+			RemoteInvocationResult result, OutputStream os) throws IOException {
+
+		OutputStream wrappedStream = decorateOutputStream(exchange, os);
+		ObjectOutputStream oos = createObjectOutputStream(wrappedStream);
+		doWriteRemoteInvocationResult(result, oos);
 		oos.flush();
-		if (gos != null) {
-			gos.finish();
+		if (wrappedStream instanceof GZIPOutputStream) {
+			((GZIPOutputStream) wrappedStream).finish();
 		}
 	}
+
+	/* (non-Javadoc)
+	 * @see org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter#decorateOutputStream(com.sun.net.httpserver.HttpExchange, java.io.OutputStream)
+	 */
+	@Override
+	protected OutputStream decorateOutputStream(HttpExchange exchange,
+			OutputStream os) throws IOException {
+		
+		if (replyWithGzipEncoding(exchange)) {
+			return new GZIPOutputStream(os);
+		} else {
+			return os;
+		}
+	}	
 }

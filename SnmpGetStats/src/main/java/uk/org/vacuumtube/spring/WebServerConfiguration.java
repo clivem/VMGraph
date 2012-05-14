@@ -14,6 +14,7 @@ import org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter
 import org.springframework.remoting.support.SimpleHttpServerFactoryBean;
 
 import uk.org.vacuumtube.http.CustomHttpInvokerServiceExporter;
+import uk.org.vacuumtube.http.JBossHttpInvokerServiceExporter;
 import uk.org.vacuumtube.service.StatsDatabaseService;
 
 import com.sun.net.httpserver.HttpHandler;
@@ -31,11 +32,28 @@ public class WebServerConfiguration {
 	
 	@Bean(name = "statsDatabaseServiceHttpExporter")
 	public SimpleHttpInvokerServiceExporter statsDatabaseServiceHttpExporter() {
+		SimpleHttpInvokerServiceExporter exporter = new SimpleHttpInvokerServiceExporter();
+		exporter.setService(applicationConfiguration.statsDatabaseService());
+		exporter.setServiceInterface(StatsDatabaseService.class);
+		return exporter;
+	}
+
+	@Bean(name = "customStatsDatabaseServiceHttpExporter")
+	public SimpleHttpInvokerServiceExporter customStatsDatabaseServiceHttpExporter() {
 		SimpleHttpInvokerServiceExporter exporter = new CustomHttpInvokerServiceExporter();
 		exporter.setService(applicationConfiguration.statsDatabaseService());
 		exporter.setServiceInterface(StatsDatabaseService.class);
 		return exporter;
 	}
+
+	@Bean(name = "jbossStatsDatabaseServiceHttpExporter")
+	public SimpleHttpInvokerServiceExporter jbossStatsDatabaseServiceHttpExporter() {
+		SimpleHttpInvokerServiceExporter exporter = new JBossHttpInvokerServiceExporter();
+		exporter.setService(applicationConfiguration.statsDatabaseService());
+		exporter.setServiceInterface(StatsDatabaseService.class);
+		return exporter;
+	}
+	
 	/*
 	@Bean(name = "statsDatabaseServiceBurlapExporter")
 	public SimpleBurlapServiceExporter statsDatabaseServiceBurlapExporter() {
@@ -53,10 +71,13 @@ public class WebServerConfiguration {
 		return exporter;
 	}
 	*/
+	
 	@Bean(name = "httpServerFactory")
 	public SimpleHttpServerFactoryBean simpleHttpServerFactory() {
 		Map<String, HttpHandler> map = new HashMap<String, HttpHandler>();
-		map.put("/remoting/HttpStatsDatabaseService", statsDatabaseServiceHttpExporter());
+		map.put("/remoting/StatsDatabaseService", statsDatabaseServiceHttpExporter());
+		map.put("/remoting/CustomStatsDatabaseService", customStatsDatabaseServiceHttpExporter());
+		map.put("/remoting/JBossStatsDatabaseService", jbossStatsDatabaseServiceHttpExporter());
 		//map.put("/remoting/BurlapStatsDatabaseService", statsDatabaseServiceBurlapExporter());
 		//map.put("/remoting/HessianStatsDatabaseService", statsDatabaseServiceHessianExporter());
 		

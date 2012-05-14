@@ -52,19 +52,27 @@ public class WebClientConfiguration {
 		return new JBossCustomCommonsHttpInvokerRequestExecutor(connectionManager());
 	}
 
-	@Bean(name = "statsHttpProxyFactory")
-	public HttpInvokerProxyFactoryBean statsHttpProxyFactory() {
+	@Bean(name = "statsDatabaseServiceProxyFactory")
+	public HttpInvokerProxyFactoryBean statsDatabaseServiceProxyFactory() {
 		HttpInvokerProxyFactoryBean invoker = new HttpInvokerProxyFactoryBean();
-		invoker.setServiceUrl("http://127.0.0.1:8080/remoting/HttpStatsDatabaseService");
+		invoker.setServiceUrl("http://127.0.0.1:8080/remoting/StatsDatabaseService");
+		invoker.setServiceInterface(StatsDatabaseService.class);
+		return invoker;
+	}
+
+	@Bean(name = "customStatsDatabaseServiceProxyFactory")
+	public HttpInvokerProxyFactoryBean customStatsDatabaseServiceProxyFactory() {
+		HttpInvokerProxyFactoryBean invoker = new HttpInvokerProxyFactoryBean();
+		invoker.setServiceUrl("http://127.0.0.1:8080/remoting/CustomStatsDatabaseService");
 		invoker.setHttpInvokerRequestExecutor(customCommonsHttpInvokerRequestExecutor());
 		invoker.setServiceInterface(StatsDatabaseService.class);
 		return invoker;
 	}
 
-	@Bean(name = "statsJBossProxyFactory")
-	public HttpInvokerProxyFactoryBean statsJBossProxyFactory() {
+	@Bean(name = "jbossStatsDatabaseServiceProxyFactory")
+	public HttpInvokerProxyFactoryBean jbossStatsDatabaseServiceProxyFactory() {
 		HttpInvokerProxyFactoryBean invoker = new HttpInvokerProxyFactoryBean();
-		invoker.setServiceUrl("http://127.0.0.1:8080/remoting/StatsDatabaseServiceX");
+		invoker.setServiceUrl("http://127.0.0.1:8080/remoting/JBossStatsDatabaseService");
 		invoker.setHttpInvokerRequestExecutor(jbossCustomCommonsHttpInvokerRequestExecutor());
 		invoker.setServiceInterface(StatsDatabaseService.class);
 		return invoker;

@@ -50,6 +50,9 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	@Override
 	@Transactional(readOnly = true)
 	public String statsToString(Stats stats) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("statsToString(stats=" + stats + ")");
+		}
 		return statsDao.statsToString(stats);
 	}
 
@@ -59,6 +62,9 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<Stats> getStatsList() {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getStatsList()");
+		}
 		return statsDao.getStatsList();
 	}
 
@@ -68,6 +74,9 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<Stats> getStatsList(boolean lazy) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getStatsList(lazy=" + lazy + ")");
+		}
 		return statsDao.getStatsList(lazy);
 	}
 
@@ -77,6 +86,9 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	@Override
 	@Transactional
 	public Notes createNote(Stats stats, String note) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("createNote(stats=" + stats + ", note=" + note + ")");
+		}
 		return statsDao.createNote(stats, note);
 	}
 
@@ -86,6 +98,9 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	@Override
 	@Transactional
 	public Long createStats(Stats stats) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("createStats(stats=" + stats + ")");
+		}
 		return statsDao.createStats(stats);
 	}
 
@@ -95,6 +110,9 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	@Override
 	@Transactional
 	public void deleteNote(Notes note) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("deleteNote(note=" + note + ")");
+		}
 		statsDao.deleteNote(note);
 	}
 
@@ -104,6 +122,9 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	@Override
 	@Transactional
 	public void deleteStats(Stats stats) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("deleteStats(stats=" + stats + ")");
+		}
 		statsDao.deleteStats(stats);
 	}
 
@@ -113,6 +134,9 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	@Override
 	@Transactional
 	public void updateStats(Stats stats) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("updateStats(stats=" + stats + ")");
+		}
 		statsDao.updateStats(stats);
 	}
 
@@ -122,6 +146,9 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	@Override
 	@Transactional
 	public Stats mergeStats(Stats stats) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("mergeStats(stats=" + stats + ")");
+		}
 		return statsDao.mergeStats(stats);
 	}
 
@@ -131,6 +158,9 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	@Override
 	@Transactional(readOnly = true)
 	public Stats loadStatsById(long id) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("loadStatsById(id=" + id + ")");
+		}
 		return statsDao.loadStatsById(id);
 	}
 
@@ -140,6 +170,9 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	@Override
 	@Transactional(readOnly = true)
 	public Stats getStatsById(long id) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getStatsById(id=" + id + ")");
+		}
 		return statsDao.getStatsById(id);
 	}
 
@@ -149,6 +182,9 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	@Override
 	@Transactional(readOnly = true)
 	public Stats getStatsById(long id, boolean lazy) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getStatsById(id=" + id + ", lazy=" + lazy + ")");
+		}
 		return statsDao.getStatsById(id, lazy);
 	}
 
@@ -158,6 +194,9 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 	@Override
 	@Transactional(readOnly = true)
 	public int getStatsCount() {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getStatsCount()");
+		}
 		return statsDao.getStatsCount();
 	}
 }
