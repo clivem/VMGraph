@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 
+import uk.org.vacuumtube.service.ServiceLocator;
 import uk.org.vacuumtube.service.StatsDatabaseService;
 import uk.org.vacuumtube.service.StatsDatabaseServiceImpl;
 
@@ -24,7 +25,7 @@ public class ApplicationConfiguration {
 	@Autowired
 	private DatabaseConfiguration databaseConfiguration;
 	
-	@Bean(name = "statsDatabaseService")
+	@Bean(name = ServiceLocator.STATS_SERVICE_BEAN_NAME)
 	public StatsDatabaseService statsDatabaseService() {
 		StatsDatabaseServiceImpl statsImpl = new StatsDatabaseServiceImpl();
 		statsImpl.setStatsDao(databaseConfiguration.statsDao());

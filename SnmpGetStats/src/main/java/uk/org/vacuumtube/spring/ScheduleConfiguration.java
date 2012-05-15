@@ -20,6 +20,7 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 
 import uk.org.vacuumtube.schedule.GetSnmpInterfaceStatisticsQuartzJob;
+import uk.org.vacuumtube.service.ServiceLocator;
 
 /**
  * @author clivem
@@ -37,7 +38,7 @@ public class ScheduleConfiguration {
 	private Properties snmpProperties;
 	
 	@Bean(name = "snmpStatsJobDetail")
-	@DependsOn(value = "statsDatabaseService")
+	@DependsOn(value = ServiceLocator.STATS_SERVICE_BEAN_NAME)
 	public JobDetailImpl snmpStatsJobDetail() {
 		/*
 		 * Put the snmp.properties, reference to the statsDatabaseService and
@@ -77,8 +78,8 @@ public class ScheduleConfiguration {
 		return simpleTriggerFactoryBean;
 	}
 	
-	@Bean(name = "scheduler")
-	public SchedulerFactoryBean scheduler() {
+	@Bean(name = "quartzScheduler")
+	public SchedulerFactoryBean quartzScheduler() {
 		SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
 		
 		// Use a SpringBeanJobFactory for dependency injection

@@ -15,7 +15,7 @@ import org.springframework.remoting.support.SimpleHttpServerFactoryBean;
 
 import uk.org.vacuumtube.http.CustomHttpInvokerServiceExporter;
 import uk.org.vacuumtube.http.JBossHttpInvokerServiceExporter;
-import uk.org.vacuumtube.http.RealmAuthenticator;
+import uk.org.vacuumtube.service.ServiceLocator;
 import uk.org.vacuumtube.service.StatsDatabaseService;
 
 import com.sun.net.httpserver.HttpHandler;
@@ -31,7 +31,7 @@ public class WebServerConfiguration {
 	@Autowired
 	private ApplicationConfiguration applicationConfiguration;
 	
-	@Bean(name = "statsDatabaseServiceHttpExporter")
+	@Bean
 	public SimpleHttpInvokerServiceExporter statsDatabaseServiceHttpExporter() {
 		SimpleHttpInvokerServiceExporter exporter = new SimpleHttpInvokerServiceExporter();
 		exporter.setService(applicationConfiguration.statsDatabaseService());
@@ -39,7 +39,7 @@ public class WebServerConfiguration {
 		return exporter;
 	}
 
-	@Bean(name = "customStatsDatabaseServiceHttpExporter")
+	@Bean
 	public SimpleHttpInvokerServiceExporter customStatsDatabaseServiceHttpExporter() {
 		SimpleHttpInvokerServiceExporter exporter = new CustomHttpInvokerServiceExporter();
 		exporter.setService(applicationConfiguration.statsDatabaseService());
@@ -47,7 +47,7 @@ public class WebServerConfiguration {
 		return exporter;
 	}
 
-	@Bean(name = "jbossStatsDatabaseServiceHttpExporter")
+	@Bean
 	public SimpleHttpInvokerServiceExporter jbossStatsDatabaseServiceHttpExporter() {
 		SimpleHttpInvokerServiceExporter exporter = new JBossHttpInvokerServiceExporter();
 		exporter.setService(applicationConfiguration.statsDatabaseService());
@@ -76,16 +76,19 @@ public class WebServerConfiguration {
 	@Bean(name = "httpServerFactory")
 	public SimpleHttpServerFactoryBean simpleHttpServerFactory() {
 		Map<String, HttpHandler> map = new HashMap<String, HttpHandler>();
-		map.put("/remoting/StatsDatabaseService", statsDatabaseServiceHttpExporter());
-		map.put("/remoting/CustomStatsDatabaseService", customStatsDatabaseServiceHttpExporter());
-		map.put("/remoting/JBossStatsDatabaseService", jbossStatsDatabaseServiceHttpExporter());
+		map.put(ServiceLocator.WEB_CONTEXT_PATH + ServiceLocator.STATS_SERVICE_HTTP_SIMPLE_JAVA_SERVICE_NAME, 
+				statsDatabaseServiceHttpExporter());
+		map.put(ServiceLocator.WEB_CONTEXT_PATH + ServiceLocator.STATS_SERVICE_HTTP_COMMONS_JAVA_SERVICE_NAME, 
+				customStatsDatabaseServiceHttpExporter());
+		map.put(ServiceLocator.WEB_CONTEXT_PATH + ServiceLocator.STATS_SERVICE_HTTP_COMMONS_JBOSS_SERVICE_NAME, 
+				jbossStatsDatabaseServiceHttpExporter());
 		//map.put("/remoting/BurlapStatsDatabaseService", statsDatabaseServiceBurlapExporter());
 		//map.put("/remoting/HessianStatsDatabaseService", statsDatabaseServiceHessianExporter());
 		
 		SimpleHttpServerFactoryBean httpServerFactory = new SimpleHttpServerFactoryBean();		
 		httpServerFactory.setContexts(map);
-		httpServerFactory.setAuthenticator(new RealmAuthenticator("Vacuumtube"));
-		httpServerFactory.setHostname("127.0.0.1");
+		//httpServerFactory.setAuthenticator(new RealmAuthenticator("Vacuumtube"));
+		//httpServerFactory.setHostname("127.0.0.1");
 		httpServerFactory.setPort(8080);
 		return httpServerFactory;
 	}

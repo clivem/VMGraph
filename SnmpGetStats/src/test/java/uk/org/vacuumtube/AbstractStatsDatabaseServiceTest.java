@@ -227,7 +227,7 @@ public abstract class AbstractStatsDatabaseServiceTest implements ApplicationCon
 			StopWatch watch = new StopWatch();
 			StatsDatabaseService sds = getStatsDatabaseService();
 
-			int count = 10;
+			int count = 2;
 			/*
 			 * Get without join
 			 */

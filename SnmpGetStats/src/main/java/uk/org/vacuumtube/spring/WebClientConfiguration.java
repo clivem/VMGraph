@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -22,6 +23,7 @@ import uk.org.vacuumtube.commons.http.DefaultCommonsHttpClientProperties;
 import uk.org.vacuumtube.commons.http.JBossCustomCommonsHttpInvokerRequestExecutor;
 import uk.org.vacuumtube.commons.http.MultiThreadedHttpConnectionManagerFactory;
 import uk.org.vacuumtube.commons.http.TransportClientProperties;
+import uk.org.vacuumtube.service.ServiceLocator;
 import uk.org.vacuumtube.service.StatsDatabaseService;
 
 /**
@@ -32,6 +34,12 @@ import uk.org.vacuumtube.service.StatsDatabaseService;
 @ImportResource("classpath:/META-INF/spring/client-context.xml")
 public class WebClientConfiguration {
 
+	@Value("${remoting.urlPrefix}")
+	private String urlPrefix;
+	
+	@Value("${remoting.contextPath}")
+	private String contextPath;
+	
 	@Bean(name = "httpTransportClientProperties")
 	public Default15HTTPTransportClientProperties httpTransportClientProperties() {
 		return new Default15HTTPTransportClientProperties();
@@ -78,31 +86,35 @@ public class WebClientConfiguration {
 				transportClientPropertiesMap());
 	}
 
-	@Bean(name = "statsDatabaseServiceProxyFactory")
+	//@Bean(name = "statsDatabaseServiceProxyFactory")
+	@Bean(name = ServiceLocator.STATS_SERVICE_HTTP_SIMPLE_JAVA_BEAN_NAME)
 	public HttpInvokerProxyFactoryBean statsDatabaseServiceProxyFactory() {
 		HttpInvokerProxyFactoryBean invoker = new HttpInvokerProxyFactoryBean();
-		invoker.setServiceUrl("http://127.0.0.1:8080/remoting/StatsDatabaseService");
+		invoker.setServiceUrl(urlPrefix + contextPath + ServiceLocator.STATS_SERVICE_HTTP_SIMPLE_JAVA_SERVICE_NAME);
 		invoker.setServiceInterface(StatsDatabaseService.class);
 		return invoker;
 	}
 
-	@Bean(name = "customStatsDatabaseServiceProxyFactory")
+	//@Bean(name = "customStatsDatabaseServiceProxyFactory")
+	@Bean(name = ServiceLocator.STATS_SERVICE_HTTP_COMMONS_JAVA_BEAN_NAME)
 	public HttpInvokerProxyFactoryBean customStatsDatabaseServiceProxyFactory() {
 		HttpInvokerProxyFactoryBean invoker = new HttpInvokerProxyFactoryBean();
-		invoker.setServiceUrl("http://127.0.0.1:8080/remoting/CustomStatsDatabaseService");
+		invoker.setServiceUrl(urlPrefix + contextPath + ServiceLocator.STATS_SERVICE_HTTP_COMMONS_JAVA_SERVICE_NAME);
 		invoker.setHttpInvokerRequestExecutor(customCommonsHttpInvokerRequestExecutor());
 		invoker.setServiceInterface(StatsDatabaseService.class);
 		return invoker;
 	}
 
-	@Bean(name = "jbossStatsDatabaseServiceProxyFactory")
+	//@Bean(name = "jbossStatsDatabaseServiceProxyFactory")
+	@Bean(name = ServiceLocator.STATS_SERVICE_HTTP_COMMONS_JBOSS_BEAN_NAME)
 	public HttpInvokerProxyFactoryBean jbossStatsDatabaseServiceProxyFactory() {
 		HttpInvokerProxyFactoryBean invoker = new HttpInvokerProxyFactoryBean();
-		invoker.setServiceUrl("http://127.0.0.1:8080/remoting/JBossStatsDatabaseService");
+		invoker.setServiceUrl(urlPrefix + contextPath + ServiceLocator.STATS_SERVICE_HTTP_COMMONS_JBOSS_SERVICE_NAME);
 		invoker.setHttpInvokerRequestExecutor(jbossCustomCommonsHttpInvokerRequestExecutor());
 		invoker.setServiceInterface(StatsDatabaseService.class);
 		return invoker;
 	}
+
 	/*
 	@Bean(name = "statsBurlapProxyFactory")
 	public BurlapProxyFactoryBean statsBurlapProxyFactory() {

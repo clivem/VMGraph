@@ -9,17 +9,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.remoting.rmi.RmiServiceExporter;
 
-import uk.org.vacuumtube.service.RemoteStatsDatabaseService;
-import uk.org.vacuumtube.service.RemoteStatsDatabaseServiceImpl;
+import uk.org.vacuumtube.service.ServiceLocator;
+import uk.org.vacuumtube.service.StatsDatabaseService;
 
 /**
  * @author clivem
  *
  */
 @Configuration
-@Import(DatabaseConfiguration.class)
+//@Import(DatabaseConfiguration.class)
+@Import(ApplicationConfiguration.class)
 public class RemoteServerConfiguration {
 
+	@Autowired
+	private ApplicationConfiguration applicationConfiguration;
+	/*
 	@Autowired
 	private DatabaseConfiguration databaseConfiguration;
 	
@@ -30,14 +34,25 @@ public class RemoteServerConfiguration {
 		remoteStatsImpl.setStatsDao(databaseConfiguration.statsDao());
 		return remoteStatsImpl;
 	}
-	
+
 	@Bean(name = "statsRmiServiceExporter")
 	public RmiServiceExporter statsRmiServiceExporter() {
 		RmiServiceExporter rmiServiceExporter = new RmiServiceExporter();
-		rmiServiceExporter.setServiceName("StatsDatabaseService");
+		rmiServiceExporter.setServiceName(ServiceLocator.STATS_SERVICE_RMI_SERVICE_NAME);
 		rmiServiceExporter.setService(remoteStatsDatabaseService());
 		rmiServiceExporter.setServiceInterface(RemoteStatsDatabaseService.class);
-		rmiServiceExporter.setRegistryPort(1199);
+		rmiServiceExporter.setRegistryPort(ServiceLocator.RMI_REGISTRY_PORT);
+		return rmiServiceExporter;
+	}	
+	*/
+	@Bean
+	public RmiServiceExporter statsRmiServiceExporter() {
+		RmiServiceExporter rmiServiceExporter = new RmiServiceExporter();
+		rmiServiceExporter.setServiceName(ServiceLocator.STATS_SERVICE_RMI_SERVICE_NAME);
+		rmiServiceExporter.setService(applicationConfiguration.statsDatabaseService());
+		rmiServiceExporter.setServiceInterface(StatsDatabaseService.class);
+		rmiServiceExporter.setServicePort(ServiceLocator.STATS_SERVICE_RMI_SERVICE_PORT);
+		rmiServiceExporter.setRegistryPort(ServiceLocator.RMI_REGISTRY_PORT);
 		return rmiServiceExporter;
 	}	
 }
