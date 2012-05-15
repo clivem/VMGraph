@@ -28,6 +28,7 @@ package org.apache.commons.httpclient.contrib.ssl;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import org.apache.log4j.Logger;
@@ -90,7 +91,6 @@ public class EasyX509TrustManager implements X509TrustManager
      * @see com.sun.net.ssl.X509TrustManager#isServerTrusted(X509Certificate[])
      */
     public boolean isServerTrusted(X509Certificate[] certificates) {
-        /*
         if ((certificates != null) && LOG.isDebugEnabled()) {
             LOG.debug("Server certificate chain:");
             for (int i = 0; i < certificates.length; i++) {
@@ -110,8 +110,7 @@ public class EasyX509TrustManager implements X509TrustManager
         } else {
             return this.standardTrustManager.isServerTrusted(certificates);
         }
-        */
-        return true;
+        //return true;
     }
 
     /**

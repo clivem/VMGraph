@@ -21,6 +21,7 @@
 
   <logger name="org.springframework" level="INFO"/>
   
+  <logger name="org.apache.commons.httpclient.contrib.ssl" level="DEBUG"/>
   <logger name="org.apache.commons.httpclient" level="INFO"/>
   <logger name="httpclient" level="INFO"/>
 
