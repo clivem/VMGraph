@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -52,11 +53,15 @@ public class CustomCommonsHttpInvokerRequestExecutor extends AbstractHttpInvoker
     
     private HttpConnectionManager connectionManager;
     
+    private Map<String, TransportClientProperties> transportClientPropertiesMap;
+    
     /**
      * @param httpConnectionManager
      */
-    public CustomCommonsHttpInvokerRequestExecutor(HttpConnectionManager httpConnectionManager) {
+    public CustomCommonsHttpInvokerRequestExecutor(HttpConnectionManager httpConnectionManager, 
+    		Map<String, TransportClientProperties> transportClientPropertiesMap) {
         this.connectionManager = httpConnectionManager;
+        this.transportClientPropertiesMap = transportClientPropertiesMap;
     }
     
     /**
@@ -240,13 +245,9 @@ public class CustomCommonsHttpInvokerRequestExecutor extends AbstractHttpInvoker
     }
     
     protected HostConfiguration getHostConfiguration(HttpClient client, URL targetURL) throws IOException {
-        TransportClientProperties tcp = TransportClientPropertiesFactory.create(
-                targetURL.getProtocol()); // http or https
-        int port = targetURL.getPort();
-        boolean hostInNonProxyList = isHostInNonProxyList(targetURL.getHost(), tcp.getNonProxyHosts());
-
         HostConfiguration config = new HostConfiguration();
 
+        int port = targetURL.getPort();
         if (port == -1) {
             if (targetURL.getProtocol().equalsIgnoreCase("https")) {
                 port = 443; // default port for https being 443
@@ -254,27 +255,39 @@ public class CustomCommonsHttpInvokerRequestExecutor extends AbstractHttpInvoker
                 port = 80; // default port for http being 80
             }
         }
+        
+    	/*
+        TransportClientProperties properties = 
+        		TransportClientPropertiesFactory.create(targetURL.getProtocol()); // http or https
+        */
+    	TransportClientProperties properties = 
+    			transportClientPropertiesMap.get(targetURL.getProtocol());
+        if (properties == null) {
+        	config.setHost(targetURL.getHost(), port, targetURL.getProtocol());
+        	return config;
+        }
 
+        boolean hostInNonProxyList = isHostInNonProxyList(targetURL.getHost(), properties.getNonProxyHosts());
         if (hostInNonProxyList) {
             config.setHost(targetURL.getHost(), port, targetURL.getProtocol());
         } else {
-            String proxyHost = tcp.getProxyHost(targetURL);
-            String proxyPort = tcp.getProxyPort(targetURL);
+            String proxyHost = properties.getProxyHost(targetURL);
+            String proxyPort = properties.getProxyPort(targetURL);
             if (proxyHost.length() == 0 || proxyPort.length() == 0) {
                 config.setHost(targetURL.getHost(), port, targetURL.getProtocol());
             } else {
-                if (tcp.getProxyUser().length() != 0) {
-                    Credentials proxyCred = new UsernamePasswordCredentials(tcp.getProxyUser(), 
-                            tcp.getProxyPassword());
+                if (properties.getProxyUser().length() != 0) {
+                    Credentials proxyCred = new UsernamePasswordCredentials(properties.getProxyUser(), 
+                            properties.getProxyPassword());
                     // if the username is in the form "user\domain"
                     // then use NTCredentials instead.
-                    int domainIndex = tcp.getProxyUser().indexOf("\\");
+                    int domainIndex = properties.getProxyUser().indexOf("\\");
                     if (domainIndex > 0) {
-                        String domain = tcp.getProxyUser().substring(0, domainIndex);
-                        if (tcp.getProxyUser().length() > domainIndex + 1) {
-                            String user = tcp.getProxyUser().substring(domainIndex + 1);
-                            proxyCred = new NTCredentials(user, tcp.getProxyPassword(), 
-                                    tcp.getProxyHost(targetURL), domain);
+                        String domain = properties.getProxyUser().substring(0, domainIndex);
+                        if (properties.getProxyUser().length() > domainIndex + 1) {
+                            String user = properties.getProxyUser().substring(domainIndex + 1);
+                            proxyCred = new NTCredentials(user, properties.getProxyPassword(), 
+                                    properties.getProxyHost(targetURL), domain);
                         }
                     }
                     client.getState().setProxyCredentials(AuthScope.ANY, proxyCred);
@@ -282,6 +295,13 @@ public class CustomCommonsHttpInvokerRequestExecutor extends AbstractHttpInvoker
                 config.setProxy(proxyHost, new Integer(proxyPort).intValue());
             }
         }
+
+        if (properties.getAuthUsername().length() > 0) {
+	        //client.getParams().setAuthenticationPreemptive(true);
+	        client.getState().setCredentials(new AuthScope(targetURL.getHost(), targetURL.getPort()), 
+	        		new UsernamePasswordCredentials(properties.getAuthUsername(), properties.getAuthPassword()));
+        }
+        		
         return config;
     }
 

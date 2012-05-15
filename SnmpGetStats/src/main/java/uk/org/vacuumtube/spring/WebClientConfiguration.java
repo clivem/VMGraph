@@ -3,6 +3,9 @@
  */
 package uk.org.vacuumtube.spring;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,9 +16,12 @@ import org.springframework.remoting.httpinvoker.HttpInvokerRequestExecutor;
 
 import uk.org.vacuumtube.commons.http.CommonsHttpClientProperties;
 import uk.org.vacuumtube.commons.http.CustomCommonsHttpInvokerRequestExecutor;
+import uk.org.vacuumtube.commons.http.Default15HTTPSTransportClientProperties;
+import uk.org.vacuumtube.commons.http.Default15HTTPTransportClientProperties;
 import uk.org.vacuumtube.commons.http.DefaultCommonsHttpClientProperties;
 import uk.org.vacuumtube.commons.http.JBossCustomCommonsHttpInvokerRequestExecutor;
 import uk.org.vacuumtube.commons.http.MultiThreadedHttpConnectionManagerFactory;
+import uk.org.vacuumtube.commons.http.TransportClientProperties;
 import uk.org.vacuumtube.service.StatsDatabaseService;
 
 /**
@@ -26,8 +32,26 @@ import uk.org.vacuumtube.service.StatsDatabaseService;
 @ImportResource("classpath:/META-INF/spring/client-context.xml")
 public class WebClientConfiguration {
 
-	@Bean(name = "commonsHttpClientProperties")
-	public CommonsHttpClientProperties commonsHttpClientProperties() {
+	@Bean(name = "httpTransportClientProperties")
+	public Default15HTTPTransportClientProperties httpTransportClientProperties() {
+		return new Default15HTTPTransportClientProperties();
+	}
+	
+	@Bean(name = "httpsTransportClientProperties")
+	public Default15HTTPSTransportClientProperties httpsTransportClientProperties() {
+		return new Default15HTTPSTransportClientProperties();
+	}
+	
+	@Bean(name = "transportClientPropertiesMap")
+	public Map<String, TransportClientProperties> transportClientPropertiesMap() {
+		Map<String, TransportClientProperties> map = new HashMap<String, TransportClientProperties>();
+		map.put("http", httpTransportClientProperties());
+		map.put("https", httpsTransportClientProperties());
+		return map;
+	}
+	
+	@Bean(name = "httpClientProperties")
+	public CommonsHttpClientProperties httpClientProperties() {
 		DefaultCommonsHttpClientProperties properties = 
 				new DefaultCommonsHttpClientProperties();
 		return properties;
@@ -35,21 +59,23 @@ public class WebClientConfiguration {
 
 	@Bean(name = "connectionManager")
 	public MultiThreadedHttpConnectionManager connectionManager() {
-		return MultiThreadedHttpConnectionManagerFactory.create(commonsHttpClientProperties());
+		return MultiThreadedHttpConnectionManagerFactory.create(httpClientProperties());
 	}
 	
 	// Needs to be prototype not singleton
 	@Bean(name = "customCommonsHttpInvokerRequestExecutor")
 	@Scope(value = "prototype")
 	public HttpInvokerRequestExecutor customCommonsHttpInvokerRequestExecutor() {
-		return new CustomCommonsHttpInvokerRequestExecutor(connectionManager());
+		return new CustomCommonsHttpInvokerRequestExecutor(connectionManager(), 
+				transportClientPropertiesMap());
 	}
 
 	// Needs to be prototype not singleton
 	@Bean(name = "jbossCustomCommonsHttpInvokerRequestExecutor")
 	@Scope(value = "prototype")
 	public HttpInvokerRequestExecutor jbossCustomCommonsHttpInvokerRequestExecutor() {
-		return new JBossCustomCommonsHttpInvokerRequestExecutor(connectionManager());
+		return new JBossCustomCommonsHttpInvokerRequestExecutor(connectionManager(), 
+				transportClientPropertiesMap());
 	}
 
 	@Bean(name = "statsDatabaseServiceProxyFactory")

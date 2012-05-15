@@ -37,8 +37,6 @@ import org.apache.commons.httpclient.protocol.ControllerThreadSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 import org.apache.log4j.Logger;
 
-import sun.rmi.runtime.Log;
-
 import com.sun.net.ssl.SSLContext;
 import com.sun.net.ssl.TrustManager;
 

@@ -15,6 +15,7 @@ import org.springframework.remoting.support.SimpleHttpServerFactoryBean;
 
 import uk.org.vacuumtube.http.CustomHttpInvokerServiceExporter;
 import uk.org.vacuumtube.http.JBossHttpInvokerServiceExporter;
+import uk.org.vacuumtube.http.RealmAuthenticator;
 import uk.org.vacuumtube.service.StatsDatabaseService;
 
 import com.sun.net.httpserver.HttpHandler;
@@ -83,6 +84,7 @@ public class WebServerConfiguration {
 		
 		SimpleHttpServerFactoryBean httpServerFactory = new SimpleHttpServerFactoryBean();		
 		httpServerFactory.setContexts(map);
+		httpServerFactory.setAuthenticator(new RealmAuthenticator("Vacuumtube"));
 		httpServerFactory.setHostname("127.0.0.1");
 		httpServerFactory.setPort(8080);
 		return httpServerFactory;

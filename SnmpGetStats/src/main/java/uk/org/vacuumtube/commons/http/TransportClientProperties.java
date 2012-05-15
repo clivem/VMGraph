@@ -32,4 +32,14 @@ public interface TransportClientProperties {
      * Returns a valid String, may be empty ("").
      */
     public String getProxyPassword();
+    
+    /**
+     * Returns a valid String, may be empty ("").
+     */
+    public String getAuthUsername();
+    
+    /**
+     * Returns a valid String, may be empty ("").
+     */
+    public String getAuthPassword();
 }

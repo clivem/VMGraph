@@ -45,7 +45,7 @@ public interface CommonsHttpClientProperties {
 
     /**
      * Used to set the default amount of time, in milliseconds, spent waiting
-     * for a reponse. 
+     * for a response. 
      *
      * @return an integer >= 0
      */

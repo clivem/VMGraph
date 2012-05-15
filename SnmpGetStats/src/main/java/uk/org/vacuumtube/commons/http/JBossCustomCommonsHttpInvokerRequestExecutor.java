@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 import org.apache.commons.httpclient.HttpConnectionManager;
 import org.jboss.serial.io.JBossObjectInputStream;
@@ -20,8 +21,9 @@ public class JBossCustomCommonsHttpInvokerRequestExecutor extends CustomCommonsH
 	/**
 	 * @param httpConnectionManager
 	 */
-	public JBossCustomCommonsHttpInvokerRequestExecutor(HttpConnectionManager httpConnectionManager) {
-		super(httpConnectionManager);
+	public JBossCustomCommonsHttpInvokerRequestExecutor(HttpConnectionManager httpConnectionManager, 
+			Map<String, TransportClientProperties> transportClientPropertiesMap) {
+		super(httpConnectionManager, transportClientPropertiesMap);
 	}
 
 	/* (non-Javadoc)
