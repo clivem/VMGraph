@@ -19,7 +19,6 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 
-import uk.org.vacuumtube.SnmpGetStats;
 import uk.org.vacuumtube.schedule.GetSnmpInterfaceStatisticsQuartzJob;
 import uk.org.vacuumtube.service.ServiceLocator;
 
