@@ -19,6 +19,7 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 
+import uk.org.vacuumtube.SnmpGetStats;
 import uk.org.vacuumtube.schedule.GetSnmpInterfaceStatisticsQuartzJob;
 import uk.org.vacuumtube.service.ServiceLocator;
 
@@ -49,6 +50,11 @@ public class ScheduleConfiguration {
 		map.put("prevTimestamp", new Long(-1));
 		map.put("prevRxBytes", new Long(-1));
 		map.put("prevTxBytes", new Long(-1));
+		// Override the RRD filename from the snmpProperties if set as a system property
+		String rrdDbFilename = System.getProperty(GetSnmpInterfaceStatisticsQuartzJob.SNMP_RRDDB_FILENAME);
+		if (rrdDbFilename != null) {
+			map.put(GetSnmpInterfaceStatisticsQuartzJob.SNMP_RRDDB_FILENAME, rrdDbFilename);
+		}
 
 		JobDetailImpl jobDetailImpl = new JobDetailImpl();
 		jobDetailImpl.setName("GetSnmpInterfaceStatisticsQuartzJob");

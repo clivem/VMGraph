@@ -31,10 +31,10 @@ public class GetSnmpInterfaceStatisticsQuartzJob implements Job {
 	private final static String PREV_RX_BYTES = "prevRxBytes";
 	private final static String PREV_TX_BYTES = "prevTxBytes";
 	
-	private final static String SNMP_ADDRESS = "snmp.address";
-	private final static String SNMP_BYTES_IN_OID = "snmp.bytesInOid";
-	private final static String SNMP_BYTES_OUT_OID = "snmp.bytesOutOid";
-	private final static String SNMP_RRDDB_FILENAME = "snmp.rrdDbFileName";
+	public final static String SNMP_ADDRESS = "snmp.address";
+	public final static String SNMP_BYTES_IN_OID = "snmp.bytesInOid";
+	public final static String SNMP_BYTES_OUT_OID = "snmp.bytesOutOid";
+	public final static String SNMP_RRDDB_FILENAME = "snmp.rrdDbFileName";
 	
 	private StatsDatabaseService statsDatabaseService = null;
 	
