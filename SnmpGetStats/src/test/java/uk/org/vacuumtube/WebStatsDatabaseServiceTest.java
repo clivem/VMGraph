@@ -31,7 +31,16 @@ public class WebStatsDatabaseServiceTest extends AbstractStatsDatabaseServiceTes
 	 */
 	public StatsDatabaseService getStatsDatabaseService() {
 		//return serviceLocator.getSimpleStatsDatabaseService();
-		//return serviceLocator.getCustomStatsDatabaseService();
-		return serviceLocator.getJBossStatsDatabaseService();
+		return serviceLocator.getCustomStatsDatabaseService();
+		//return serviceLocator.getJBossStatsDatabaseService();
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.AbstractStatsDatabaseServiceTest#getAltStatsDatabaseService()
+	 */
+	@Override
+	public StatsDatabaseService getAltStatsDatabaseService() {
+		//return serviceLocator.getJBossStatsDatabaseService();
+		return getStatsDatabaseService();
 	}
 }

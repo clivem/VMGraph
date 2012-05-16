@@ -29,4 +29,12 @@ public class StatsDatabaseServiceTest extends AbstractStatsDatabaseServiceTest {
 	public StatsDatabaseService getStatsDatabaseService() {
 		return serviceLocator.getStatsDatabaseService();
 	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.AbstractStatsDatabaseServiceTest#getAltStatsDatabaseService()
+	 */
+	@Override
+	public StatsDatabaseService getAltStatsDatabaseService() {
+		return getStatsDatabaseService();
+	}
 }

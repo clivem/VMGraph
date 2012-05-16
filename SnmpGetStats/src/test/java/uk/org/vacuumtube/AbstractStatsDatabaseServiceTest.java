@@ -42,6 +42,7 @@ public abstract class AbstractStatsDatabaseServiceTest implements ApplicationCon
 	}
 	
 	public abstract StatsDatabaseService getStatsDatabaseService();
+	public abstract StatsDatabaseService getAltStatsDatabaseService();
 
 	@Test
     public void testGetTestObject() throws Exception {
@@ -65,9 +66,9 @@ public abstract class AbstractStatsDatabaseServiceTest implements ApplicationCon
 			for (int i = 0; i < count; i++) {
 				StatsDatabaseService service = null;
 				if (i % 2 == 0) {
-					service = serviceLocator.getCustomStatsDatabaseService();
+					service = getStatsDatabaseService();
 				} else {
-					service = serviceLocator.getJBossStatsDatabaseService();
+					service = getAltStatsDatabaseService();
 				}
 						
 				StopWatch watch = new StopWatch();
