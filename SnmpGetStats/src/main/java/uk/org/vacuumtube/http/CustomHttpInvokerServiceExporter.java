@@ -33,8 +33,9 @@ public class CustomHttpInvokerServiceExporter extends SimpleHttpInvokerServiceEx
 	 */
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
+		
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("handle(exhange.requestURI=" + exchange.getRequestURI() +"): START");
+			LOGGER.debug("handle(exchange.requestURI=" + exchange.getRequestURI() +"): START");
 		}
 		long start = System.currentTimeMillis();
 		super.handle(exchange);
@@ -138,6 +139,7 @@ public class CustomHttpInvokerServiceExporter extends SimpleHttpInvokerServiceEx
 	@Override
 	protected void doWriteRemoteInvocationResult(RemoteInvocationResult result, ObjectOutputStream oos)
 			throws IOException {
+		
 		long start = System.currentTimeMillis();
 		oos.writeObject(result);
 		long time = System.currentTimeMillis() - start;
@@ -152,6 +154,7 @@ public class CustomHttpInvokerServiceExporter extends SimpleHttpInvokerServiceEx
 	@Override
 	protected RemoteInvocation doReadRemoteInvocation(ObjectInputStream ois)
 			throws IOException, ClassNotFoundException {
+		
 		RemoteInvocation invocation = super.doReadRemoteInvocation(ois);
 		if (logger.isDebugEnabled()) {
 			LOGGER.info(invocation);

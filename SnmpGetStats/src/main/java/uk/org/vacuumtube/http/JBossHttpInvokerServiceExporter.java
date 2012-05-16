@@ -26,6 +26,7 @@ public class JBossHttpInvokerServiceExporter extends CustomHttpInvokerServiceExp
 	@Override
 	protected ObjectInputStream createObjectInputStream(InputStream is)
 			throws IOException {
+		
 		return new JBossObjectInputStream(new BufferedInputStream(is));
 	}
 
@@ -35,6 +36,7 @@ public class JBossHttpInvokerServiceExporter extends CustomHttpInvokerServiceExp
 	@Override
 	protected ObjectOutputStream createObjectOutputStream(OutputStream os)
 			throws IOException {
+		
 		return new JBossObjectOutputStream(new BufferedOutputStream(os));
 	}
 }
