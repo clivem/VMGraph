@@ -133,15 +133,6 @@ public class CustomHttpInvokerServiceExporter extends SimpleHttpInvokerServiceEx
 	}	
 
 	/* (non-Javadoc)
-	 * @see org.springframework.remoting.rmi.RemoteInvocationSerializingExporter#createObjectOutputStream(java.io.OutputStream)
-	 */
-	@Override
-	protected ObjectOutputStream createObjectOutputStream(OutputStream os)
-			throws IOException {
-		return new ObjectOutputStream(os);
-	}
-
-	/* (non-Javadoc)
 	 * @see org.springframework.remoting.rmi.RemoteInvocationSerializingExporter#doWriteRemoteInvocationResult(org.springframework.remoting.support.RemoteInvocationResult, java.io.ObjectOutputStream)
 	 */
 	@Override
