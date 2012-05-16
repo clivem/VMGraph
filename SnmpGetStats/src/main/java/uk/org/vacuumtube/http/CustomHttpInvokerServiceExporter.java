@@ -5,6 +5,7 @@ package uk.org.vacuumtube.http;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.apache.log4j.Logger;
 import org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter;
+import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationResult;
 
 import com.sun.net.httpserver.Headers;
@@ -24,8 +26,24 @@ import com.sun.net.httpserver.HttpExchange;
  */
 public class CustomHttpInvokerServiceExporter extends SimpleHttpInvokerServiceExporter {
 
-	private final static Logger LOGGER = Logger.getLogger(CustomHttpInvokerServiceExporter.class);
+	protected final static Logger LOGGER = Logger.getLogger(CustomHttpInvokerServiceExporter.class);
 	
+	/* (non-Javadoc)
+	 * @see org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter#handle(com.sun.net.httpserver.HttpExchange)
+	 */
+	@Override
+	public void handle(HttpExchange exchange) throws IOException {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("handle(exhange.requestURI=" + exchange.getRequestURI() +"): START");
+		}
+		long start = System.currentTimeMillis();
+		super.handle(exchange);
+		long time = System.currentTimeMillis() - start;
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("handle(exhange.requestURI=" + exchange.getRequestURI() +"): END " + time + "ms");
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter#decorateInputStream(com.sun.net.httpserver.HttpExchange, java.io.InputStream)
 	 */
@@ -113,4 +131,40 @@ public class CustomHttpInvokerServiceExporter extends SimpleHttpInvokerServiceEx
 			return os;
 		}
 	}	
+
+	/* (non-Javadoc)
+	 * @see org.springframework.remoting.rmi.RemoteInvocationSerializingExporter#createObjectOutputStream(java.io.OutputStream)
+	 */
+	@Override
+	protected ObjectOutputStream createObjectOutputStream(OutputStream os)
+			throws IOException {
+		return new ObjectOutputStream(os);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.springframework.remoting.rmi.RemoteInvocationSerializingExporter#doWriteRemoteInvocationResult(org.springframework.remoting.support.RemoteInvocationResult, java.io.ObjectOutputStream)
+	 */
+	@Override
+	protected void doWriteRemoteInvocationResult(RemoteInvocationResult result, ObjectOutputStream oos)
+			throws IOException {
+		long start = System.currentTimeMillis();
+		oos.writeObject(result);
+		long time = System.currentTimeMillis() - start;
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug(oos.getClass().getSimpleName() + ".writeObject(): " + time + "ms");
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.springframework.remoting.rmi.RemoteInvocationSerializingExporter#doReadRemoteInvocation(java.io.ObjectInputStream)
+	 */
+	@Override
+	protected RemoteInvocation doReadRemoteInvocation(ObjectInputStream ois)
+			throws IOException, ClassNotFoundException {
+		RemoteInvocation invocation = super.doReadRemoteInvocation(ois);
+		if (logger.isDebugEnabled()) {
+			LOGGER.info(invocation);
+		}
+		return invocation;
+	}
 }

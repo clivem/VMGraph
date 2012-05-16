@@ -3,6 +3,8 @@
  */
 package uk.org.vacuumtube.http;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -24,7 +26,7 @@ public class JBossHttpInvokerServiceExporter extends CustomHttpInvokerServiceExp
 	@Override
 	protected ObjectInputStream createObjectInputStream(InputStream is)
 			throws IOException {
-		return new JBossObjectInputStream(is);
+		return new JBossObjectInputStream(new BufferedInputStream(is));
 	}
 
 	/* (non-Javadoc)
@@ -33,6 +35,6 @@ public class JBossHttpInvokerServiceExporter extends CustomHttpInvokerServiceExp
 	@Override
 	protected ObjectOutputStream createObjectOutputStream(OutputStream os)
 			throws IOException {
-		return new JBossObjectOutputStream(os);
+		return new JBossObjectOutputStream(new BufferedOutputStream(os));
 	}
 }

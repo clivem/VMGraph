@@ -27,7 +27,8 @@ public class TestObject implements Serializable {
 		super();
 	}
 	
-	public TestObject(char c, byte b, short s, int i, long l, String string, String[] string_array, long instanceCount) {
+	public TestObject(char c, byte b, short s, int i, long l, 
+			String string, String[] string_array, long instanceCount) {
 		this.c = c;
 		this.b = b;
 		this.s = s;
@@ -37,7 +38,7 @@ public class TestObject implements Serializable {
 		this.string_array = string_array;
 		this.instanceCount = instanceCount;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -100,5 +101,13 @@ public class TestObject implements Serializable {
 				"This is a test. This is a test. This is a test. This is a test. ",
 				"This is a test. This is a test. This is a test. This is a test. "},
 			++INSTANCE_COUNT);
+	}
+	
+	public final static TestObject[] createArray(int size) {
+		TestObject[] objects = new TestObject[size];
+		for (int i = 0; i < size; i++) {
+			objects[i] = create();
+		}
+		return objects;
 	}
 }

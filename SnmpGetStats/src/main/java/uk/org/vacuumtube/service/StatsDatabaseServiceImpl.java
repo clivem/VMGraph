@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.org.vacuumtube.dao.Notes;
 import uk.org.vacuumtube.dao.Stats;
 import uk.org.vacuumtube.dao.StatsDao;
+import uk.org.vacuumtube.serialization.test.TestObject;
 
 /**
  * @author clivem
@@ -198,5 +199,27 @@ public class StatsDatabaseServiceImpl implements StatsDatabaseService {
 			LOGGER.debug("getStatsCount()");
 		}
 		return statsDao.getStatsCount();
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.service.StatsDatabaseService#getTestObject()
+	 */
+	@Override
+	public TestObject getTestObject() {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getTestObject()");
+		}
+		return TestObject.create();
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.service.StatsDatabaseService#getTestObjectList(int)
+	 */
+	@Override
+	public TestObject[] getTestObjectList(int size) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getTestObjectList(size=" + size + ")");
+		}
+		return TestObject.createArray(size);
 	}
 }

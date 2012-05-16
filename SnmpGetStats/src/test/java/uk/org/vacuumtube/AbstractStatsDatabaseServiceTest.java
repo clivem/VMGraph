@@ -18,6 +18,7 @@ import org.springframework.util.StopWatch.TaskInfo;
 
 import uk.org.vacuumtube.dao.Notes;
 import uk.org.vacuumtube.dao.Stats;
+import uk.org.vacuumtube.serialization.test.TestObject;
 import uk.org.vacuumtube.service.ServiceLocator;
 import uk.org.vacuumtube.service.StatsDatabaseService;
 
@@ -42,22 +43,45 @@ public abstract class AbstractStatsDatabaseServiceTest implements ApplicationCon
 	
 	public abstract StatsDatabaseService getStatsDatabaseService();
 
-	/*
 	@Test
-    public void testStartupOfSpringInegrationContext() throws Exception {
-		LOGGER.info("\n\ntestStartupOfSpringInegrationContext()");
+    public void testGetTestObject() throws Exception {
+		LOGGER.info("\n\ntestGetTestObject()");
 		try {
 			StopWatch watch = new StopWatch();
-			@SuppressWarnings("unused")
-			final ApplicationContext context = createApplicationContext(watch);
-			
-			Thread.sleep(2000);
+			watch.start("getTestObject()");
+			getStatsDatabaseService().getTestObject();
+			logWatchStop(watch);
 		} catch (Exception e) {
 			LOGGER.warn(null, e);
 			throw e;
 		}
     }
-    */
+	
+	@Test
+    public void testGetTestObjectList() throws Exception {
+		LOGGER.info("\n\ntestGetTestObjectList()");
+		try {
+			int count = 10;
+			for (int i = 0; i < count; i++) {
+				StatsDatabaseService service = null;
+				if (i % 2 == 0) {
+					service = serviceLocator.getCustomStatsDatabaseService();
+				} else {
+					service = serviceLocator.getJBossStatsDatabaseService();
+				}
+						
+				StopWatch watch = new StopWatch();
+				int size = 50000;
+				watch.start("getTestObjectList(" + size + ")");
+				TestObject[] objects = service.getTestObjectList(size);
+				logWatchStop(watch);
+				LOGGER.info("getTestObjectList(" + size + "): returns " + objects.length + " objects.");
+			}
+		} catch (Exception e) {
+			LOGGER.warn(null, e);
+			throw e;
+		}
+    }
 	
 	@Test
 	public void testLoadStatsById() throws Exception {
