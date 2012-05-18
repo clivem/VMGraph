@@ -41,59 +41,61 @@ public class BetFairArchiveLoader {
 		
 		HistoryService hs = ServiceLocator.getHistoryService(ctx);
 		
-		StopWatch watch = new StopWatch();
-		watch.start("Loading: " + args[0]);
-		
-		BufferedReader in = null;
-		try {
-			in = new BufferedReader(new FileReader(args[0]));
-
-			HistoryMapper mapper = new HistoryMapper();
-			int count = 0;
+		for (String fileName : args) {
+			StopWatch watch = new StopWatch();
+			watch.start("Loading: " + args[0]);
 			
-			List<History> historyList = new ArrayList<History>(1000);
-			
-			String line = null;
-			while ((line = in.readLine()) != null) {
-				++count;
-				if (count > 1) {
-					try {
-						History history = mapper.parseRecord(line);
-						//LOGGER.info("Row(" + count + "): " + history);
-						//hs.createHistory(history);
-						historyList.add(history);
-						if (count % 1000 == 0) {
-							hs.createHistory(historyList);
-							historyList.clear();
+			BufferedReader in = null;
+			try {
+				in = new BufferedReader(new FileReader(fileName));
+	
+				HistoryMapper mapper = new HistoryMapper();
+				int count = 0;
+				
+				List<History> historyList = new ArrayList<History>(1000);
+				
+				String line = null;
+				while ((line = in.readLine()) != null) {
+					++count;
+					if (count > 1) {
+						try {
+							History history = mapper.parseRecord(line);
+							//LOGGER.info("Row(" + count + "): " + history);
+							//hs.createHistory(history);
+							historyList.add(history);
+							if (count % 1000 == 0) {
+								hs.createHistory(historyList);
+								historyList.clear();
+							}
+						} catch (Exception e) {
+							LOGGER.warn("Row(" + count + "): " + line, e);
 						}
-					} catch (Exception e) {
-						LOGGER.warn("Row(" + count + "): " + line, e);
+					} else {
+						LOGGER.info("Row(" + count + "): " + line);
+						mapper.parseHeader(line);
 					}
-				} else {
-					LOGGER.info("Row(" + count + "): " + line);
-					mapper.parseHeader(line);
 				}
-			}
-
-			if (historyList.size() > 0) {
-				try {
-					hs.createHistory(historyList);
-					historyList.clear();
-				} catch (Exception ex) {
-					LOGGER.warn(null, ex);
+	
+				if (historyList.size() > 0) {
+					try {
+						hs.createHistory(historyList);
+						historyList.clear();
+					} catch (Exception ex) {
+						LOGGER.warn(null, ex);
+					}
 				}
-			}
-			
-			in.close();
-			watch.stop();
-			LOGGER.info("Finished. Processed " + count + " rows in " + watch.getLastTaskTimeMillis() + "ms.");
-		} catch (Exception e) {
-			LOGGER.warn(null, e);
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (Exception e) {}
+				
+				in.close();
+				watch.stop();
+				LOGGER.info("Finished. Processed " + count + " rows in " + watch.getLastTaskTimeMillis() + "ms.");
+			} catch (Exception e) {
+				LOGGER.warn(null, e);
+			} finally {
+				if (in != null) {
+					try {
+						in.close();
+					} catch (Exception e) {}
+				}
 			}
 		}
 	}
