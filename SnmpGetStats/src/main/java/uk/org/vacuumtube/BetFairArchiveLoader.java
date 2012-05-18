@@ -5,7 +5,8 @@ package uk.org.vacuumtube;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -50,22 +51,39 @@ public class BetFairArchiveLoader {
 			HistoryMapper mapper = new HistoryMapper();
 			int count = 0;
 			
+			List<History> historyList = new ArrayList<History>(1000);
+			
 			String line = null;
 			while ((line = in.readLine()) != null) {
 				++count;
 				if (count > 1) {
 					try {
-						History history = mapper.parse(line);
+						History history = mapper.parseRecord(line);
 						//LOGGER.info("Row(" + count + "): " + history);
-						hs.createHistory(history);
-					} catch (ParseException ex) {
-						LOGGER.warn("Row(" + count + "): " + line, ex);
+						//hs.createHistory(history);
+						historyList.add(history);
+						if (count % 1000 == 0) {
+							hs.createHistory(historyList);
+							historyList.clear();
+						}
+					} catch (Exception e) {
+						LOGGER.warn("Row(" + count + "): " + line, e);
 					}
 				} else {
 					LOGGER.info("Row(" + count + "): " + line);
 					mapper.parseHeader(line);
 				}
 			}
+
+			if (historyList.size() > 0) {
+				try {
+					hs.createHistory(historyList);
+					historyList.clear();
+				} catch (Exception ex) {
+					LOGGER.warn(null, ex);
+				}
+			}
+			
 			in.close();
 			watch.stop();
 			LOGGER.info("Finished. Processed " + count + " rows in " + watch.getLastTaskTimeMillis() + "ms.");

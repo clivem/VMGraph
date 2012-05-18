@@ -15,13 +15,15 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import uk.org.vacuumtube.util.DateFormatFactory;
+
 /**
  * @author clivem
  *
  */
 @Entity
 @Table(name="history")
-public class History implements PersistableEntity, Serializable {
+public class History extends AbstractTimestampEntity implements PersistableEntity, Serializable {
 
 	private static final long serialVersionUID = -3789672959688552347L;
 	
@@ -47,6 +49,7 @@ public class History implements PersistableEntity, Serializable {
 	 * 
 	 */
 	public History() {
+		super();
 	}
 	
 	/**
@@ -73,6 +76,7 @@ public class History implements PersistableEntity, Serializable {
 			String selection, double odds, long numberBets,
 			double volumeMatched, Date latestTaken, Date firstTaken,
 			int winFlag, String inPlay) {
+		this();
 		this.sportsId = sportsId;
 		this.eventId = eventId;
 		this.settledDate = settledDate;
@@ -547,6 +551,10 @@ public class History implements PersistableEntity, Serializable {
 		buf.append(winFlag);
 		buf.append(", inPlay=");
 		buf.append(inPlay);
+		buf.append(", created=");
+		buf.append(DateFormatFactory.format(DateFormatFactory.DF_FULL, created));
+		buf.append(", updated=");
+		buf.append(DateFormatFactory.format(DateFormatFactory.DF_FULL, updated));
 		buf.append("]");
 		return buf.toString();
 	}

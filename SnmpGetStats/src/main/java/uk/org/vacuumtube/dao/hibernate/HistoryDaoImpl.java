@@ -3,6 +3,8 @@
  */
 package uk.org.vacuumtube.dao.hibernate;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
@@ -57,5 +59,22 @@ public class HistoryDaoImpl extends AbstractHibernateDaoImpl implements HistoryD
 		}
 		
 		super.delete(history);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.HistoryDao#createHistory(java.util.List)
+	 */
+	@Override
+	public List<History> createHistory(List<History> historyList) {
+		int count = 0;
+		for (History history : historyList) {
+			super.save(history);
+			if (++count % 20 == 0) {
+				getSession().flush();
+				getSession().clear();
+			}
+		}
+		
+		return historyList;
 	}
 }

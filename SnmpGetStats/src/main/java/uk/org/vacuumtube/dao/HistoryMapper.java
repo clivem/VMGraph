@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
@@ -26,22 +25,22 @@ public class HistoryMapper {
 	private Map<Integer, HeaderMapping> mappingMap = new HashMap<Integer, HeaderMapping>();
 	
 	static {
-		put(new SportsIdMapping("SPORTS_ID"));
-		put(new EventIdMapping("EVENT_ID"));
-		put(new SettledDateMapping("SETTLED_DATE"));
-		put(new FullDescriptionMapping("FULL_DESCRIPTION"));
-		put(new ScheduledOffMapping("SCHEDULED_OFF"));
-		put(new EventMapping("EVENT"));
-		put(new ActualOffMapping("DT ACTUAL_OFF"));
-		put(new SelectionIdMapping("SELECTION_ID"));
-		put(new SelectionMapping("SELECTION"));
-		put(new OddsMapping("ODDS"));
-		put(new NumberBetsMapping("NUMBER_BETS"));
-		put(new VolumeMatchedMapping("VOLUME_MATCHED"));
-		put(new LatestTakenMapping("LATEST_TAKEN"));
-		put(new FirstTakenMapping("FIRST_TAKEN"));
-		put(new WinFlagMapping("WIN_FLAG"));
-		put(new InPlayMapping("IN_PLAY"));
+		put(new SportsIdMapping());
+		put(new EventIdMapping());
+		put(new SettledDateMapping());
+		put(new FullDescriptionMapping());
+		put(new ScheduledOffMapping());
+		put(new EventMapping());
+		put(new ActualOffMapping());
+		put(new SelectionIdMapping());
+		put(new SelectionMapping());
+		put(new OddsMapping());
+		put(new NumberBetsMapping());
+		put(new VolumeMatchedMapping());
+		put(new LatestTakenMapping());
+		put(new FirstTakenMapping());
+		put(new WinFlagMapping());
+		put(new InPlayMapping());
 	}
 	
 	/**
@@ -63,19 +62,11 @@ public class HistoryMapper {
 	 * @throws Exception
 	 */
 	public void parseHeader(String line) throws Exception {
-		StringTokenizer tok = new StringTokenizer(line, ",");
-		int size = tok.countTokens();
-		if (size != 16) {
-			throw new Exception("Expecting 16 columns!");
-		}
-
+		
+		String[] tokens = parse(line);
 		int count = 0;
-		while (tok.hasMoreTokens()) {
-			String next = tok.nextToken();
-			if (next.startsWith("\"") && next.endsWith("\"")) {
-				next = next.substring(1, next.length() - 1);
-			}
-			
+		for (String token : tokens) {
+			String next = strip(token);
 			HeaderMapping mapping = headerMap.get(next);
 			if (mapping == null) {
 				throw new Exception("No mapper for column: " + next);
@@ -90,29 +81,51 @@ public class HistoryMapper {
 	 * @return
 	 * @throws ParseException
 	 */
-	public History parse(String line) throws Exception {
+	public History parseRecord(String line) throws Exception {
 
-		StringTokenizer tok = new StringTokenizer(line, ",");
-		int size = tok.countTokens();
-		if (size != 16) {
-			throw new Exception("Expecting 16 columns!");
-		}
-		
+		String[] tokens = parse(line);
 		History history = new History();
 		int count = 0;
-		while (tok.hasMoreTokens()) {
-			String next = tok.nextToken();
-			if (next.startsWith("\"") && next.endsWith("\"")) {
-				next = next.substring(1, next.length() - 1);
-			}
-			
+		for (String token : tokens) {
+			String next = strip(token);
 			mappingMap.get(count).process(next, history);			
-			
 			count++;
-			//System.out.println(next);
 		}
 		
 		return history;
+	}
+	
+	/**
+	 * @param line
+	 * @return
+	 * @throws Exception
+	 */
+	private String[] parse(String line) throws Exception {
+		
+		String[] tokens = line.split(",\"");
+		int size = tokens.length;
+		if (size != headerMap.size()) {
+			int count = 0;
+			for (String token : tokens) {
+				LOGGER.warn(count++ + ": [" + strip(token) + "]");
+			}
+			throw new Exception("Expecting " + headerMap.size() + " columns. Received " + size + "!");
+		}
+		return tokens;
+	}
+	
+	/**
+	 * @param value
+	 * @return
+	 */
+	private String strip(String value) {
+		if (value.startsWith("\"")) {
+			value = value.substring(1);
+		}
+		if (value.endsWith("\"")) {
+			value = value.substring(0, value.length() - 1);
+		}
+		return value;
 	}
 	
 	/**
@@ -122,11 +135,11 @@ public class HistoryMapper {
 	 */
 	private static final Date parseArchiveDate(String column, String value) throws ParseException {
 		if (value.length() == 0) {
-			if (!"settledDate".equals(column) && !"dtActualOffDate".equals(column)) {
+			if (!"settledDate".equals(column) && !"actualOffDate".equals(column)) {
 				LOGGER.warn("Column: " + column + ", Value: " + value);
 			}
 			return null;
-		} else if (value.length() == 16) {
+		} else if (value.length() == DateFormatFactory.BETFAIR_DATE_TIME_WOUT_SECS.length()) {
 			return DateFormatFactory.parse(DateFormatFactory.BETFAIR_DATE_TIME_WOUT_SECS, value);
 		} else {
 			return DateFormatFactory.parse(DateFormatFactory.BETFAIR_DATE_TIME, value);
@@ -161,11 +174,13 @@ public class HistoryMapper {
 	
 	private static class SportsIdMapping extends HeaderMapping {
 
+		public final static String ID = "SPORTS_ID";
+		
 		/**
 		 * @param csvHeaderName
 		 */
-		public SportsIdMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public SportsIdMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)
@@ -180,11 +195,13 @@ public class HistoryMapper {
 
 	private static class EventIdMapping extends HeaderMapping {
 
+		public final static String ID = "EVENT_ID";
+
 		/**
 		 * @param csvHeaderName
 		 */
-		public EventIdMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public EventIdMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)
@@ -199,11 +216,13 @@ public class HistoryMapper {
 
 	private static class SettledDateMapping extends HeaderMapping {
 
+		public final static String ID = "SETTLED_DATE";
+
 		/**
 		 * @param csvHeaderName
 		 */
-		public SettledDateMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public SettledDateMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)
@@ -218,11 +237,13 @@ public class HistoryMapper {
 
 	private static class FullDescriptionMapping extends HeaderMapping {
 
+		public final static String ID = "FULL_DESCRIPTION";
+
 		/**
 		 * @param csvHeaderName
 		 */
-		public FullDescriptionMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public FullDescriptionMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)
@@ -237,11 +258,13 @@ public class HistoryMapper {
 
 	private static class ScheduledOffMapping extends HeaderMapping {
 
+		public final static String ID = "SCHEDULED_OFF";
+
 		/**
 		 * @param csvHeaderName
 		 */
-		public ScheduledOffMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public ScheduledOffMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)
@@ -256,11 +279,13 @@ public class HistoryMapper {
 
 	private static class EventMapping extends HeaderMapping {
 
+		public final static String ID = "EVENT";
+
 		/**
 		 * @param csvHeaderName
 		 */
-		public EventMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public EventMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)
@@ -275,11 +300,13 @@ public class HistoryMapper {
 
 	private static class ActualOffMapping extends HeaderMapping {
 
+		public final static String ID = "DT ACTUAL_OFF";
+
 		/**
 		 * @param csvHeaderName
 		 */
-		public ActualOffMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public ActualOffMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)
@@ -294,11 +321,13 @@ public class HistoryMapper {
 
 	private static class SelectionIdMapping extends HeaderMapping {
 
+		public final static String ID = "SELECTION_ID";
+
 		/**
 		 * @param csvHeaderName
 		 */
-		public SelectionIdMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public SelectionIdMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)
@@ -313,11 +342,13 @@ public class HistoryMapper {
 
 	private static class SelectionMapping extends HeaderMapping {
 
+		public final static String ID = "SELECTION";
+
 		/**
 		 * @param csvHeaderName
 		 */
-		public SelectionMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public SelectionMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)
@@ -332,11 +363,13 @@ public class HistoryMapper {
 
 	private static class OddsMapping extends HeaderMapping {
 
+		public final static String ID = "ODDS";
+
 		/**
 		 * @param csvHeaderName
 		 */
-		public OddsMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public OddsMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)
@@ -351,11 +384,13 @@ public class HistoryMapper {
 
 	private static class NumberBetsMapping extends HeaderMapping {
 
+		public final static String ID = "NUMBER_BETS";
+
 		/**
 		 * @param csvHeaderName
 		 */
-		public NumberBetsMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public NumberBetsMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)
@@ -370,11 +405,13 @@ public class HistoryMapper {
 
 	private static class VolumeMatchedMapping extends HeaderMapping {
 
+		public final static String ID = "VOLUME_MATCHED";
+
 		/**
 		 * @param csvHeaderName
 		 */
-		public VolumeMatchedMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public VolumeMatchedMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)
@@ -389,11 +426,13 @@ public class HistoryMapper {
 
 	private static class LatestTakenMapping extends HeaderMapping {
 
+		public final static String ID = "LATEST_TAKEN";
+
 		/**
 		 * @param csvHeaderName
 		 */
-		public LatestTakenMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public LatestTakenMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)
@@ -408,11 +447,13 @@ public class HistoryMapper {
 
 	private static class FirstTakenMapping extends HeaderMapping {
 
+		public final static String ID = "FIRST_TAKEN";
+
 		/**
 		 * @param csvHeaderName
 		 */
-		public FirstTakenMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public FirstTakenMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)
@@ -427,11 +468,13 @@ public class HistoryMapper {
 
 	private static class WinFlagMapping extends HeaderMapping {
 
+		public final static String ID = "WIN_FLAG";
+
 		/**
 		 * @param csvHeaderName
 		 */
-		public WinFlagMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public WinFlagMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)
@@ -446,11 +489,13 @@ public class HistoryMapper {
 
 	private static class InPlayMapping extends HeaderMapping {
 
+		public final static String ID = "IN_PLAY";
+
 		/**
 		 * @param csvHeaderName
 		 */
-		public InPlayMapping(String csvHeaderName) {
-			super(csvHeaderName);
+		public InPlayMapping() {
+			super(ID);
 		}
 
 		/* (non-Javadoc)

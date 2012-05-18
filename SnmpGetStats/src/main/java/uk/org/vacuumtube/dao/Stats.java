@@ -48,6 +48,7 @@ public class Stats extends AbstractTimestampEntity implements PersistableEntity,
 	 * 
 	 */
 	public Stats() {
+		super();
 	}
 
 	/**
@@ -56,6 +57,7 @@ public class Stats extends AbstractTimestampEntity implements PersistableEntity,
 	 * @param txBytes
 	 */
 	public Stats(Long millis, Long rxBytes, Long txBytes) {
+		this();
 		this.millis = millis;
 		this.rxBytes = rxBytes;
 		this.txBytes = txBytes;

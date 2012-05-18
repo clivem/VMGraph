@@ -4,7 +4,6 @@
 package uk.org.vacuumtube.dao;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,16 +34,16 @@ public class Notes extends AbstractTimestampEntity implements uk.org.vacuumtube.
 	 * 
 	 */
 	public Notes() {
+		super();
 	}
 
 	/**
 	 * @param note
 	 */
 	public Notes(Stats stats, String note) {
+		this();
 		this.note = note;
 		this.stats = stats;
-		// MySQL "fix" (truncate the millis) which are not stored by their timestamp
-		this.created = new Date((System.currentTimeMillis() / 1000L) * 1000L);
 	}
 
 	/**

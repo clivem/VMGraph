@@ -3,6 +3,8 @@
  */
 package uk.org.vacuumtube.service;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,5 +77,18 @@ public class HistoryServiceImpl implements HistoryService {
 			LOGGER.trace("deleteHistory(history=" + history + ")");
 		}
 		historyDao.deleteHistory(history);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.HistoryDao#createHistory(java.util.List)
+	 */
+	@Override
+	@Transactional
+	public List<History> createHistory(List<History> historyList) {
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("createHistory(historyList.size=" + historyList.size() + ")");
+		}
+		return historyDao.createHistory(historyList);
 	}
 }

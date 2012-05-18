@@ -65,6 +65,8 @@ CREATE TABLE IF NOT EXISTS `history` (
   `first_taken` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
   `win_flag` tinyint(1) NOT NULL,
   `in_play` varchar(255) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `updated` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`history_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=29901 ;
 
