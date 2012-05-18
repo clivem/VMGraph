@@ -1,4 +1,4 @@
-
+DROP TABLE IF EXISTS `history`;
 DROP TABLE IF EXISTS `notes`;
 DROP TABLE IF EXISTS `stats`;
 
@@ -43,3 +43,28 @@ ALTER TABLE `notes`
   ADD CONSTRAINT `notes_stats_id_fk` FOREIGN KEY (`stats_id`) REFERENCES `stats` (`stats_id`)
   ON DELETE CASCADE ON UPDATE CASCADE;
   
+
+--
+-- Table structure for table `history`
+--
+CREATE TABLE IF NOT EXISTS `history` (
+  `history_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `sports_id` bigint(20) NOT NULL,
+  `event_id` bigint(20) NOT NULL,
+  `settled_date` timestamp NULL DEFAULT NULL,
+  `full_description` varchar(255) NOT NULL,
+  `scheduled_off_date` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `event` varchar(255) NOT NULL,
+  `actual_off_date` timestamp NULL DEFAULT NULL,
+  `selection_id` bigint(20) NOT NULL,
+  `selection` varchar(255) NOT NULL,
+  `odds` double NOT NULL,
+  `number_bets` bigint(20) NOT NULL,
+  `volume_matched` double NOT NULL,
+  `latest_taken` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `first_taken` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `win_flag` tinyint(1) NOT NULL,
+  `in_play` varchar(255) NOT NULL,
+  PRIMARY KEY (`history_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=29901 ;
+

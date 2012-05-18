@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 
+import uk.org.vacuumtube.service.HistoryService;
+import uk.org.vacuumtube.service.HistoryServiceImpl;
 import uk.org.vacuumtube.service.ServiceLocator;
 import uk.org.vacuumtube.service.StatsDatabaseService;
 import uk.org.vacuumtube.service.StatsDatabaseServiceImpl;
@@ -30,6 +32,13 @@ public class ApplicationConfiguration {
 		StatsDatabaseServiceImpl statsImpl = new StatsDatabaseServiceImpl();
 		statsImpl.setStatsDao(databaseConfiguration.statsDao());
 		return statsImpl;
+	}
+	
+	@Bean(name = ServiceLocator.HISTORY_SERVICE_BEAN_NAME)
+	public HistoryService historyService() {
+		HistoryServiceImpl historyServiceImpl = new HistoryServiceImpl();
+		historyServiceImpl.setHistoryDao(databaseConfiguration.historyDao());
+		return historyServiceImpl;
 	}
 	
 	/*

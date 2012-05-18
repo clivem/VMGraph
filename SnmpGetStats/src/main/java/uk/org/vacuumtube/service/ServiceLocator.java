@@ -29,6 +29,8 @@ public class ServiceLocator {
      */
     public final static String STATS_SERVICE_BEAN_NAME = 
     		"statsDatabaseService";
+    public final static String HISTORY_SERVICE_BEAN_NAME = 
+    		"historyService";
 
     /*
      * RMI
@@ -107,6 +109,21 @@ public class ServiceLocator {
 	 */
 	public static final StatsDatabaseService getStatsDatabaseService(ApplicationContext context) {
 		return context.getBean(STATS_SERVICE_BEAN_NAME, StatsDatabaseService.class);
+	}
+	
+	/**
+	 * @return a local instance of a HistoryService 
+	 */
+	public final HistoryService getHistoryService() {
+		return getHistoryService(applicationContext);
+	}
+	
+	/**
+	 * @param context
+	 * @return a local instance of a HistoryService 
+	 */
+	public static final HistoryService getHistoryService(ApplicationContext context) {
+		return context.getBean(HISTORY_SERVICE_BEAN_NAME, HistoryService.class);
 	}
 	
 	/**
