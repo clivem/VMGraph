@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import uk.org.vacuumtube.dao.History;
 import uk.org.vacuumtube.dao.HistoryDao;
+import uk.org.vacuumtube.dao.Sport;
 
 /**
  * @author clivem
@@ -90,5 +91,31 @@ public class HistoryServiceImpl implements HistoryService {
 			LOGGER.trace("createHistory(historyList.size=" + historyList.size() + ")");
 		}
 		return historyDao.createHistory(historyList);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.HistoryDao#createSport(uk.org.vacuumtube.dao.Sport)
+	 */
+	@Override
+	@Transactional
+	public Long createSport(Sport sport) {
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("createSport(sport=" + sport + ")");
+		}
+		return historyDao.createSport(sport);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.HistoryDao#getSportById(java.lang.Long)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public Sport getSportById(Long id) {
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("getSportById(id=" + id + ")");
+		}
+		return historyDao.getSportById(id);
 	}
 }

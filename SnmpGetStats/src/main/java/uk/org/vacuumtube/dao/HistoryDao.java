@@ -18,4 +18,8 @@ public interface HistoryDao {
 	public void deleteHistory(History history);
 	
 	public List<History> createHistory(List<History> historyList);
+	
+	public Long createSport(Sport sport);
+	
+	public Sport getSportById(Long id);
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import uk.org.vacuumtube.dao.hibernate.InPlay;
 import uk.org.vacuumtube.util.DateFormatFactory;
 
 /**
@@ -21,8 +22,6 @@ public class HistoryMapper {
 	private final static Logger LOGGER = Logger.getLogger(HistoryMapper.class);
 	
 	private static Map<String, HeaderMapping> headerMap = new HashMap<String, HeaderMapping>();
-	
-	private Map<Integer, HeaderMapping> mappingMap = new HashMap<Integer, HeaderMapping>();
 	
 	static {
 		put(new SportsIdMapping());
@@ -43,13 +42,8 @@ public class HistoryMapper {
 		put(new InPlayMapping());
 	}
 	
-	/**
-	 * @param mapping
-	 */
-	private static final void put(HeaderMapping mapping) {
-		headerMap.put(mapping.getCsvHeaderName(), mapping);
-	}
-	
+	private Map<Integer, HeaderMapping> mappingMap = new HashMap<Integer, HeaderMapping>();
+
 	/**
 	 * 
 	 */
@@ -88,7 +82,7 @@ public class HistoryMapper {
 		int count = 0;
 		for (String token : tokens) {
 			String next = strip(token);
-			mappingMap.get(count).process(next, history);			
+			mappingMap.get(count).process(line, next, history);			
 			count++;
 		}
 		
@@ -135,7 +129,7 @@ public class HistoryMapper {
 	 */
 	private static final Date parseArchiveDate(String column, String value) throws ParseException {
 		if (value.length() == 0) {
-			if (!"settledDate".equals(column) && !"actualOffDate".equals(column)) {
+			if (!SettledDateMapping.ID.equals(column) && !ActualOffMapping.ID.equals(column)) {
 				LOGGER.warn("Column: " + column + ", Value: " + value);
 			}
 			return null;
@@ -168,11 +162,12 @@ public class HistoryMapper {
 		 * @param value
 		 * @param history
 		 * @throws ParseException
+		 * @throws NumberFormatException
 		 */
-		public abstract void process(String value, History history) throws ParseException;
+		public abstract void process(String line, String value, History history) throws ParseException, NumberFormatException;
 	}
 	
-	private static class SportsIdMapping extends HeaderMapping {
+	private final static class SportsIdMapping extends HeaderMapping {
 
 		public final static String ID = "SPORTS_ID";
 		
@@ -184,327 +179,351 @@ public class HistoryMapper {
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
-			history.setSportsId(Integer.parseInt(value));
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
+			//history.setSportsId(Integer.parseInt(value));
+			long id = Integer.parseInt(value);
+			history.setSport(new Sport(id, "UNKNOWN", false));
 		}
 	}
 
-	private static class EventIdMapping extends HeaderMapping {
+	private final static class EventIdMapping extends HeaderMapping {
 
 		public final static String ID = "EVENT_ID";
 
 		/**
-		 * @param csvHeaderName
+		 * 
 		 */
 		public EventIdMapping() {
 			super(ID);
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
 			history.setEventId(Long.valueOf(value).longValue());
 		}
 	}
 
-	private static class SettledDateMapping extends HeaderMapping {
+	private final static class SettledDateMapping extends HeaderMapping {
 
 		public final static String ID = "SETTLED_DATE";
 
 		/**
-		 * @param csvHeaderName
+		 * 
 		 */
 		public SettledDateMapping() {
 			super(ID);
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
-			history.setSettledDate(parseArchiveDate("settledDate", value));
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
+			history.setSettledDate(parseArchiveDate(csvHeaderName, value));
 		}
 	}
 
-	private static class FullDescriptionMapping extends HeaderMapping {
+	private final static class FullDescriptionMapping extends HeaderMapping {
 
 		public final static String ID = "FULL_DESCRIPTION";
 
 		/**
-		 * @param csvHeaderName
+		 * 
 		 */
 		public FullDescriptionMapping() {
 			super(ID);
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
 			history.setFullDescription(value);
 		}
 	}
 
-	private static class ScheduledOffMapping extends HeaderMapping {
+	private final static class ScheduledOffMapping extends HeaderMapping {
 
 		public final static String ID = "SCHEDULED_OFF";
 
 		/**
-		 * @param csvHeaderName
+		 * 
 		 */
 		public ScheduledOffMapping() {
 			super(ID);
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
-			history.setScheduledOffDate(parseArchiveDate("scheduledOffDate", value));
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
+			history.setScheduledOffDate(parseArchiveDate(csvHeaderName, value));
 		}
 	}
 
-	private static class EventMapping extends HeaderMapping {
+	private final static class EventMapping extends HeaderMapping {
 
 		public final static String ID = "EVENT";
 
 		/**
-		 * @param csvHeaderName
+		 * 
 		 */
 		public EventMapping() {
 			super(ID);
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
 			history.setEvent(value);
 		}
 	}
 
-	private static class ActualOffMapping extends HeaderMapping {
+	private final static class ActualOffMapping extends HeaderMapping {
 
 		public final static String ID = "DT ACTUAL_OFF";
 
 		/**
-		 * @param csvHeaderName
+		 * 
 		 */
 		public ActualOffMapping() {
 			super(ID);
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
-			history.setActualOffDate(parseArchiveDate("actualOffDate", value));
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
+			history.setActualOffDate(parseArchiveDate(csvHeaderName, value));
 		}
 	}
 
-	private static class SelectionIdMapping extends HeaderMapping {
+	private final static class SelectionIdMapping extends HeaderMapping {
 
 		public final static String ID = "SELECTION_ID";
 
 		/**
-		 * @param csvHeaderName
+		 * 
 		 */
 		public SelectionIdMapping() {
 			super(ID);
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
 			history.setSelectionId(Long.valueOf(value).longValue());
 		}
 	}
 
-	private static class SelectionMapping extends HeaderMapping {
+	private final static class SelectionMapping extends HeaderMapping {
 
 		public final static String ID = "SELECTION";
 
 		/**
-		 * @param csvHeaderName
+		 * 
 		 */
 		public SelectionMapping() {
 			super(ID);
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
 			history.setSelection(value);
 		}
 	}
 
-	private static class OddsMapping extends HeaderMapping {
+	private final static class OddsMapping extends HeaderMapping {
 
 		public final static String ID = "ODDS";
 
 		/**
-		 * @param csvHeaderName
+		 * 
 		 */
 		public OddsMapping() {
 			super(ID);
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
 			history.setOdds(Double.valueOf(value).doubleValue());
 		}
 	}
 
-	private static class NumberBetsMapping extends HeaderMapping {
+	private final static class NumberBetsMapping extends HeaderMapping {
 
 		public final static String ID = "NUMBER_BETS";
 
 		/**
-		 * @param csvHeaderName
+		 * 
 		 */
 		public NumberBetsMapping() {
 			super(ID);
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
 			history.setNumberBets(Long.valueOf(value).longValue());
 		}
 	}
 
-	private static class VolumeMatchedMapping extends HeaderMapping {
+	private final static class VolumeMatchedMapping extends HeaderMapping {
 
 		public final static String ID = "VOLUME_MATCHED";
 
 		/**
-		 * @param csvHeaderName
+		 * 
 		 */
 		public VolumeMatchedMapping() {
 			super(ID);
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
 			history.setVolumeMatched(Double.valueOf(value).doubleValue());
 		}
 	}
 
-	private static class LatestTakenMapping extends HeaderMapping {
+	private final static class LatestTakenMapping extends HeaderMapping {
 
 		public final static String ID = "LATEST_TAKEN";
 
 		/**
-		 * @param csvHeaderName
+		 * 
 		 */
 		public LatestTakenMapping() {
 			super(ID);
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
-			history.setLatestTaken(parseArchiveDate("latestTaken", value));
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
+			history.setLatestTaken(parseArchiveDate(csvHeaderName, value));
 		}
 	}
 
-	private static class FirstTakenMapping extends HeaderMapping {
+	private final static class FirstTakenMapping extends HeaderMapping {
 
 		public final static String ID = "FIRST_TAKEN";
 
 		/**
-		 * @param csvHeaderName
+		 * 
 		 */
 		public FirstTakenMapping() {
 			super(ID);
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
-			history.setFirstTaken(parseArchiveDate("firstTaken", value));
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
+			history.setFirstTaken(parseArchiveDate(csvHeaderName, value));
 		}
 	}
 
-	private static class WinFlagMapping extends HeaderMapping {
+	private final static class WinFlagMapping extends HeaderMapping {
 
 		public final static String ID = "WIN_FLAG";
 
 		/**
-		 * @param csvHeaderName
+		 * 
 		 */
 		public WinFlagMapping() {
 			super(ID);
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
-			history.setWinFlag(Integer.parseInt(value));
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
+			try {
+				history.setWinFlag(Integer.parseInt(value) == 1);
+			} catch (NumberFormatException ex) {
+				LOGGER.warn(csvHeaderName + ": value='" + value + "'! setWinFlag(false): " + line);
+				history.setWinFlag(false);
+				history.addNote(new HistoryNote(csvHeaderName + ": value='" + value + "'! setWinFlag(false)"));
+				//history.setWinFlag(-1);
+				//throw ex;
+			}
 		}
 	}
 
-	private static class InPlayMapping extends HeaderMapping {
+	private final static class InPlayMapping extends HeaderMapping {
 
 		public final static String ID = "IN_PLAY";
 
 		/**
-		 * @param csvHeaderName
+		 * 
 		 */
 		public InPlayMapping() {
 			super(ID);
 		}
 
 		/* (non-Javadoc)
-		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, uk.org.vacuumtube.dao.History)
+		 * @see uk.org.vacuumtube.dao.HistoryMapper.HeaderMapping#process(java.lang.String, java.lang.String, uk.org.vacuumtube.dao.History)
 		 */
 		@Override
-		public void process(String value, History history)
-				throws ParseException {
-			history.setInPlay(value);
+		public void process(String line, String value, History history)
+				throws ParseException, NumberFormatException {
+			//history.setInPlay(value);
+			InPlay inPlay = InPlay.getInstance(value);
+			if (inPlay != null) {
+				history.setInPlay(inPlay);
+			} else {
+				LOGGER.warn(csvHeaderName + ": value='" + value + "'! setInPlay(null): " + line);
+				history.setInPlay(null);
+			}
 		}
 	}
+	
+	/**
+	 * @param mapping
+	 */
+	private static final void put(HeaderMapping mapping) {
+		headerMap.put(mapping.getCsvHeaderName(), mapping);
+	}	
 }

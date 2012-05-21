@@ -4,23 +4,41 @@
 package uk.org.vacuumtube.dao;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashSet;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.Cascade;
+
+import uk.org.vacuumtube.dao.hibernate.InPlay;
+import uk.org.vacuumtube.dao.hibernate.InPlayUserType;
 import uk.org.vacuumtube.util.DateFormatFactory;
 
 /**
  * @author clivem
  *
  */
+@org.hibernate.annotations.TypeDef(
+	name = "in_play",
+	defaultForType = InPlay.class,
+	typeClass = InPlayUserType.class
+)
+
 @Entity
 @Table(name="history")
 public class History extends AbstractTimestampEntity implements PersistableEntity, Serializable {
@@ -28,7 +46,7 @@ public class History extends AbstractTimestampEntity implements PersistableEntit
 	private static final long serialVersionUID = -3789672959688552347L;
 	
 	protected Long historyId = null;
-	protected int sportsId;
+	protected Sport sport;
 	protected long eventId;
 	protected Date settledDate;
 	protected String fullDescription;
@@ -42,8 +60,10 @@ public class History extends AbstractTimestampEntity implements PersistableEntit
 	protected double volumeMatched;
 	protected Date latestTaken;
 	protected Date firstTaken;
-	protected int winFlag;
-	protected String inPlay;
+	protected boolean winFlag;
+	protected InPlay inPlay;
+
+	protected Collection<HistoryNote> notes = null;
 
 	/**
 	 * 
@@ -53,7 +73,7 @@ public class History extends AbstractTimestampEntity implements PersistableEntit
 	}
 	
 	/**
-	 * @param sportsId
+	 * @param sport
 	 * @param eventId
 	 * @param settledDate
 	 * @param fullDescription
@@ -70,14 +90,14 @@ public class History extends AbstractTimestampEntity implements PersistableEntit
 	 * @param winFlag
 	 * @param inPlay
 	 */
-	public History(int sportsId, long eventId,
+	public History(Sport sport, long eventId,
 			Date settledDate, String fullDescription, Date scheduledOffDate,
 			String event, Date actualOffDate, long selectionId,
 			String selection, double odds, long numberBets,
 			double volumeMatched, Date latestTaken, Date firstTaken,
-			int winFlag, String inPlay) {
+			boolean winFlag, InPlay inPlay) {
 		this();
-		this.sportsId = sportsId;
+		this.sport = sport;
 		this.eventId = eventId;
 		this.settledDate = settledDate;
 		this.fullDescription = fullDescription;
@@ -113,18 +133,20 @@ public class History extends AbstractTimestampEntity implements PersistableEntit
 	}
 
 	/**
-	 * @return the sportsId
+	 * @return the sport
 	 */
-	@Column(name = "sports_id", nullable = false)
-	public int getSportsId() {
-		return sportsId;
+	@ManyToOne()
+	//@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "sport_id", nullable = false)
+	public Sport getSport() {
+		return sport;
 	}
 
 	/**
-	 * @param sportsId the sportsId to set
+	 * @param sport the sport to set
 	 */
-	public void setSportsId(int sportsId) {
-		this.sportsId = sportsId;
+	public void setSport(Sport sport) {
+		this.sport = sport;
 	}
 
 	/**
@@ -331,14 +353,15 @@ public class History extends AbstractTimestampEntity implements PersistableEntit
 	 * @return the winFlag
 	 */
 	@Column(name = "win_flag", nullable = false)
-	public int getWinFlag() {
+	@org.hibernate.annotations.Type(type = "numeric_boolean")
+	public boolean getWinFlag() {
 		return winFlag;
 	}
 
 	/**
 	 * @param winFlag the winFlag to set
 	 */
-	public void setWinFlag(int winFlag) {
+	public void setWinFlag(boolean winFlag) {
 		this.winFlag = winFlag;
 	}
 
@@ -346,15 +369,34 @@ public class History extends AbstractTimestampEntity implements PersistableEntit
 	 * @return the inPlay
 	 */
 	@Column(name = "in_play", nullable = false)
-	public String getInPlay() {
+	@org.hibernate.annotations.Type(type = "in_play")
+	public InPlay getInPlay() {
 		return inPlay;
 	}
 
 	/**
 	 * @param inPlay the inPlay to set
 	 */
-	public void setInPlay(String inPlay) {
+	public void setInPlay(InPlay inPlay) {
 		this.inPlay = inPlay;
+	}
+
+	/**
+	 * @return the notes
+	 */
+	//@OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "history")
+	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.LAZY, mappedBy = "history")
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	//@Fetch(FetchMode.JOIN)
+	public Collection<HistoryNote> getNotes() {
+		return notes;
+	}
+
+	/**
+	 * @param notes the notes to set
+	 */
+	public void setNotes(Collection<HistoryNote> notes) {
+		this.notes = notes;
 	}
 
 	/* (non-Javadoc)
@@ -391,10 +433,12 @@ public class History extends AbstractTimestampEntity implements PersistableEntit
 		result = prime * result + (int) (selectionId ^ (selectionId >>> 32));
 		result = prime * result
 				+ ((settledDate == null) ? 0 : settledDate.hashCode());
-		result = prime * result + sportsId;
+		if (sport != null && sport.getSportId() != null) {
+			result = prime * result + sport.getSportId().intValue();
+		}
 		temp = Double.doubleToLongBits(volumeMatched);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + winFlag;
+		result = prime * result + (winFlag ? 1231 : 1237);
 		return result;
 	}
 
@@ -498,7 +542,11 @@ public class History extends AbstractTimestampEntity implements PersistableEntit
 		} else if (!settledDate.equals(other.settledDate)) {
 			return false;
 		}
-		if (sportsId != other.sportsId) {
+		if (sport == null) {
+			if (other.sport != null) {
+				return false;
+			}
+		} else if (!sport.equals(other.sport)) {
 			return false;
 		}
 		if (Double.doubleToLongBits(volumeMatched) != Double
@@ -519,8 +567,8 @@ public class History extends AbstractTimestampEntity implements PersistableEntit
 		StringBuffer buf = new StringBuffer();
 		buf.append("History[historyId=");
 		buf.append(historyId);
-		buf.append(", sportsId=");
-		buf.append(sportsId);
+		buf.append(", sport=");
+		buf.append(sport);
 		buf.append(", eventId=");
 		buf.append(eventId);
 		buf.append(", settledDate=");
@@ -555,7 +603,40 @@ public class History extends AbstractTimestampEntity implements PersistableEntit
 		buf.append(DateFormatFactory.format(DateFormatFactory.DF_FULL, created));
 		buf.append(", updated=");
 		buf.append(DateFormatFactory.format(DateFormatFactory.DF_FULL, updated));
+		buf.append(", notes=");
+		if (notes != null) {
+			//buf.append(notes);
+			if (Hibernate.isInitialized(notes)) {
+				buf.append("HistoryNote[" + notes.size() + "]");
+			} else {
+				buf.append("HistoryNote[PROXY NOT INITIALISED]");
+			}
+		} else {
+			buf.append("null");
+		}
 		buf.append("]");
 		return buf.toString();
+	}
+	
+	/**
+	 * @param note
+	 */
+	public HistoryNote addNote(HistoryNote note) {
+		if (notes == null) {
+			notes = new LinkedHashSet<HistoryNote>();
+		}
+		note.setHistory(this);
+		notes.add(note);
+		return note;
+	}
+	
+	/**
+	 * @param note
+	 */
+	public void removeNote(HistoryNote note) {
+		if (notes != null) {
+			notes.remove(note);
+		}
+		note.setHistory(null);
 	}
 }

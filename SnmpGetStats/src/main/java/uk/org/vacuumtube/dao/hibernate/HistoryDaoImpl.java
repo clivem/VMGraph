@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import uk.org.vacuumtube.dao.History;
 import uk.org.vacuumtube.dao.HistoryDao;
+import uk.org.vacuumtube.dao.Sport;
 
 /**
  * @author clivem
@@ -76,5 +77,29 @@ public class HistoryDaoImpl extends AbstractHibernateDaoImpl implements HistoryD
 		}
 		
 		return historyList;
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.HistoryDao#createSport(uk.org.vacuumtube.dao.Sport)
+	 */
+	@Override
+	public Long createSport(Sport sport) {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("createSport(sport=" + sport + ")");
+		}
+
+		return (Long) super.save(sport);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.org.vacuumtube.dao.HistoryDao#getSportById(java.lang.Long)
+	 */
+	@Override
+	public Sport getSportById(Long id) {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("getSportById(id=" + id + ")");
+		}
+
+		return (Sport) super.get(Sport.class, id);
 	}
 }
