@@ -14,15 +14,20 @@ import java.util.Hashtable;
  * 
  */
 public class DateFormatFactory {
+	
+	//private final static Logger LOGGER = Logger.getLogger(DateFormatFactory.class);
 
 	public final static String DATE_TIME = "yyyy/MM/dd HH:mm:ss";
 	public final static String DATE = "yyyy/MM/dd";
 	public final static String TIME = "HH:mm:ss";
 	public final static String DATE_TIME_MILLIS = "yy/MM/dd HH:mm:ss,SSS";
 	public final static String DF_FULL = "yyyy/MM/dd HH:mm:ss,SSS z";
+	
+	public final static String BETFAIR_DATE_TIME = "dd-MM-yyyy HH:mm:ss";
+	public final static String BETFAIR_DATE_TIME_WOUT_SECS = "dd-MM-yyyy HH:mm";
 
 	private final static String[] LIST = new String[] { 
-		DATE_TIME, DATE, TIME, DATE_TIME_MILLIS, DF_FULL };
+		DATE_TIME, DATE, TIME, DATE_TIME_MILLIS, DF_FULL, BETFAIR_DATE_TIME, BETFAIR_DATE_TIME_WOUT_SECS };
 
 	private static Hashtable<String, DateFormat> map;
 

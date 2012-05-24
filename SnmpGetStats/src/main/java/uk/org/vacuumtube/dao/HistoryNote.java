@@ -21,46 +21,45 @@ import uk.org.vacuumtube.util.DateFormatFactory;
  *
  */
 @Entity
-@Table(name="notes")
-public class Notes extends AbstractTimestampEntity implements uk.org.vacuumtube.dao.PersistableEntity, Serializable {
+@Table(name="history_note")
+public class HistoryNote extends AbstractTimestampEntity implements PersistableEntity, Serializable {
 
-	private static final long serialVersionUID = 7877156363139225872L;
-	
-	protected Long notesId = null;
-	protected String note = null;	
-	protected Stats stats = null;
+	private static final long serialVersionUID = 8394854265499309836L;
+
+	private Long historyNoteId;
+	private History history;
+	private String note;
 	
 	/**
 	 * 
 	 */
-	public Notes() {
+	public HistoryNote() {
 		super();
 	}
-
+	
 	/**
 	 * @param note
 	 */
-	public Notes(Stats stats, String note) {
+	public HistoryNote(String note) {
 		this();
 		this.note = note;
-		this.stats = stats;
 	}
 
 	/**
-	 * @return the notesId
+	 * @return the historyNoteId
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="notes_id", unique = true, nullable = false)
-	public Long getNotesId() {
-		return notesId;
+	@Column(name = "history_note_id", unique = true, nullable = false)
+	public Long getHistoryNoteId() {
+		return historyNoteId;
 	}
 
 	/**
-	 * @param notesId the notesId to set
+	 * @param historyNoteId the historyNoteId to set
 	 */
-	public void setNotesId(Long notesId) {
-		this.notesId = notesId;
+	public void setHistoryNoteId(Long historyNoteId) {
+		this.historyNoteId = historyNoteId;
 	}
 
 	/**
@@ -79,20 +78,20 @@ public class Notes extends AbstractTimestampEntity implements uk.org.vacuumtube.
 	}
 
 	/**
-	 * @return the stats
+	 * @return the history
 	 */
 	@ManyToOne()
 	//@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "stats_id", nullable = false)
-	public Stats getStats() {
-		return stats;
+	@JoinColumn(name = "history_id", nullable = false)
+	public History getHistory() {
+		return history;
 	}
 
 	/**
-	 * @param stats the stats to set
+	 * @param history the history to set
 	 */
-	public void setStats(Stats stats) {
-		this.stats = stats;
+	public void setHistory(History history) {
+		this.history = history;
 	}
 
 	/* (non-Javadoc)
@@ -102,6 +101,11 @@ public class Notes extends AbstractTimestampEntity implements uk.org.vacuumtube.
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		/*
+		result = prime * result
+				+ ((historyNoteId == null) ? 0 : historyNoteId.hashCode());
+				*/
+		result = prime * result + ((history == null) ? 0 : history.hashCode());
 		result = prime * result + ((note == null) ? 0 : note.hashCode());
 		result = prime * result + ((created == null) ? 0 : created.hashCode());
 		result = prime * result + ((updated == null) ? 0 : updated.hashCode());
@@ -119,10 +123,17 @@ public class Notes extends AbstractTimestampEntity implements uk.org.vacuumtube.
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof Notes)) {
+		if (!(obj instanceof HistoryNote)) {
 			return false;
 		}
-		Notes other = (Notes) obj;
+		HistoryNote other = (HistoryNote) obj;
+		if (history == null) {
+			if (other.history != null) {
+				return false;
+			}
+		} else if (!history.equals(other.history)) {
+			return false;
+		}
 		if (note == null) {
 			if (other.note != null) {
 				return false;
@@ -153,24 +164,15 @@ public class Notes extends AbstractTimestampEntity implements uk.org.vacuumtube.
 	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
-		buf.append("Notes[notesId=");
-		buf.append(notesId);
+		buf.append("HistoryNote[historyNoteId=");
+		buf.append(historyNoteId);
 		buf.append(", note=");
 		buf.append(note);
 		buf.append(", created=");
 		buf.append(DateFormatFactory.format(DateFormatFactory.DF_FULL, created));
 		buf.append(", updated=");
 		buf.append(DateFormatFactory.format(DateFormatFactory.DF_FULL, updated));
-		buf.append(", stats=");
-		buf.append(((stats != null) ? ("Stats[statsId=" + stats.getStatsId() + "]") : "null"));
 		buf.append("]");
 		return buf.toString();
-	}	
-
-	/**
-	 * @return
-	 */
-	public String shortDescription() {
-		return "Notes[id=" + notesId + "]";
 	}
 }

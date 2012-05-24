@@ -1,4 +1,3 @@
-
 DROP TABLE IF EXISTS `notes`;
 DROP TABLE IF EXISTS `stats`;
 
@@ -43,3 +42,4 @@ ALTER TABLE `notes`
   ADD CONSTRAINT `notes_stats_id_fk` FOREIGN KEY (`stats_id`) REFERENCES `stats` (`stats_id`)
   ON DELETE CASCADE ON UPDATE CASCADE;
   
+

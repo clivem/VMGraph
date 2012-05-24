@@ -31,6 +31,9 @@ public abstract class AbstractTimestampEntity implements Serializable {
 	 * 
 	 */
 	protected AbstractTimestampEntity() {
+		super();
+		// MySQL "fix" (truncate the millis) which are not stored by their timestamp
+		this.created = new Date((System.currentTimeMillis() / 1000L) * 1000L);
 	}
 	
 	/**

@@ -34,7 +34,7 @@ import uk.org.vacuumtube.util.DateFormatFactory;
 @FetchProfile(name = "stats-with-notes", fetchOverrides = {
 	@FetchProfile.FetchOverride(entity = Stats.class, association = "notes", mode = FetchMode.JOIN)
 })
-public class Stats extends AbstractTimestampEntity implements uk.org.vacuumtube.dao.PersistableEntity, Serializable {
+public class Stats extends AbstractTimestampEntity implements PersistableEntity, Serializable {
 
 	private static final long serialVersionUID = 2247407172964283263L;
 
@@ -48,6 +48,7 @@ public class Stats extends AbstractTimestampEntity implements uk.org.vacuumtube.
 	 * 
 	 */
 	public Stats() {
+		super();
 	}
 
 	/**
@@ -56,6 +57,7 @@ public class Stats extends AbstractTimestampEntity implements uk.org.vacuumtube.
 	 * @param txBytes
 	 */
 	public Stats(Long millis, Long rxBytes, Long txBytes) {
+		this();
 		this.millis = millis;
 		this.rxBytes = rxBytes;
 		this.txBytes = txBytes;

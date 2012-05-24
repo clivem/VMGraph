@@ -16,7 +16,9 @@ import org.springframework.dao.annotation.PersistenceExceptionTranslationPostPro
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 
+import uk.org.vacuumtube.dao.HistoryDao;
 import uk.org.vacuumtube.dao.StatsDao;
+import uk.org.vacuumtube.dao.hibernate.HistoryDaoImpl;
 import uk.org.vacuumtube.dao.hibernate.MySqlTimestampInterceptor;
 import uk.org.vacuumtube.dao.hibernate.StatsDaoImpl;
 
@@ -43,6 +45,16 @@ public class DatabaseConfiguration {
 	@Value("${jdbc.password}")
 	private String jdbcPassword;
 
+	@Bean(name = "dataSource", destroyMethod = "close")
+	public DataSource dataSource() {
+		BasicDataSource ds = new BasicDataSource();
+		ds.setDriverClassName(jdbcDriverClassName);
+		ds.setUrl(jdbcUrl);
+		ds.setUsername(jdbcUsername);
+		ds.setPassword(jdbcPassword);
+		return ds;
+	}	
+
 	@Bean(name = "sessionFactory")
 	public LocalSessionFactoryBean sessionFactory() {
 		LocalSessionFactoryBean bean = new LocalSessionFactoryBean();
@@ -58,30 +70,25 @@ public class DatabaseConfiguration {
 		return bean;
 	}
 	
-	@Bean(name = "persistenceExceptionTranslationPostProcessor")
-	public PersistenceExceptionTranslationPostProcessor persistenceExceptionTranslationPostProcessor() {
-		return new PersistenceExceptionTranslationPostProcessor();
-	}
-
 	@Bean(name = "transactionManager")
 	public HibernateTransactionManager transactionManager() {
 		return new HibernateTransactionManager(sessionFactory().getObject());
 	}
 
+	@Bean(name = "persistenceExceptionTranslationPostProcessor")
+	public PersistenceExceptionTranslationPostProcessor persistenceExceptionTranslationPostProcessor() {
+		return new PersistenceExceptionTranslationPostProcessor();
+	}
+
 	@Bean(name = "statsDao")
 	public StatsDao statsDao() {
 		StatsDaoImpl statsDaoImpl = new StatsDaoImpl();
-		//statsDaoImpl.setSessionFactory(sessionFactory().getObject());
 		return statsDaoImpl;
 	}
 	
-	@Bean(name = "dataSource", destroyMethod = "close")
-	public DataSource dataSource() {
-		BasicDataSource ds = new BasicDataSource();
-		ds.setDriverClassName(jdbcDriverClassName);
-		ds.setUrl(jdbcUrl);
-		ds.setUsername(jdbcUsername);
-		ds.setPassword(jdbcPassword);
-		return ds;
-	}	
+	@Bean(name = "historyDao")
+	public HistoryDao historyDao() {
+		HistoryDaoImpl historyDaoImpl = new HistoryDaoImpl();
+		return historyDaoImpl;
+	}
 }
