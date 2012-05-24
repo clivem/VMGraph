@@ -79,7 +79,7 @@ public class Service {
 		/*
 		 * XL60_6
 		 */
-    	new Service(XL60_6, 50, 5,
+    	new Service(XL60_6, 60, 6,
     			ServicePeriod.createMap(new ServicePeriod[] {
     					new ServicePeriod("DAY", 0, 24,
     			    			StmProfile.createMap(new StmProfile[] {
@@ -103,7 +103,7 @@ public class Service {
 		/*
 		 * XL100_5
 		 */
-    	new Service(XL100_5, 50, 5,
+    	new Service(XL100_5, 100, 5,
     			ServicePeriod.createMap(new ServicePeriod[] {
     					new ServicePeriod("DAY", 0, 24,
     			    			StmProfile.createMap(new StmProfile[] {
@@ -127,7 +127,7 @@ public class Service {
 		/*
 		 * XL100_10
 		 */
-    	new Service(XL100_10, 50, 5,
+    	new Service(XL100_10, 100, 10,
     			ServicePeriod.createMap(new ServicePeriod[] {
     					new ServicePeriod("DAY", 0, 24,
     			    			StmProfile.createMap(new StmProfile[] {
