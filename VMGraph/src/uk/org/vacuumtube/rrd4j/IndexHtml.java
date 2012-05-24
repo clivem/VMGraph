@@ -13,7 +13,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
@@ -40,6 +43,35 @@ public class IndexHtml {
 		this.contentList = new ArrayList<String>();
 	}
 	
+	private static class FileDateComparator implements Comparator<String> {
+		/* (non-Javadoc)
+		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+		 */
+		@Override
+		public int compare(String o1, String o2) {
+			if (o1.endsWith(".html") && o2.endsWith(".html")) {
+				try {
+					String s1 = o1.substring(0, o1.length() - 5);
+					int date1 = Integer.parseInt(s1.substring(s1.length() - 8));
+					String s2 = o2.substring(0, o2.length() - 5);
+					int date2 = Integer.parseInt(s2.substring(s2.length() - 8));
+					if (date1 > date2) {
+						return 1;
+					} else if (date1 < date2) {
+						return -1;
+					} else {
+						return 0;
+					}
+				} catch (Exception e) {
+					LOGGER.warn(null, e);
+				}
+			}
+			
+			return o1.compareTo(o2);
+		}
+		
+	}
+	
 	/**
 	 * 
 	 */
@@ -59,9 +91,14 @@ public class IndexHtml {
 				return false;
 			}
 		});
-		
-		Arrays.sort(dailyHtmlFileNames);
-		
+		//Arrays.sort(dailyHtmlFileNames);
+
+		SortedSet<String> set = new TreeSet<String>(new FileDateComparator());
+		for (String fileName : dailyHtmlFileNames) {
+			set.add(fileName);
+		}
+		set.toArray(dailyHtmlFileNames);
+				
 		writeHeader();
 		//for (String fileName : dailyHtmlFileNames) {
 		for (int i = dailyHtmlFileNames.length - 1; i >= 0; i--) {
