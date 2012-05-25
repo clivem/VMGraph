@@ -12,6 +12,7 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+@SuppressWarnings("restriction") 
 public class EchoHandler implements HttpHandler
 {
     public void handle(HttpExchange t) throws IOException {

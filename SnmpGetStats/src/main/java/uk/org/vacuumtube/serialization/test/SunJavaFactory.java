@@ -83,7 +83,7 @@ public class SunJavaFactory extends AbstractSerializationFactory {
 		GZIPOutputStream gos = null;
 		try {
 			if (compress) {
-				gos = new GZIPOutputStream(baos, true);
+				gos = new GZIPOutputStream(baos);
 				if (buffer) {
 					bos = new BufferedOutputStream(gos);
 					mvos = new ObjectOutputStream(bos);

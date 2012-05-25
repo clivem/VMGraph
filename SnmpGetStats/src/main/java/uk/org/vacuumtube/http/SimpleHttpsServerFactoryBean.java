@@ -52,6 +52,7 @@ import com.sun.net.httpserver.HttpsServer;
  * @see #setPort
  * @see #setContexts
  */
+@SuppressWarnings("restriction") 
 public class SimpleHttpsServerFactoryBean implements FactoryBean<HttpsServer>, InitializingBean, DisposableBean {
 
 	protected final Log logger = LogFactory.getLog(getClass());

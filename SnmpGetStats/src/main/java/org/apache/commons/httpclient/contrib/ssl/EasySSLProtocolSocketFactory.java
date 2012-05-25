@@ -85,12 +85,13 @@ import com.sun.net.ssl.TrustManager;
  * </p>
  */
 
+@SuppressWarnings({ "deprecation", "restriction" })
 public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory {
 
     /** Log object for this class. */
     private static final Logger LOG = Logger.getLogger(EasySSLProtocolSocketFactory.class);
 
-    private SSLContext sslcontext = null;
+	private SSLContext sslcontext = null;
 
     /**
      * Constructor for EasySSLProtocolSocketFactory.

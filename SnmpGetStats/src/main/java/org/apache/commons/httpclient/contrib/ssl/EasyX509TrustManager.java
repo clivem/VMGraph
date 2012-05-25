@@ -59,9 +59,10 @@ import com.sun.net.ssl.X509TrustManager;
  * </p>
  */
 
-public class EasyX509TrustManager implements X509TrustManager
-{
-    private X509TrustManager standardTrustManager = null;
+@SuppressWarnings({ "deprecation", "restriction" })
+public class EasyX509TrustManager implements X509TrustManager {
+	
+	private X509TrustManager standardTrustManager = null;
 
     /** Log object for this class. */
     private static final Logger LOG = Logger.getLogger(EasyX509TrustManager.class);
@@ -69,7 +70,7 @@ public class EasyX509TrustManager implements X509TrustManager
     /**
      * Constructor for EasyX509TrustManager.
      */
-    public EasyX509TrustManager(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
+	public EasyX509TrustManager(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
         super();
         TrustManagerFactory factory = TrustManagerFactory.getInstance("SunX509");
         factory.init(keystore);
@@ -83,14 +84,14 @@ public class EasyX509TrustManager implements X509TrustManager
     /**
      * @see com.sun.net.ssl.X509TrustManager#isClientTrusted(X509Certificate[])
      */
-    public boolean isClientTrusted(X509Certificate[] certificates) {
+	public boolean isClientTrusted(X509Certificate[] certificates) {
         return this.standardTrustManager.isClientTrusted(certificates);
     }
 
     /**
      * @see com.sun.net.ssl.X509TrustManager#isServerTrusted(X509Certificate[])
      */
-    public boolean isServerTrusted(X509Certificate[] certificates) {
+	public boolean isServerTrusted(X509Certificate[] certificates) {
         if ((certificates != null) && LOG.isDebugEnabled()) {
             LOG.debug("Server certificate chain:");
             for (int i = 0; i < certificates.length; i++) {
@@ -116,7 +117,7 @@ public class EasyX509TrustManager implements X509TrustManager
     /**
      * @see com.sun.net.ssl.X509TrustManager#getAcceptedIssuers()
      */
-    public X509Certificate[] getAcceptedIssuers() {
+	public X509Certificate[] getAcceptedIssuers() {
         return this.standardTrustManager.getAcceptedIssuers();
     }
 }

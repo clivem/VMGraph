@@ -38,6 +38,7 @@ import com.sun.net.httpserver.HttpsParameters;
  */
 @Configuration
 @Import(ApplicationConfiguration.class)
+@SuppressWarnings("restriction") 
 public class WebServerConfiguration {
 
 	private final String keystoreLocation = "classpath:META-INF/certs/vacuumtube.keystore";

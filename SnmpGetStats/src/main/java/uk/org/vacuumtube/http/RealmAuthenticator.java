@@ -11,6 +11,7 @@ import com.sun.net.httpserver.BasicAuthenticator;
  * @author clivem
  *
  */
+@SuppressWarnings("restriction") 
 public class RealmAuthenticator extends BasicAuthenticator {
 
 	private final static Logger LOGGER = Logger.getLogger(RealmAuthenticator.class);

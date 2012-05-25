@@ -24,6 +24,7 @@ import com.sun.net.httpserver.HttpExchange;
  * @author clivem
  *
  */
+@SuppressWarnings("restriction") 
 public class CustomHttpInvokerServiceExporter extends SimpleHttpInvokerServiceExporter {
 
 	protected final static Logger LOGGER = Logger.getLogger(CustomHttpInvokerServiceExporter.class);
